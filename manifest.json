@@ -1,0 +1,24 @@
+{
+  "background_color": "#002147",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "The Oxford Game",
+  "orientation": "portrait",
+  "scope": "./",
+  "short_name": "Oxford",
+  "start_url": "./",
+  "theme_color": "#002147",
+  "description": "The Oxford Game app",
+  "lang": "en",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,4293 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Oxford Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --oxford-navy: #002147;
+      --oxford-gold: #b8860b;
+      --oxford-parchment: #f8f5ee;
+      --oxford-ink: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: var(--oxford-parchment);
+      font-family: 'Inter', sans-serif;
+      color: var(--oxford-ink);
+    }
+
+    .font-oxford {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    #map-viewport {
+      touch-action: none;
+      background-color: var(--oxford-parchment);
+      background-image:
+        radial-gradient(rgba(0, 33, 71, 0.045) 1px, transparent 0),
+        radial-gradient(rgba(184, 134, 11, 0.04) 1px, transparent 0);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes pulseBeacon {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.92;
+      }
+
+      50% {
+        transform: scale(1.42);
+        opacity: 0.35;
+      }
+    }
+
+    .beacon-ring {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pulseBeacon 1.6s ease-in-out infinite;
+    }
+
+    @keyframes dashMarch {
+      to {
+        stroke-dashoffset: -24;
+      }
+    }
+
+    .sightline-path {
+      animation: dashMarch 0.9s linear infinite;
+    }
+
+    .bottom-sheet {
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  </style>
+  <style>
+    *,
+    ::before,
+    ::after {
+      --tw-border-spacing-x: 0;
+      --tw-border-spacing-y: 0;
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-rotate: 0;
+      --tw-skew-x: 0;
+      --tw-skew-y: 0;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-pan-x: ;
+      --tw-pan-y: ;
+      --tw-pinch-zoom: ;
+      --tw-scroll-snap-strictness: proximity;
+      --tw-gradient-from-position: ;
+      --tw-gradient-via-position: ;
+      --tw-gradient-to-position: ;
+      --tw-ordinal: ;
+      --tw-slashed-zero: ;
+      --tw-numeric-figure: ;
+      --tw-numeric-spacing: ;
+      --tw-numeric-fraction: ;
+      --tw-ring-inset: ;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-color: rgb(59 130 246 / 0.5);
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-colored: 0 0 #0000;
+      --tw-blur: ;
+      --tw-brightness: ;
+      --tw-contrast: ;
+      --tw-grayscale: ;
+      --tw-hue-rotate: ;
+      --tw-invert: ;
+      --tw-saturate: ;
+      --tw-sepia: ;
+      --tw-drop-shadow: ;
+      --tw-backdrop-blur: ;
+      --tw-backdrop-brightness: ;
+      --tw-backdrop-contrast: ;
+      --tw-backdrop-grayscale: ;
+      --tw-backdrop-hue-rotate: ;
+      --tw-backdrop-invert: ;
+      --tw-backdrop-opacity: ;
+      --tw-backdrop-saturate: ;
+      --tw-backdrop-sepia: ;
+      --tw-contain-size: ;
+      --tw-contain-layout: ;
+      --tw-contain-paint: ;
+      --tw-contain-style:
+    }
+
+    ::backdrop {
+      --tw-border-spacing-x: 0;
+      --tw-border-spacing-y: 0;
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-rotate: 0;
+      --tw-skew-x: 0;
+      --tw-skew-y: 0;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-pan-x: ;
+      --tw-pan-y: ;
+      --tw-pinch-zoom: ;
+      --tw-scroll-snap-strictness: proximity;
+      --tw-gradient-from-position: ;
+      --tw-gradient-via-position: ;
+      --tw-gradient-to-position: ;
+      --tw-ordinal: ;
+      --tw-slashed-zero: ;
+      --tw-numeric-figure: ;
+      --tw-numeric-spacing: ;
+      --tw-numeric-fraction: ;
+      --tw-ring-inset: ;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-color: rgb(59 130 246 / 0.5);
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-colored: 0 0 #0000;
+      --tw-blur: ;
+      --tw-brightness: ;
+      --tw-contrast: ;
+      --tw-grayscale: ;
+      --tw-hue-rotate: ;
+      --tw-invert: ;
+      --tw-saturate: ;
+      --tw-sepia: ;
+      --tw-drop-shadow: ;
+      --tw-backdrop-blur: ;
+      --tw-backdrop-brightness: ;
+      --tw-backdrop-contrast: ;
+      --tw-backdrop-grayscale: ;
+      --tw-backdrop-hue-rotate: ;
+      --tw-backdrop-invert: ;
+      --tw-backdrop-opacity: ;
+      --tw-backdrop-saturate: ;
+      --tw-backdrop-sepia: ;
+      --tw-contain-size: ;
+      --tw-contain-layout: ;
+      --tw-contain-paint: ;
+      --tw-contain-style:
+    }
+
+    /* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+    *,
+    ::after,
+    ::before {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: #e5e7eb
+    }
+
+    ::after,
+    ::before {
+      --tw-content: ''
+    }
+
+    :host,
+    html {
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      -moz-tab-size: 4;
+      tab-size: 4;
+      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    body {
+      margin: 0;
+      line-height: inherit
+    }
+
+    hr {
+      height: 0;
+      color: inherit;
+      border-top-width: 1px
+    }
+
+    abbr:where([title]) {
+      -webkit-text-decoration: underline dotted;
+      text-decoration: underline dotted
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: inherit;
+      font-weight: inherit
+    }
+
+    a {
+      color: inherit;
+      text-decoration: inherit
+    }
+
+    b,
+    strong {
+      font-weight: bolder
+    }
+
+    code,
+    kbd,
+    pre,
+    samp {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      font-size: 1em
+    }
+
+    small {
+      font-size: 80%
+    }
+
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline
+    }
+
+    sub {
+      bottom: -.25em
+    }
+
+    sup {
+      top: -.5em
+    }
+
+    table {
+      text-indent: 0;
+      border-color: inherit;
+      border-collapse: collapse
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font-family: inherit;
+      font-feature-settings: inherit;
+      font-variation-settings: inherit;
+      font-size: 100%;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0
+    }
+
+    button,
+    select {
+      text-transform: none
+    }
+
+    button,
+    input:where([type=button]),
+    input:where([type=reset]),
+    input:where([type=submit]) {
+      -webkit-appearance: button;
+      background-color: transparent;
+      background-image: none
+    }
+
+    :-moz-focusring {
+      outline: auto
+    }
+
+    :-moz-ui-invalid {
+      box-shadow: none
+    }
+
+    progress {
+      vertical-align: baseline
+    }
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+      height: auto
+    }
+
+    [type=search] {
+      -webkit-appearance: textfield;
+      outline-offset: -2px
+    }
+
+    ::-webkit-search-decoration {
+      -webkit-appearance: none
+    }
+
+    ::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      font: inherit
+    }
+
+    summary {
+      display: list-item
+    }
+
+    blockquote,
+    dd,
+    dl,
+    figure,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    p,
+    pre {
+      margin: 0
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0
+    }
+
+    legend {
+      padding: 0
+    }
+
+    menu,
+    ol,
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    dialog {
+      padding: 0
+    }
+
+    textarea {
+      resize: vertical
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      opacity: 1;
+      color: #9ca3af
+    }
+
+    [role=button],
+    button {
+      cursor: pointer
+    }
+
+    :disabled {
+      cursor: default
+    }
+
+    audio,
+    canvas,
+    embed,
+    iframe,
+    img,
+    object,
+    svg,
+    video {
+      display: block;
+      vertical-align: middle
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto
+    }
+
+    [hidden]:where(:not([hidden=until-found])) {
+      display: none
+    }
+
+    .pointer-events-none {
+      pointer-events: none
+    }
+
+    .fixed {
+      position: fixed
+    }
+
+    .absolute {
+      position: absolute
+    }
+
+    .relative {
+      position: relative
+    }
+
+    .inset-0 {
+      inset: 0px
+    }
+
+    .bottom-0 {
+      bottom: 0px
+    }
+
+    .bottom-32 {
+      bottom: 8rem
+    }
+
+    .left-0 {
+      left: 0px
+    }
+
+    .left-3 {
+      left: 0.75rem
+    }
+
+    .right-0 {
+      right: 0px
+    }
+
+    .right-3 {
+      right: 0.75rem
+    }
+
+    .top-3 {
+      top: 0.75rem
+    }
+
+    .z-10 {
+      z-index: 10
+    }
+
+    .z-20 {
+      z-index: 20
+    }
+
+    .z-30 {
+      z-index: 30
+    }
+
+    .z-40 {
+      z-index: 40
+    }
+
+    .z-50 {
+      z-index: 50
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .my-auto {
+      margin-top: auto;
+      margin-bottom: auto
+    }
+
+    .mb-1 {
+      margin-bottom: 0.25rem
+    }
+
+    .mb-1\.5 {
+      margin-bottom: 0.375rem
+    }
+
+    .mb-3 {
+      margin-bottom: 0.75rem
+    }
+
+    .mt-0\.5 {
+      margin-top: 0.125rem
+    }
+
+    .mt-1 {
+      margin-top: 0.25rem
+    }
+
+    .mt-2 {
+      margin-top: 0.5rem
+    }
+
+    .mb-0\.5 {
+      margin-bottom: 0.125rem
+    }
+
+    .block {
+      display: block
+    }
+
+    .flex {
+      display: flex
+    }
+
+    .inline-flex {
+      display: inline-flex
+    }
+
+    .grid {
+      display: grid
+    }
+
+    .hidden {
+      display: none
+    }
+
+    .h-1 {
+      height: 0.25rem
+    }
+
+    .h-10 {
+      height: 2.5rem
+    }
+
+    .h-16 {
+      height: 4rem
+    }
+
+    .h-20 {
+      height: 5rem
+    }
+
+    .h-4 {
+      height: 1rem
+    }
+
+    .h-5 {
+      height: 1.25rem
+    }
+
+    .h-7 {
+      height: 1.75rem
+    }
+
+    .h-8 {
+      height: 2rem
+    }
+
+    .h-9 {
+      height: 2.25rem
+    }
+
+    .h-\[100dvh\] {
+      height: 100dvh
+    }
+
+    .h-\[1px\] {
+      height: 1px
+    }
+
+    .h-full {
+      height: 100%
+    }
+
+    .h-6 {
+      height: 1.5rem
+    }
+
+    .max-h-40 {
+      max-height: 10rem
+    }
+
+    .max-h-60 {
+      max-height: 15rem
+    }
+
+    .max-h-64 {
+      max-height: 16rem
+    }
+
+    .max-h-\[42dvh\] {
+      max-height: 42dvh
+    }
+
+    .max-h-\[52dvh\] {
+      max-height: 52dvh
+    }
+
+    .max-h-\[88dvh\] {
+      max-height: 88dvh
+    }
+
+    .w-10 {
+      width: 2.5rem
+    }
+
+    .w-16 {
+      width: 4rem
+    }
+
+    .w-20 {
+      width: 5rem
+    }
+
+    .w-4 {
+      width: 1rem
+    }
+
+    .w-5 {
+      width: 1.25rem
+    }
+
+    .w-7 {
+      width: 1.75rem
+    }
+
+    .w-8 {
+      width: 2rem
+    }
+
+    .w-9 {
+      width: 2.25rem
+    }
+
+    .w-full {
+      width: 100%
+    }
+
+    .w-6 {
+      width: 1.5rem
+    }
+
+    .min-w-0 {
+      min-width: 0px
+    }
+
+    .max-w-lg {
+      max-width: 32rem
+    }
+
+    .max-w-md {
+      max-width: 28rem
+    }
+
+    .max-w-sm {
+      max-width: 24rem
+    }
+
+    .flex-1 {
+      flex: 1 1 0%
+    }
+
+    .shrink-0 {
+      flex-shrink: 0
+    }
+
+    .cursor-pointer {
+      cursor: pointer
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .flex-col {
+      flex-direction: column
+    }
+
+    .items-start {
+      align-items: flex-start
+    }
+
+    .items-end {
+      align-items: flex-end
+    }
+
+    .items-center {
+      align-items: center
+    }
+
+    .justify-end {
+      justify-content: flex-end
+    }
+
+    .justify-center {
+      justify-content: center
+    }
+
+    .justify-between {
+      justify-content: space-between
+    }
+
+    .gap-0\.5 {
+      gap: 0.125rem
+    }
+
+    .gap-1 {
+      gap: 0.25rem
+    }
+
+    .gap-1\.5 {
+      gap: 0.375rem
+    }
+
+    .gap-2 {
+      gap: 0.5rem
+    }
+
+    .gap-2\.5 {
+      gap: 0.625rem
+    }
+
+    .gap-3 {
+      gap: 0.75rem
+    }
+
+    .space-y-1> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-1\.5> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.375rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-2> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-2\.5> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.625rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-3> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.75rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-4> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+    }
+
+    .space-y-6> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(1.5rem * var(--tw-space-y-reverse))
+    }
+
+    .overflow-hidden {
+      overflow: hidden
+    }
+
+    .overflow-x-auto {
+      overflow-x: auto
+    }
+
+    .overflow-y-auto {
+      overflow-y: auto
+    }
+
+    .truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .rounded {
+      border-radius: 0.25rem
+    }
+
+    .rounded-2xl {
+      border-radius: 1rem
+    }
+
+    .rounded-3xl {
+      border-radius: 1.5rem
+    }
+
+    .rounded-full {
+      border-radius: 9999px
+    }
+
+    .rounded-xl {
+      border-radius: 0.75rem
+    }
+
+    .rounded-t-3xl {
+      border-top-left-radius: 1.5rem;
+      border-top-right-radius: 1.5rem
+    }
+
+    .rounded-t-xl {
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem
+    }
+
+    .border {
+      border-width: 1px
+    }
+
+    .border-2 {
+      border-width: 2px
+    }
+
+    .border-4 {
+      border-width: 4px
+    }
+
+    .border-b-2 {
+      border-bottom-width: 2px
+    }
+
+    .border-t {
+      border-top-width: 1px
+    }
+
+    .border-t-2 {
+      border-top-width: 2px
+    }
+
+    .border-\[\#002147\] {
+      --tw-border-opacity: 1;
+      border-color: rgb(0 33 71 / var(--tw-border-opacity, 1))
+    }
+
+    .border-\[\#b8860b\] {
+      --tw-border-opacity: 1;
+      border-color: rgb(184 134 11 / var(--tw-border-opacity, 1))
+    }
+
+    .border-\[\#c83737\] {
+      --tw-border-opacity: 1;
+      border-color: rgb(200 55 55 / var(--tw-border-opacity, 1))
+    }
+
+    .border-amber-300 {
+      --tw-border-opacity: 1;
+      border-color: rgb(252 211 77 / var(--tw-border-opacity, 1))
+    }
+
+    .border-emerald-400 {
+      --tw-border-opacity: 1;
+      border-color: rgb(52 211 153 / var(--tw-border-opacity, 1))
+    }
+
+    .border-red-200 {
+      --tw-border-opacity: 1;
+      border-color: rgb(254 202 202 / var(--tw-border-opacity, 1))
+    }
+
+    .border-slate-200 {
+      --tw-border-opacity: 1;
+      border-color: rgb(226 232 240 / var(--tw-border-opacity, 1))
+    }
+
+    .border-white {
+      --tw-border-opacity: 1;
+      border-color: rgb(255 255 255 / var(--tw-border-opacity, 1))
+    }
+
+    .border-white\/10 {
+      border-color: rgb(255 255 255 / 0.1)
+    }
+
+    .border-white\/15 {
+      border-color: rgb(255 255 255 / 0.15)
+    }
+
+    .border-white\/20 {
+      border-color: rgb(255 255 255 / 0.2)
+    }
+
+    .border-white\/25 {
+      border-color: rgb(255 255 255 / 0.25)
+    }
+
+    .border-slate-300 {
+      --tw-border-opacity: 1;
+      border-color: rgb(203 213 225 / var(--tw-border-opacity, 1))
+    }
+
+    .bg-\[\#001733\] {
+      --tw-bg-opacity: 1;
+      background-color: rgb(0 23 51 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-\[\#002147\] {
+      --tw-bg-opacity: 1;
+      background-color: rgb(0 33 71 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-\[\#002147\]\/90 {
+      background-color: rgb(0 33 71 / 0.9)
+    }
+
+    .bg-\[\#b8860b\] {
+      --tw-bg-opacity: 1;
+      background-color: rgb(184 134 11 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-\[\#c83737\] {
+      --tw-bg-opacity: 1;
+      background-color: rgb(200 55 55 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-\[\#f8f5ee\] {
+      --tw-bg-opacity: 1;
+      background-color: rgb(248 245 238 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-amber-100 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-amber-50 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(255 251 235 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-black\/25 {
+      background-color: rgb(0 0 0 / 0.25)
+    }
+
+    .bg-emerald-100 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-red-50 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-red-600 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-slate-100 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-slate-200 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-slate-200\/80 {
+      background-color: rgb(226 232 240 / 0.8)
+    }
+
+    .bg-slate-300 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-slate-800 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-slate-950\/60 {
+      background-color: rgb(2 6 23 / 0.6)
+    }
+
+    .bg-slate-950\/65 {
+      background-color: rgb(2 6 23 / 0.65)
+    }
+
+    .bg-slate-950\/75 {
+      background-color: rgb(2 6 23 / 0.75)
+    }
+
+    .bg-white {
+      --tw-bg-opacity: 1;
+      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-white\/10 {
+      background-color: rgb(255 255 255 / 0.1)
+    }
+
+    .bg-white\/15 {
+      background-color: rgb(255 255 255 / 0.15)
+    }
+
+    .bg-white\/20 {
+      background-color: rgb(255 255 255 / 0.2)
+    }
+
+    .bg-white\/95 {
+      background-color: rgb(255 255 255 / 0.95)
+    }
+
+    .bg-slate-50 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1))
+    }
+
+    .p-1 {
+      padding: 0.25rem
+    }
+
+    .p-1\.5 {
+      padding: 0.375rem
+    }
+
+    .p-2\.5 {
+      padding: 0.625rem
+    }
+
+    .p-3 {
+      padding: 0.75rem
+    }
+
+    .p-3\.5 {
+      padding: 0.875rem
+    }
+
+    .p-4 {
+      padding: 1rem
+    }
+
+    .p-5 {
+      padding: 1.25rem
+    }
+
+    .p-6 {
+      padding: 1.5rem
+    }
+
+    .px-1\.5 {
+      padding-left: 0.375rem;
+      padding-right: 0.375rem
+    }
+
+    .px-2 {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem
+    }
+
+    .px-2\.5 {
+      padding-left: 0.625rem;
+      padding-right: 0.625rem
+    }
+
+    .px-3 {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem
+    }
+
+    .px-3\.5 {
+      padding-left: 0.875rem;
+      padding-right: 0.875rem
+    }
+
+    .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem
+    }
+
+    .px-5 {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem
+    }
+
+    .py-0\.5 {
+      padding-top: 0.125rem;
+      padding-bottom: 0.125rem
+    }
+
+    .py-1 {
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem
+    }
+
+    .py-1\.5 {
+      padding-top: 0.375rem;
+      padding-bottom: 0.375rem
+    }
+
+    .py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem
+    }
+
+    .py-2\.5 {
+      padding-top: 0.625rem;
+      padding-bottom: 0.625rem
+    }
+
+    .py-3 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem
+    }
+
+    .py-3\.5 {
+      padding-top: 0.875rem;
+      padding-bottom: 0.875rem
+    }
+
+    .py-4 {
+      padding-top: 1rem;
+      padding-bottom: 1rem
+    }
+
+    .pb-0 {
+      padding-bottom: 0px
+    }
+
+    .pb-0\.5 {
+      padding-bottom: 0.125rem
+    }
+
+    .pb-3 {
+      padding-bottom: 0.75rem
+    }
+
+    .pl-2 {
+      padding-left: 0.5rem
+    }
+
+    .pr-1 {
+      padding-right: 0.25rem
+    }
+
+    .pt-0\.5 {
+      padding-top: 0.125rem
+    }
+
+    .pt-1 {
+      padding-top: 0.25rem
+    }
+
+    .pt-4 {
+      padding-top: 1rem
+    }
+
+    .text-left {
+      text-align: left
+    }
+
+    .text-center {
+      text-align: center
+    }
+
+    .font-sans {
+      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    }
+
+    .text-2xl {
+      font-size: 1.5rem;
+      line-height: 2rem
+    }
+
+    .text-3xl {
+      font-size: 1.875rem;
+      line-height: 2.25rem
+    }
+
+    .text-4xl {
+      font-size: 2.25rem;
+      line-height: 2.5rem
+    }
+
+    .text-5xl {
+      font-size: 3rem;
+      line-height: 1
+    }
+
+    .text-\[10px\] {
+      font-size: 10px
+    }
+
+    .text-\[11px\] {
+      font-size: 11px
+    }
+
+    .text-base {
+      font-size: 1rem;
+      line-height: 1.5rem
+    }
+
+    .text-lg {
+      font-size: 1.125rem;
+      line-height: 1.75rem
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+      line-height: 1.25rem
+    }
+
+    .text-xl {
+      font-size: 1.25rem;
+      line-height: 1.75rem
+    }
+
+    .text-xs {
+      font-size: 0.75rem;
+      line-height: 1rem
+    }
+
+    .font-bold {
+      font-weight: 700
+    }
+
+    .font-extrabold {
+      font-weight: 800
+    }
+
+    .font-medium {
+      font-weight: 500
+    }
+
+    .font-semibold {
+      font-weight: 600
+    }
+
+    .uppercase {
+      text-transform: uppercase
+    }
+
+    .italic {
+      font-style: italic
+    }
+
+    .leading-none {
+      line-height: 1
+    }
+
+    .leading-relaxed {
+      line-height: 1.625
+    }
+
+    .leading-snug {
+      line-height: 1.375
+    }
+
+    .leading-tight {
+      line-height: 1.25
+    }
+
+    .tracking-\[0\.22em\] {
+      letter-spacing: 0.22em
+    }
+
+    .tracking-\[0\.25em\] {
+      letter-spacing: 0.25em
+    }
+
+    .tracking-\[0\.2em\] {
+      letter-spacing: 0.2em
+    }
+
+    .tracking-wide {
+      letter-spacing: 0.025em
+    }
+
+    .tracking-wider {
+      letter-spacing: 0.05em
+    }
+
+    .tracking-widest {
+      letter-spacing: 0.1em
+    }
+
+    .text-\[\#002147\] {
+      --tw-text-opacity: 1;
+      color: rgb(0 33 71 / var(--tw-text-opacity, 1))
+    }
+
+    .text-\[\#b8860b\] {
+      --tw-text-opacity: 1;
+      color: rgb(184 134 11 / var(--tw-text-opacity, 1))
+    }
+
+    .text-amber-200 {
+      --tw-text-opacity: 1;
+      color: rgb(253 230 138 / var(--tw-text-opacity, 1))
+    }
+
+    .text-amber-200\/90 {
+      color: rgb(253 230 138 / 0.9)
+    }
+
+    .text-amber-300 {
+      --tw-text-opacity: 1;
+      color: rgb(252 211 77 / var(--tw-text-opacity, 1))
+    }
+
+    .text-emerald-900 {
+      --tw-text-opacity: 1;
+      color: rgb(6 78 59 / var(--tw-text-opacity, 1))
+    }
+
+    .text-red-700 {
+      --tw-text-opacity: 1;
+      color: rgb(185 28 28 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-100 {
+      --tw-text-opacity: 1;
+      color: rgb(241 245 249 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-200 {
+      --tw-text-opacity: 1;
+      color: rgb(226 232 240 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-300 {
+      --tw-text-opacity: 1;
+      color: rgb(203 213 225 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-400 {
+      --tw-text-opacity: 1;
+      color: rgb(148 163 184 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-500 {
+      --tw-text-opacity: 1;
+      color: rgb(100 116 139 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-700 {
+      --tw-text-opacity: 1;
+      color: rgb(51 65 85 / var(--tw-text-opacity, 1))
+    }
+
+    .text-slate-800 {
+      --tw-text-opacity: 1;
+      color: rgb(30 41 59 / var(--tw-text-opacity, 1))
+    }
+
+    .text-white {
+      --tw-text-opacity: 1;
+      color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+    }
+
+    .text-red-600 {
+      --tw-text-opacity: 1;
+      color: rgb(220 38 38 / var(--tw-text-opacity, 1))
+    }
+
+    .accent-\[\#002147\] {
+      accent-color: #002147
+    }
+
+    .opacity-90 {
+      opacity: 0.9
+    }
+
+    .shadow {
+      --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-2xl {
+      --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+      --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-\[0_-8px_30px_rgba\(0\2c 0\2c 0\2c 0\.16\)\] {
+      --tw-shadow: 0 -8px 30px rgba(0, 0, 0, 0.16);
+      --tw-shadow-colored: 0 -8px 30px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-inner {
+      --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+      --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-lg {
+      --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-md {
+      --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-sm {
+      --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .shadow-xl {
+      --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+
+    .backdrop-blur-md {
+      --tw-backdrop-blur: blur(12px);
+      -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+      backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
+    }
+
+    .backdrop-blur-sm {
+      --tw-backdrop-blur: blur(4px);
+      -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+      backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
+    }
+
+    .transition {
+      transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms
+    }
+
+    .hover\:bg-\[\#00316b\]:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(0 49 107 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-\[\#00336e\]:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(0 51 110 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-amber-200:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(253 230 138 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-amber-400:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(251 191 36 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-amber-500:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-red-100:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-slate-100:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-slate-300:hover {
+      --tw-bg-opacity: 1;
+      background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1))
+    }
+
+    .hover\:bg-white\/20:hover {
+      background-color: rgb(255 255 255 / 0.2)
+    }
+
+    .hover\:bg-white\/25:hover {
+      background-color: rgb(255 255 255 / 0.25)
+    }
+
+    .hover\:text-white:hover {
+      --tw-text-opacity: 1;
+      color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+    }
+
+    .focus\:border-\[\#002147\]:focus {
+      --tw-border-opacity: 1;
+      border-color: rgb(0 33 71 / var(--tw-border-opacity, 1))
+    }
+
+    .focus\:bg-white:focus {
+      --tw-bg-opacity: 1;
+      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+    }
+
+    .focus\:outline-none:focus {
+      outline: 2px solid transparent;
+      outline-offset: 2px
+    }
+
+    .active\:scale-90:active {
+      --tw-scale-x: .9;
+      --tw-scale-y: .9;
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+    }
+
+    .active\:scale-95:active {
+      --tw-scale-x: .95;
+      --tw-scale-y: .95;
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+    }
+
+    .active\:scale-\[0\.99\]:active {
+      --tw-scale-x: 0.99;
+      --tw-scale-y: 0.99;
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+    }
+
+    .disabled\:pointer-events-none:disabled {
+      pointer-events: none
+    }
+
+    .disabled\:opacity-45:disabled {
+      opacity: 0.45
+    }
+
+    @media (min-width: 640px) {
+      .sm\:bottom-36 {
+        bottom: 9rem
+      }
+
+      .sm\:inline {
+        display: inline
+      }
+
+      .sm\:h-20 {
+        height: 5rem
+      }
+
+      .sm\:w-20 {
+        width: 5rem
+      }
+
+      .sm\:p-5 {
+        padding: 1.25rem
+      }
+
+      .sm\:p-6 {
+        padding: 1.5rem
+      }
+
+      .sm\:px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem
+      }
+
+      .sm\:py-2\.5 {
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem
+      }
+
+      .sm\:text-3xl {
+        font-size: 1.875rem;
+        line-height: 2.25rem
+      }
+
+      .sm\:text-base {
+        font-size: 1rem;
+        line-height: 1.5rem
+      }
+
+      .sm\:text-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem
+      }
+
+      .sm\:text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem
+      }
+
+      .sm\:text-xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem
+      }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col h-[100dvh] w-full overflow-hidden">
+
+  <!-- ===================================================================== -->
+  <!-- 1. TOP STATUS PANEL (REFERENCE DESIGN COMPLIANT)                      -->
+  <!-- ===================================================================== -->
+  <header id="top-status-header"
+    class="relative z-30 shrink-0 bg-[#002147] text-white border-b-2 border-[#b8860b] shadow-lg">
+    <div class="px-3 py-2 sm:px-4 sm:py-2.5 flex flex-col gap-1.5">
+      <!-- Top Row: Active Player Card & Settings Gear Button -->
+      <div class="flex items-center justify-between gap-3 bg-white/10 rounded-2xl p-2.5 border border-white/15">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="active-player-avatar"
+            class="w-10 h-10 rounded-full border-2 border-amber-300 shadow flex items-center justify-center shrink-0 bg-red-600 text-white text-lg">
+            🎓
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span id="status-player-name"
+                class="font-oxford font-bold text-sm sm:text-base text-white truncate">Player 1</span>
+              <span id="status-player-role"
+                class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#b8860b] text-[#002147]">Human</span>
+            </div>
+            <div id="status-player-location" class="text-xs text-amber-200/90 font-medium truncate mt-0.5">Active Turn •
+              Sheldonian Theatre</div>
+          </div>
+        </div>
+
+        <button id="btn-open-settings-hud" type="button" title="Settings, Rules &amp; AI Telemetry"
+          class="w-9 h-9 rounded-2xl bg-[#b8860b] hover:bg-amber-500 text-[#002147] font-bold flex items-center justify-center shadow shrink-0 active:scale-95 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+            </path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Middle Row: Line Badge, Instruction Box & Integrated LOG Button -->
+      <div class="bg-black/25 rounded-2xl px-3 py-2 border border-white/10 flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <span id="status-line-badge"
+            class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-amber-200 border border-white/25">All
+            Connected Lines</span>
+          <button id="btn-toggle-log" type="button"
+            class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xl bg-[#b8860b] text-[#002147] hover:bg-amber-400 transition flex items-center gap-1 shadow">
+            <span>LOG</span><span id="log-chevron">▼</span>
+          </button>
+        </div>
+        <p id="status-instruction" class="text-xs sm:text-sm text-slate-100 leading-snug">
+          Welcome to Oxford! Set up players to begin.
+        </p>
+      </div>
+
+      <!-- Bottom Row: Clean Mortarboard Progress Pills & Deck Stats -->
+      <div class="flex items-center justify-between pt-0.5 pb-0.5">
+        <div id="player-pills-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5"></div>
+        <div class="text-xs text-amber-200 font-mono-tech shrink-0 font-bold pl-2">
+          Deck: <span id="hud-hazard-count">70</span> | Blockers: <span id="hud-blocker-count">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expandable Scrollable Action Log Drawer -->
+    <div id="action-log-drawer" class="hidden border-t border-white/15 bg-[#001733] px-3 py-2.5">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-[#b8860b]">Chronological Match Log</span>
+        <button id="btn-close-log" type="button"
+          class="text-xs text-slate-300 hover:text-white px-2 py-0.5 rounded bg-white/10">Close ✕</button>
+      </div>
+      <div id="action-log-list" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs text-slate-200 font-mono-tech">
+        <div class="text-slate-400 italic">No actions recorded yet.</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 2. MAIN MAP VIEWPORT & CONTROLS                                       -->
+  <!-- ===================================================================== -->
+  <main id="map-viewport" class="relative flex-1 w-full overflow-hidden">
+    <svg id="oxford-map-svg" class="w-full h-full block" viewBox="0 0 1100 1280" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.28"></feDropShadow>
+        </filter>
+      </defs>
+
+      <g id="map-world">
+        <!-- Geography & Waterways -->
+        <g id="layer-geography" opacity="0.55">
+          <rect x="520" y="210" width="230" height="175" rx="28" fill="#dcead5" stroke="#b9d4ad" stroke-width="2">
+          </rect>
+          <text x="635" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#4b6b43"
+            letter-spacing="1.5">UNIVERSITY PARKS</text>
+          <path d="M 480 990 Q 650 970 840 1030 L 760 1190 L 480 1160 Z" fill="#e1edd9" stroke="#bfd6b2"
+            stroke-width="2"></path>
+          <text x="640" y="1085" text-anchor="middle" font-size="11" font-weight="700" fill="#4b6b43"
+            letter-spacing="1.5">CHRIST CHURCH MEADOW</text>
+          <path d="M 985 60 L 985 880 L 750 1185 L 440 1185" fill="none" stroke="#cbe4f2" stroke-width="18"
+            stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+
+        <g id="layer-lines">
+          <polyline
+            points="85,660 155,745 230,785 230,865 335,875 430,875 540,875 645,875 735,875 825,875 935,875 1020,905 965,995"
+            fill="none" stroke="#c83737" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline
+            points="230,660 230,785 155,925 255,1025 430,1065 430,945 430,875 430,660 535,660 645,660 765,660 740,760 905,660"
+            fill="none" stroke="#2d7a4d" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline
+            points="150,525 295,525 430,435 335,435 245,435 150,390 230,320 340,320 365,480 430,515 430,660 230,660"
+            fill="none" stroke="#7c4d3a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline
+            points="430,1225 430,1145 430,1065 430,1005 430,945 430,755 430,660 430,585 430,515 430,435 430,320 430,245 430,170 430,95 560,95 560,320 605,510 645,660 740,760 645,760 535,760 535,710 485,710 535,660"
+            fill="none" stroke="#22252a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline
+            points="985,260 775,260 560,320 645,395 645,475 645,565 645,660 645,710 645,760 645,810 645,842 645,875"
+            fill="none" stroke="#9e2a6b" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="985,260 845,350 905,445 845,555 780,475 645,475" fill="none" stroke="#9e2a6b"
+            stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="905,445 905,660 825,875 935,875" fill="none" stroke="#9e2a6b" stroke-width="7.5"
+            stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline
+            points="230,785 315,755 380,755 430,755 645,760 740,760 825,810 825,875 825,930 745,980 645,980 645,925 645,875"
+            fill="none" stroke="#ca8a04" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="985,95 985,260 985,460 935,875 855,1035 785,1110 715,1185 805,1245" fill="none"
+            stroke="#1d6fa5" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="715,1185 575,1185 430,1145" fill="none" stroke="#1d6fa5" stroke-width="7.5"
+            stroke-linecap="round" stroke-linejoin="round"></polyline>
+        </g>
+        <g id="layer-sightline"></g>
+        <g id="layer-stations">
+          <circle cx="430" cy="95" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_hughs"></circle>
+          <rect x="555" y="90" width="10" height="10" fill="#22252a" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_north_parks"></rect>
+          <circle cx="430" cy="170" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_antonys"></circle>
+          <circle cx="430" cy="245" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_annes"></circle>
+          <circle cx="430" cy="320" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="green_templeton"></circle>
+          <circle cx="340" cy="320" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="radcliffe_obs"></circle>
+          <circle cx="230" cy="320" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="jericho_health"></circle>
+          <circle cx="150" cy="390" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="oup"></circle>
+          <circle cx="245" cy="435" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="wellington_sq"></circle>
+          <circle cx="335" cy="435" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="gds_jericho"></circle>
+          <circle cx="430" cy="435" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="somerville"></circle>
+          <circle cx="150" cy="525" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="worcester"></circle>
+          <circle cx="295" cy="525" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="ashmolean"></circle>
+          <rect x="360" y="475" width="10" height="10" fill="#7c4d3a" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_walton"></rect>
+          <circle cx="430" cy="515" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="st_cross"></circle>
+          <circle cx="430" cy="585" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_johns"></circle>
+          <circle cx="85" cy="660" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="station"></circle>
+          <circle cx="230" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="gloucester_green"></circle>
+          <circle cx="155" cy="745" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="oxford_castle"></circle>
+          <circle cx="230" cy="785" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="st_peters"></circle>
+          <circle cx="230" cy="865" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="nuffield"></circle>
+          <circle cx="155" cy="925" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="westgate"></circle>
+          <circle cx="255" cy="1025" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="pembroke"></circle>
+          <circle cx="430" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="balliol"></circle>
+          <circle cx="535" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="trinity"></circle>
+          <circle cx="645" cy="660" r="12" fill="#ffffff" stroke="#002147" stroke-width="4" class="cursor-pointer"
+            data-sid="sheldonian"></circle>
+          <circle cx="315" cy="755" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="oxford_union"></circle>
+          <circle cx="380" cy="755" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="covered_market"></circle>
+          <circle cx="430" cy="755" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="sq_cornmarket"></circle>
+          <circle cx="535" cy="710" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="exeter"></circle>
+          <circle cx="485" cy="710" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="jesus"></circle>
+          <circle cx="535" cy="760" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="lincoln"></circle>
+          <circle cx="645" cy="710" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="hertford"></circle>
+          <circle cx="645" cy="760" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="bodleian"></circle>
+          <circle cx="645" cy="810" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="brasenose"></circle>
+          <rect x="640" y="837" width="10" height="10" fill="#9e2a6b" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_radcliffe"></rect>
+          <rect x="330" y="870" width="10" height="10" fill="#c83737" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_high_w"></rect>
+          <circle cx="430" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="sq_carfax"></circle>
+          <rect x="535" y="870" width="10" height="10" fill="#c83737" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_high_mid"></rect>
+          <circle cx="645" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="all_souls"></circle>
+          <circle cx="645" cy="925" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="oriel"></circle>
+          <circle cx="645" cy="980" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="corpus_christi"></circle>
+          <circle cx="745" cy="980" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="merton"></circle>
+          <rect x="820" y="925" width="10" height="10" fill="#ca8a04" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_high_e"></rect>
+          <circle cx="735" cy="875" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="university_col"></circle>
+          <circle cx="825" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="queens"></circle>
+          <circle cx="825" cy="810" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_edmund_hall"></circle>
+          <circle cx="740" cy="760" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="sq_catte"></circle>
+          <circle cx="765" cy="660" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="new_college"></circle>
+          <circle cx="430" cy="945" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="town_hall"></circle>
+          <circle cx="430" cy="1005" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="christ_church"></circle>
+          <circle cx="430" cy="1065" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="gds_south"></circle>
+          <circle cx="430" cy="1145" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="head_of_river"></circle>
+          <circle cx="430" cy="1225" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="hinksey_pool"></circle>
+          <circle cx="560" cy="320" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="university_parks"></circle>
+          <rect x="600" y="505" width="10" height="10" fill="#22252a" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_parks_rd"></rect>
+          <circle cx="645" cy="395" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="keble"></circle>
+          <circle cx="645" cy="475" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="university_museum"></circle>
+          <circle cx="645" cy="565" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="wadham"></circle>
+          <circle cx="780" cy="475" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="mansfield"></circle>
+          <circle cx="845" cy="555" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="harris_manchester"></circle>
+          <rect x="770" y="255" width="10" height="10" fill="#9e2a6b" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_parks_n"></rect>
+          <circle cx="845" cy="350" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="pavilion"></circle>
+          <circle cx="905" cy="445" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="linacre"></circle>
+          <circle cx="985" cy="95" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="wolfson"></circle>
+          <circle cx="985" cy="260" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="lmh"></circle>
+          <rect x="980" y="455" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_marston"></rect>
+          <circle cx="905" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="st_catherines"></circle>
+          <circle cx="935" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="magdalen"></circle>
+          <circle cx="1020" cy="905" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="gds_east"></circle>
+          <circle cx="965" cy="995" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="st_hildas"></circle>
+          <circle cx="855" cy="1035" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="botanical_gardens"></circle>
+          <rect x="780" y="1105" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_cherwell"></rect>
+          <circle cx="715" cy="1185" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
+            data-sid="boathouse_island"></circle>
+          <rect x="570" y="1180" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
+            class="cursor-pointer" data-sid="sq_isis"></rect>
+          <circle cx="805" cy="1245" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
+            data-sid="longbridges"></circle>
+        </g>
+        <g id="layer-highlights"></g>
+        <g id="layer-blockers"></g>
+        <g id="layer-labels">
+          <text x="442" y="439" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Somerville</text>
+          <text x="442" y="439" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Somerville</text>
+
+          <text x="442" y="519" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">St Cross</text>
+          <text x="442" y="519" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St Cross</text>
+
+          <text x="242" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Gloucester Green</text>
+          <text x="242" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Gloucester
+            Green</text>
+
+          <text x="242" y="789" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">St Peter's</text>
+          <text x="242" y="789" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St Peter's</text>
+
+          <text x="442" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Balliol</text>
+          <text x="442" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Balliol</text>
+
+          <text x="547" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Trinity</text>
+          <text x="547" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Trinity</text>
+
+          <text x="657" y="664" font-size="12.5" font-weight="800" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Sheldonian</text>
+          <text x="657" y="664" font-size="12.5" font-weight="800" fill="#002147"
+            pointer-events="none">Sheldonian</text>
+
+          <text x="442" y="759" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Cornmarket Sq</text>
+          <text x="442" y="759" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Cornmarket
+            Sq</text>
+
+          <text x="657" y="764" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Bodleian</text>
+          <text x="657" y="764" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Bodleian</text>
+
+          <text x="442" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Carfax Sq</text>
+          <text x="442" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Carfax Sq</text>
+
+          <text x="657" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">All Souls'</text>
+          <text x="657" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">All Souls'</text>
+
+          <text x="837" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Queen's</text>
+          <text x="837" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Queen's</text>
+
+          <text x="752" y="764" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Catte St Sq</text>
+          <text x="752" y="764" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Catte St Sq</text>
+
+          <text x="442" y="949" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Town Hall</text>
+          <text x="442" y="949" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Town Hall</text>
+
+          <text x="442" y="1069" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">G&amp;D's (St Aldate's)</text>
+          <text x="442" y="1069" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">G&amp;D's (St
+            Aldate's)</text>
+
+          <text x="442" y="1149" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Head of the River</text>
+          <text x="442" y="1149" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Head of the
+            River</text>
+
+          <text x="572" y="324" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">University Parks</text>
+          <text x="572" y="324" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">University
+            Parks</text>
+
+          <text x="657" y="479" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">University Museum</text>
+          <text x="657" y="479" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">University
+            Museum</text>
+
+          <text x="917" y="449" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Linacre</text>
+          <text x="917" y="449" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Linacre</text>
+
+          <text x="997" y="264" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Lady Margaret Hall</text>
+          <text x="997" y="264" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Lady Margaret
+            Hall</text>
+
+          <text x="917" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">St Catherine's</text>
+          <text x="917" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St
+            Catherine's</text>
+
+          <text x="947" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Magdalen</text>
+          <text x="947" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Magdalen</text>
+
+          <text x="727" y="1189" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
+            stroke-linejoin="round" pointer-events="none">Boathouse Island</text>
+          <text x="727" y="1189" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Boathouse
+            Island</text>
+        </g>
+        <g id="layer-players"></g>
+      </g>
+    </svg>
+
+    <!-- Radar Pips Overlay -->
+    <div id="radar-overlay" class="pointer-events-none absolute inset-0 overflow-hidden z-10"></div>
+
+    <!-- Camera & Zoom Controls (Left Thumb Zone) -->
+    <div class="absolute left-3 top-3 z-20 flex flex-col gap-2">
+      <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 p-1.5 flex flex-col gap-1">
+        <button id="cam-my-turn" type="button"
+          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 bg-[#002147] text-white transition"
+          title="Center on Active Player">
+          <span>🎯</span><span class="hidden sm:inline">My Turn</span>
+        </button>
+        <button id="cam-objectives" type="button"
+          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:bg-slate-100 transition"
+          title="Fit Current Position &amp; Targets">
+          <span>🧭</span><span class="hidden sm:inline">Objectives</span>
+        </button>
+        <button id="cam-full-map" type="button"
+          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:bg-slate-100 transition"
+          title="Full Map Overview">
+          <span>🗺️</span><span class="hidden sm:inline">Full Map</span>
+        </button>
+      </div>
+
+      <div
+        class="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 p-1 flex flex-col items-center">
+        <button id="btn-zoom-in" type="button"
+          class="w-9 h-9 rounded-xl font-extrabold text-lg text-[#002147] hover:bg-slate-100 active:scale-90">+</button>
+        <div class="w-5 h-[1px] bg-slate-200"></div>
+        <button id="btn-zoom-out" type="button"
+          class="w-9 h-9 rounded-xl font-extrabold text-lg text-[#002147] hover:bg-slate-100 active:scale-90">−</button>
+      </div>
+    </div>
+
+    <!-- Dice Roll Dock (Right Thumb Zone) -->
+    <div id="dice-dock" class="absolute right-3 bottom-32 sm:bottom-36 z-20 flex flex-col items-end gap-2">
+      <button id="btn-roll-die" type="button"
+        class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#002147] hover:bg-[#00316b] disabled:opacity-45 disabled:pointer-events-none text-white border-2 border-[#b8860b] shadow-2xl flex flex-col items-center justify-center gap-0.5 active:scale-95 transition">
+        <span id="die-face" class="text-2xl sm:text-3xl font-extrabold leading-none">🎲</span>
+        <span id="die-label" class="text-[10px] font-bold uppercase tracking-wider text-amber-300">Roll Die</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- 3. SOUVENIR CARDS BOTTOM PANEL (ORDERED, NARROW, TRUNCATED WITH 📍 & 🔍) -->
+  <!-- ===================================================================== -->
+  <section id="souvenir-drawer"
+    class="bottom-sheet fixed bottom-0 left-0 right-0 z-20 bg-[#f8f5ee]/98 backdrop-blur-md border-t-2 border-[#b8860b] rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.16)] flex flex-col">
+    <div id="drawer-header-bar" class="px-4 py-2.5 flex items-center justify-between cursor-pointer">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-1 rounded-full bg-slate-300"></div>
+        <h2 class="font-oxford font-bold text-xs sm:text-sm text-[#002147] tracking-wide">
+          Souvenir Cards <span id="drawer-owner-label" class="font-sans font-semibold text-slate-500">(Your Hand)</span>
+        </h2>
+        <span id="drawer-progress-badge"
+          class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#002147] text-amber-300">0/6</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] text-slate-500 hidden sm:inline">Unvisited first • Tap buttons on card</span>
+        <button id="btn-toggle-drawer" type="button"
+          class="w-7 h-7 rounded-full bg-slate-200/80 text-[#002147] font-bold text-xs flex items-center justify-center">
+          ▼
+        </button>
+      </div>
+    </div>
+
+    <div id="souvenir-cards-strip" class="px-3 pb-3 pt-0.5 flex gap-2.5 overflow-x-auto no-scrollbar">
+      <!-- Populated dynamically -->
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: WELCOME SCREEN (STACKED INPUTS & "MATRICULATE!" BUTTON)       -->
+  <!-- ===================================================================== -->
+  <div id="modal-welcome"
+    class="fixed inset-0 z-50 bg-[#002147]/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-[#f8f5ee] w-full max-w-lg rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden my-auto">
+      <div class="bg-[#002147] text-white px-5 py-4 border-b-2 border-[#b8860b] flex items-center justify-between">
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-300">Digital Board Game Edition</div>
+          <h1 class="font-oxford text-2xl sm:text-3xl font-extrabold tracking-wide text-white mt-0.5">THE OXFORD GAME
+          </h1>
+        </div>
+        <button id="btn-welcome-settings" type="button"
+          class="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-200 text-xs font-bold flex items-center gap-1.5 border border-white/20">
+          <span>⚙️</span><span>Settings &amp; Rules</span>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-4">
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          Race across Oxford's colleges, streets, and waterways! Visit your <strong>6 Souvenir destinations</strong> and
+          return first to the <strong>Sheldonian Theatre</strong>. Switch lines at white interchanges by drawing from
+          the <strong>70-card Hazard deck</strong>.
+        </p>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-[#002147]">Players &amp; AI Opponents
+              (2–6)</span>
+            <button id="btn-add-player" type="button"
+              class="px-3 py-1.5 rounded-xl bg-[#002147] hover:bg-[#00336e] text-white text-xs font-bold shadow-sm active:scale-95 transition">
+              + Add Player
+            </button>
+          </div>
+          <div id="setup-players-list" class="space-y-2.5 max-h-[42dvh] overflow-y-auto pr-1">
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#c83737">
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
+                    Name</label>
+                  <input type="text" value="Player 1" oninput="setupRoster[0].name = this.value"
+                    placeholder="Enter player name..."
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
+                    AI Difficulty</label>
+                  <select onchange="setupRoster[0].type = this.value"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                    <option value="human" selected="">Human (Pass &amp; Play)</option>
+                    <option value="easy">Bot: Fresher (Easy)</option>
+                    <option value="medium">Bot: GA Commuter (Medium)</option>
+                    <option value="hard">Bot: MCTS Don (Hard)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="button" onclick="removeRosterSlot(0)" aria-label="Remove player"
+                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
+
+            </div>
+
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#1d6fa5">
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
+                    Name</label>
+                  <input type="text" value="Dr. Turing (MCTS)" oninput="setupRoster[1].name = this.value"
+                    placeholder="Enter player name..."
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
+                    AI Difficulty</label>
+                  <select onchange="setupRoster[1].type = this.value"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                    <option value="human">Human (Pass &amp; Play)</option>
+                    <option value="easy">Bot: Fresher (Easy)</option>
+                    <option value="medium">Bot: GA Commuter (Medium)</option>
+                    <option value="hard" selected="">Bot: MCTS Don (Hard)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="button" onclick="removeRosterSlot(1)" aria-label="Remove player"
+                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
+
+            </div>
+
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#2d7a4d">
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
+                    Name</label>
+                  <input type="text" value="Commuter Bot (GA)" oninput="setupRoster[2].name = this.value"
+                    placeholder="Enter player name..."
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
+                    AI Difficulty</label>
+                  <select onchange="setupRoster[2].type = this.value"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                    <option value="human">Human (Pass &amp; Play)</option>
+                    <option value="easy">Bot: Fresher (Easy)</option>
+                    <option value="medium" selected="">Bot: GA Commuter (Medium)</option>
+                    <option value="hard">Bot: MCTS Don (Hard)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="button" onclick="removeRosterSlot(2)" aria-label="Remove player"
+                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
+
+            </div>
+          </div>
+        </div>
+
+        <label class="flex items-center gap-2.5 bg-white p-3 rounded-2xl border border-slate-200 cursor-pointer">
+          <input id="chk-auto-blockers" type="checkbox" class="w-4 h-4 accent-[#002147] rounded">
+          <span class="text-xs font-semibold text-slate-700">Auto-place initial blocking counters (skip setup
+            placement)</span>
+        </label>
+
+        <button id="btn-start-game" type="button"
+          class="w-full py-3.5 rounded-2xl bg-[#002147] hover:bg-[#00316b] text-amber-300 font-oxford font-bold text-base sm:text-lg tracking-wider shadow-xl border border-[#b8860b] active:scale-[0.99] transition">
+          MATRICULATE!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: PASS THE PHONE (PASS-AND-PLAY PRIVACY SCREEN)                -->
+  <!-- ===================================================================== -->
+  <div id="modal-pass-phone"
+    class="hidden fixed inset-0 z-50 bg-[#002147] flex flex-col items-center justify-center p-6 text-center text-white">
+    <div class="max-w-md space-y-6">
+      <div
+        class="w-20 h-20 rounded-full border-4 border-amber-300 bg-white/10 flex items-center justify-center text-4xl mx-auto shadow-2xl">
+        🎓
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-[0.25em] text-amber-300 font-bold">Pass-and-Play Privacy</div>
+        <h2 id="pass-phone-title" class="font-oxford text-3xl font-extrabold mt-1">Pass to Player 2</h2>
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Hand the device over to the next player. Your souvenir cards and confidential target rings remain hidden until
+        you start your turn.
+      </p>
+      <button id="btn-pass-phone-ready" type="button"
+        class="w-full py-4 rounded-2xl bg-[#b8860b] hover:bg-amber-500 text-[#002147] font-oxford font-extrabold text-base tracking-wider shadow-2xl active:scale-98 transition">
+        I AM READY — START TURN
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: MOVE CONFIRMATION DIALOG                                     -->
+  <!-- ===================================================================== -->
+  <div id="modal-confirm-move"
+    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden">
+      <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="font-oxford font-bold text-base text-amber-300">Confirm Journey</span>
+        <span id="confirm-move-steps-badge" class="text-xs font-mono-tech bg-white/15 px-2.5 py-0.5 rounded-full">3
+          steps</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <div class="text-[11px] uppercase tracking-wider font-bold text-slate-500">Destination Stop</div>
+          <div id="confirm-move-station" class="font-oxford text-xl font-extrabold text-[#002147] mt-0.5">Balliol</div>
+          <div id="confirm-move-line-pill"
+            class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-slate-800">
+            Via Black Line
+          </div>
+        </div>
+        <div id="confirm-move-notes"
+          class="text-xs text-slate-700 bg-white p-3 rounded-2xl border border-slate-200 space-y-1"></div>
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <button id="btn-cancel-move" type="button"
+            class="py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm transition">Cancel</button>
+          <button id="btn-accept-move" type="button"
+            class="py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-md transition">Confirm
+            Move</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SWITCH LINE (+ DRAW HAZARD) INTERCHANGE DIALOG             -->
+  <!-- ===================================================================== -->
+  <div id="modal-switch-line"
+    class="hidden fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden">
+      <div class="bg-[#002147] text-white px-5 py-3.5">
+        <div class="text-[10px] uppercase tracking-widest text-amber-300 font-bold">White Interchange Station</div>
+        <h3 id="switch-line-station-title" class="font-oxford text-lg font-bold">Sheldonian Interchange</h3>
+      </div>
+      <div class="p-5 space-y-3">
+        <div id="switch-line-souvenir-banner"
+          class="hidden bg-emerald-100 border border-emerald-400 text-emerald-900 px-3 py-2 rounded-xl text-xs font-bold">
+        </div>
+        <p class="text-xs text-slate-700 leading-relaxed">Stay on your current route to end your turn safely, or
+          <strong>switch to an intersecting line</strong> and draw a <strong>Hazard card</strong>.</p>
+        <div id="switch-line-options" class="space-y-2 max-h-60 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: HAZARD CARD DISPLAY & RESOLUTION                             -->
+  <!-- ===================================================================== -->
+  <div id="modal-hazard"
+    class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#c83737] shadow-2xl overflow-hidden">
+      <div class="bg-[#c83737] text-white px-5 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-amber-200">Oxford Hazard Card</div>
+            <h3 id="hazard-title" class="font-oxford font-extrabold text-lg leading-tight">FRESHERS' FLU</h3>
+          </div>
+        </div>
+        <span id="hazard-count-badge" class="text-[10px] font-mono-tech bg-black/25 px-2 py-0.5 rounded-full">×4</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <p id="hazard-desc"
+          class="text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200 leading-relaxed"></p>
+        <div id="hazard-interactive-box" class="hidden space-y-2.5 bg-amber-50 p-3 rounded-2xl border border-amber-300">
+        </div>
+        <button id="btn-hazard-ok" type="button"
+          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-white font-bold text-sm shadow-lg transition">Acknowledge
+          &amp; Resolve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: BOT TURN SUMMARY POPUP                                         -->
+  <!-- ===================================================================== -->
+  <div id="modal-bot-summary"
+    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden">
+      <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center gap-3">
+        <div id="bot-summary-avatar"
+          class="w-9 h-9 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shrink-0">
+          🎓</div>
+        <div>
+          <div class="text-[10px] uppercase tracking-widest text-amber-300 font-bold" id="bot-summary-tier">AI Bot Turn
+          </div>
+          <h3 id="bot-summary-name" class="font-oxford font-bold text-base">Dr. Turing (MCTS)</h3>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        <ul id="bot-summary-actions"
+          class="space-y-2 text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200"></ul>
+        <button id="btn-bot-continue" type="button"
+          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-lg active:scale-98 transition">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: PLAYER PROGRESS INSPECTOR (PRIVACY-AWARE)                    -->
+  <!-- ===================================================================== -->
+  <div id="modal-player-inspector"
+    class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden">
+      <div class="bg-[#002147] text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="inspector-avatar"
+            class="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center font-extrabold text-sm">
+            🎓</div>
+          <div>
+            <h3 id="inspector-name" class="font-oxford font-bold text-base">Player 1</h3>
+            <div id="inspector-sub" class="text-[11px] text-amber-200">At Sheldonian • 0/6 Visited</div>
+          </div>
+        </div>
+        <button id="btn-close-inspector" type="button"
+          class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-sm">✕</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500" id="inspector-list-caption">Souvenir
+          Destinations</div>
+        <ul id="inspector-souvenir-list"
+          class="space-y-2 bg-white p-3.5 rounded-2xl border border-slate-200 text-sm max-h-64 overflow-y-auto"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SOUVENIR CARD FULL DETAIL OVERLAY                              -->
+  <!-- ===================================================================== -->
+  <div id="modal-souvenir-detail"
+    class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-4 border-white shadow-2xl overflow-hidden">
+      <div id="souvenir-detail-banner" class="px-5 py-4 text-white flex items-center justify-between bg-[#002147]">
+        <div>
+          <div id="souvenir-detail-line" class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-90">RED LINE
+          </div>
+          <h3 id="souvenir-detail-name" class="font-oxford text-xl font-extrabold mt-0.5">All Souls' College</h3>
+        </div>
+        <span id="souvenir-detail-status"
+          class="text-xs font-bold px-2.5 py-1 rounded-full bg-black/25">Unvisited</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-inner">
+          <p id="souvenir-detail-desc" class="text-xs sm:text-sm text-slate-800 leading-relaxed"></p>
+        </div>
+        <div class="flex gap-2.5">
+          <button id="btn-souvenir-locate" type="button"
+            class="flex-1 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-[#002147] font-bold text-xs border border-amber-300">📍
+            Locate on Map</button>
+          <button id="btn-souvenir-close" type="button"
+            class="flex-1 py-2.5 rounded-2xl bg-[#002147] text-white font-bold text-xs">Close Card</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SETTINGS, RULES & AI TELEMETRY (TABBED MODAL)                  -->
+  <!-- ===================================================================== -->
+  <div id="modal-settings"
+    class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+    <div
+      class="bg-[#f8f5ee] w-full max-w-lg rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden flex flex-col max-h-[88dvh]">
+      <div class="bg-[#002147] text-white px-5 pt-4 pb-0">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-oxford text-lg sm:text-xl font-bold text-amber-300">Oxford Game Control Centre</h2>
+          <button id="btn-close-settings" type="button"
+            class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-sm">✕</button>
+        </div>
+        <div class="flex gap-1.5">
+          <button data-tab="settings" type="button"
+            class="settings-tab-btn px-3.5 py-2 rounded-t-xl text-xs font-bold bg-[#f8f5ee] text-[#002147]">⚙️
+            Settings</button>
+          <button data-tab="help" type="button"
+            class="settings-tab-btn px-3.5 py-2 rounded-t-xl text-xs font-bold bg-white/10 text-slate-200 hover:bg-white/20">📖
+            Rules &amp; Help</button>
+          <button data-tab="telemetry" type="button"
+            class="settings-tab-btn px-3.5 py-2 rounded-t-xl text-xs font-bold bg-white/10 text-slate-200 hover:bg-white/20">🧠
+            AI Telemetry</button>
+        </div>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs sm:text-sm">
+        <!-- TAB 1: SETTINGS -->
+        <div id="tab-panel-settings" class="space-y-4">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="text-[11px] font-extrabold uppercase tracking-wider text-[#002147]">Audio &amp; Map Navigation
+            </div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <div class="font-bold text-slate-800">Sound Effects</div>
+                <div class="text-[11px] text-slate-500">Dice rattles, station chimes, and hazard alerts</div>
+              </div>
+              <input id="set-sound" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+            </label>
+            <div class="h-[1px] bg-slate-100"></div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <div class="font-bold text-slate-800">Off-Screen Radar Pips</div>
+                <div class="text-[11px] text-slate-500">Directional edge indicators pointing to destinations</div>
+              </div>
+              <input id="set-radar" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+            </label>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="text-[11px] font-extrabold uppercase tracking-wider text-[#002147]">AI Opponents &amp; Pacing
+            </div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <div class="font-bold text-slate-800">Bot Turn Confirmations</div>
+                <div class="text-[11px] text-slate-500">Show summary popup after each bot turn requiring tap to continue
+                </div>
+              </div>
+              <input id="set-bot-confirm" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+            </label>
+            <div class="h-[1px] bg-slate-100"></div>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-slate-800">Bot Action Speed</span>
+                <span id="set-bot-speed-label"
+                  class="font-mono-tech text-xs font-bold text-[#002147] bg-amber-100 px-2 py-0.5 rounded">Normal
+                  (750ms)</span>
+              </div>
+              <input id="set-bot-speed" type="range" min="1" max="4" step="1" value="2"
+                class="w-full accent-[#002147] cursor-pointer">
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button id="btn-return-welcome" type="button"
+              class="px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs border border-red-200">End
+              Match &amp; Return to Setup</button>
+          </div>
+        </div>
+
+        <!-- TAB 2: RULES & HELP -->
+        <div id="tab-panel-help" class="hidden space-y-3 text-slate-700 leading-relaxed">
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
+            <div class="font-bold text-[#002147] mb-1">1. Goal &amp; Uncommitted Lines</div>
+            <p class="text-xs">Visit all <strong>6 Souvenir cards</strong> and be first back to the <strong>Sheldonian
+                Theatre</strong>. At the start—or after Hazard cards teleport you—you are uncommitted and may roll
+              first, then travel along <em>any</em> connected route.</p>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
+            <div class="font-bold text-[#002147] mb-1">2. Movement &amp; Rolling a 6</div>
+            <p class="text-xs">Roll the die and move <strong>up to</strong> that number of stops. Rolling a
+              <strong>6</strong> lets you reopen and relocate any closed stop you pass through.</p>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
+            <div class="font-bold text-[#002147] mb-1">3. Interchanges &amp; Souvenirs</div>
+            <p class="text-xs">Stopping at a <strong>white interchange</strong> lets you switch to another intersecting
+              line by drawing a <strong>Hazard card</strong>—even if that stop also completes one of your Souvenir
+              destinations!</p>
+          </div>
+        </div>
+
+        <!-- TAB 3: AI TELEMETRY -->
+        <div id="tab-panel-telemetry" class="hidden space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#002147]">Full-Game Scrollable
+              Telemetry Cards</span>
+            <div class="flex gap-2">
+              <button id="btn-download-telemetry" type="button"
+                class="px-3 py-1.5 rounded-xl bg-[#002147] text-amber-300 text-xs font-bold shadow hover:bg-[#00336e]">📥
+                Download Telemetry</button>
+              <button id="btn-clear-telemetry" type="button"
+                class="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 text-xs font-bold border border-red-200">Clear</button>
+            </div>
+          </div>
+          <div id="telemetry-cards-container" class="space-y-2.5 max-h-[52dvh] overflow-y-auto pr-1 text-xs">
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200 text-slate-500 italic">No AI telemetry
+              recorded yet. Bot turns will generate scrollable heuristic &amp; MCTS cards here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: VICTORY SCREEN (REVIEW MODE & EXPORT)                          -->
+  <!-- ===================================================================== -->
+  <div id="modal-victory"
+    class="hidden fixed inset-0 z-50 bg-[#002147]/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div
+      class="bg-[#f8f5ee] w-full max-w-md rounded-3xl border-4 border-[#b8860b] p-6 text-center shadow-2xl space-y-4">
+      <div class="text-5xl">🎓🏆</div>
+      <div class="text-xs font-extrabold uppercase tracking-[0.25em] text-[#b8860b]">First-Class Honours</div>
+      <h2 id="victory-winner-name" class="font-oxford text-2xl sm:text-3xl font-extrabold text-[#002147]">Player 1 Wins!
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-700">Completed all Souvenir destinations across Oxford and returned first
+        to the Sheldonian Theatre!</p>
+      <div id="victory-standings"
+        class="bg-white rounded-2xl p-3.5 border border-slate-200 text-left text-xs space-y-1.5"></div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button id="btn-victory-review" type="button"
+          class="py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">🗺️ Go Back to
+          Map</button>
+        <button id="btn-download-match-log" type="button"
+          class="py-3 rounded-2xl bg-amber-100 hover:bg-amber-200 text-[#002147] font-bold text-xs border border-amber-300">📥
+          Download Game Log</button>
+      </div>
+      <button id="btn-play-again" type="button"
+        class="w-full py-3 rounded-2xl bg-[#002147] text-amber-300 font-oxford font-bold text-xs shadow-lg">New Match
+        Setup</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION SCRIPT & ENGINE                                           -->
+  <!-- ===================================================================== -->
+  <script>
+    /**
+     * =========================================================================
+     * 1. PROCEDURAL WEB AUDIO SOUND ENGINE
+     * =========================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.enabled = true;
+        this.ctx = null;
+      }
+      _ensureCtx() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => { });
+        }
+      }
+      tone(freq, type = 'sine', dur = 0.12, gainVal = 0.12, delay = 0) {
+        if (!this.enabled) return;
+        try {
+          this._ensureCtx();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(gainVal, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + dur);
+        } catch (_) { }
+      }
+      dice() { [240, 310, 280, 390, 460].forEach((f, i) => this.tone(f, 'triangle', 0.06, 0.1, i * 0.055)); }
+      step() { this.tone(520, 'sine', 0.08, 0.09); }
+      stamp() {
+        this.tone(523.25, 'triangle', 0.14, 0.15, 0);
+        this.tone(659.25, 'triangle', 0.14, 0.15, 0.09);
+        this.tone(783.99, 'triangle', 0.25, 0.18, 0.18);
+      }
+      hazard() {
+        this.tone(320, 'sawtooth', 0.16, 0.1, 0);
+        this.tone(240, 'sawtooth', 0.24, 0.12, 0.14);
+      }
+      blocker() { this.tone(190, 'square', 0.11, 0.08); }
+      win() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 'triangle', 0.26, 0.16, i * 0.12)); }
+    }
+    const sfx = new SoundEngine();
+
+    const LINES = {
+      red: { id: "red", name: "Red Line (High St & East)", color: "#c83737" },
+      green: { id: "green", name: "Green Line (Broad & Westgate)", color: "#2d7a4d" },
+      brown: { id: "brown", name: "Brown Line (Jericho & Walton)", color: "#7c4d3a" },
+      black: { id: "black", name: "Black Line (St Giles & South)", color: "#22252a" },
+      magenta: { id: "magenta", name: "Pink Line (Parks & Catte St)", color: "#9e2a6b" },
+      yellow: { id: "yellow", name: "Yellow Line (Central Loop)", color: "#f0d000" },
+      blue: { id: "blue", name: "Blue Line (Cherwell & Isis)", color: "#1d6fa5" },
+      purple: { id: "purple", name: "Purple Line (Turl St)", color: "#9b70ff" },
+      orange: { id: "orange", name: "Orange Line (Mansfield Rd)", color: "#eb9824" }
+    };
+
+    const STATIONS = [
+      { id: "st_hughs", name: "St Hugh's", x: 490, y: 100, type: "destination", desc: "Founded in 1886 by Elizabeth Wordsworth, St Hugh's boasts 14.5 acres of tranquil gardens in North Oxford." },
+      { id: "st_marg_e", name: "St Margaret's Road East", x: 550, y: 100, type: "square" },
+      { id: "st_antonys", name: "St Antony's", x: 430, y: 140, type: "destination", desc: "Oxford's renowned postgraduate college specialising in international relations, global history, and area studies." },
+      { id: "st_annes", name: "St Anne's", x: 430, y: 220, type: "destination", desc: "Evolved from the 1879 Society of Oxford Home-Students, championing women's higher education." },
+      { id: "green_templeton", name: "Green Templeton", x: 430, y: 300, type: "interchange", desc: "Home to the 18th-century Radcliffe Observatory tower inspired by the ancient Tower of the Winds in Athens." },
+      { id: "radcliffe_obs", name: "Radcliffe Observatory Qtr", x: 370, y: 300, type: "destination", desc: "Historic academic quarter centred on the 1772 Radcliffe Observatory and Mathematical Institute." },
+      { id: "jericho_health", name: "Jericho Health Centre", x: 310, y: 300, type: "square", desc: "Local GP surgery in Jericho—the essential destination whenever Freshers' Flu strikes!" },
+      { id: "oup", name: "Oxford University Press", x: 250, y: 360, type: "destination", desc: "The world's largest university press, printing Bibles, academic journals, and the Oxford English Dictionary." },
+      { id: "wellington_sq", name: "Wellington Square", x: 310, y: 420, type: "destination", desc: "Leafy Georgian garden square housing central University administrative offices." },
+      { id: "gds_jericho", name: "G&D's (Jericho)", x: 370, y: 420, type: "square", desc: "George & Davis' original Little Clarendon Street ice-cream café, serving homemade Oxford flavours since 1992." },
+      { id: "somerville", name: "Somerville", x: 430, y: 420, type: "interchange", desc: "Founded in 1879 as a non-denominational women's college; alma mater of Margaret Thatcher, Indira Gandhi, and Dorothy Hodgkin." },
+      { id: "worcester", name: "Worcester", x: 250, y: 540, type: "destination", desc: "Celebrated for its 26 acres of lakeside gardens, sports fields, and medieval 'cottages' row." },
+      { id: "ashmolean", name: "Ashmolean Museum", x: 370, y: 540, type: "destination", desc: "Britain's first public museum, founded in 1683 to house Elias Ashmole's cabinet of curiosities." },
+      { id: "st_cross", name: "St Cross", x: 430, y: 500, type: "destination", desc: "Postgraduate college established in 1965 on St Giles' just north of the Ashmolean." },
+      { id: "st_johns", name: "St John's", x: 430, y: 580, type: "destination", desc: "Founded in 1555 by Sir Thomas White; famous for its Canterbury Quadrangle and expansive gardens." },
+      { id: "station", name: "Oxford Station", x: 70, y: 660, type: "interchange", desc: "Opened in 1852 on the Great Western Railway, linking Oxford to London Paddington and the Midlands." },
+      { id: "gloucester_green", name: "Gloucester Green", x: 310, y: 660, type: "destination", desc: "Historic market square and coach terminus bustling with street-food stalls every Wednesday and Thursday." },
+      { id: "oxford_castle", name: "Oxford Castle", x: 150, y: 740, type: "destination", desc: "11th-century Norman motte-and-bailey castle and Saxon St George's Tower." },
+      { id: "st_peters", name: "St Peter's", x: 310, y: 780, type: "interchange", desc: "Founded in 1929 on New Inn Hall Street; became a full Oxford college in 1961." },
+      { id: "nuffield", name: "Nuffield", x: 230, y: 820, type: "destination", desc: "Postgraduate social sciences college founded in 1937 by Lord Nuffield (William Morris)." },
+      { id: "westgate", name: "Westgate Shopping Centre", x: 310, y: 960, type: "destination", desc: "Oxford's flagship shopping gallery with a rooftop terrace overlooking the dreaming spires." },
+      { id: "pembroke", name: "Pembroke", x: 390, y: 1060, type: "destination", desc: "Founded in 1624; counts Dr Samuel Johnson and J.R.R. Tolkien among its celebrated members." },
+      { id: "balliol", name: "Balliol", x: 490, y: 660, type: "destination", desc: "Founded c. 1263; famed for its political alumni and historic rivalry with neighbouring Trinity College." },
+      { id: "trinity", name: "Trinity", x: 610, y: 660, type: "destination", desc: "Founded in 1555 on the site of Durham College, entered through its iconic Broad Street gates." },
+      { id: "sheldonian", name: "Sheldonian", x: 730, y: 660, type: "interchange", desc: "Designed by Christopher Wren (1669); ceremonial heart of the University where matriculation and graduation take place." },
+      { id: "oxford_union", name: "Oxford Union", x: 370, y: 780, type: "destination", desc: "World-famous debating society founded in 1823 on Frewin Court." },
+      { id: "covered_market", name: "Covered Market", x: 490, y: 780, type: "destination", desc: "Historic indoor market opened in 1774, beloved for artisanal bakers, florists, and milkshakes." },
+      { id: "cornmarket", name: "Cornmarket Street", x: 430, y: 780, type: "square" },
+      { id: "exeter", name: "Exeter", x: 550, y: 690, type: "destination", desc: "Founded in 1314; boasts a magnificent Gothic Revival chapel inspired by Sainte-Chapelle in Paris." },
+      { id: "jesus", name: "Jesus", x: 550, y: 750, type: "destination", desc: "Founded in 1571 by Elizabeth I, maintaining strong historical and cultural ties with Wales." },
+      { id: "lincoln", name: "Lincoln", x: 550, y: 860, type: "destination", desc: "Founded in 1427; former home of Methodist founder John Wesley and children's author Dr Seuss." },
+      { id: "hertford", name: "Hertford", x: 730, y: 720, type: "destination", desc: "Iconic for its Venetian-style Bridge of Sighs spanning New College Lane." },
+      { id: "bodleian", name: "Bodleian", x: 730, y: 780, type: "interchange", desc: "One of Europe's oldest libraries (1602), holding over 13 million printed items and the Radcliffe Camera." },
+      { id: "brasenose", name: "Brasenose", x: 730, y: 840, type: "destination", desc: "Named after its 12th-century bronze sanctuary door-knocker preserved above High Table." },
+      { id: "sq_radcliffe", name: "Radcliffe Square", x: 730, y: 870, type: "square" },
+      { id: "queen_st", name: "Queen Street", x: 310, y: 900, type: "square" },
+      { id: "carfax", name: "Carfax Tower", x: 430, y: 900, type: "square" },
+      { id: "high_st", name: "High St", x: 550, y: 900, type: "square" },
+      { id: "all_souls", name: "All Souls'", x: 770, y: 900, type: "destination", desc: "Unique fellowship-only college with no undergraduate students, founded in 1438 by Henry VI." },
+      { id: "oriel", name: "Oriel", x: 640, y: 940, type: "interchange", desc: "Royal foundation (1326) on Oriel Square, featuring a distinctive Dutch-gabled front quadrangle." },
+      { id: "corpus_christi", name: "Corpus Christi", x: 640, y: 980, type: "destination", desc: "Founded in 1517; famous for the 1581 Pelican Sundial standing in its front quad." },
+      { id: "merton", name: "Merton", x: 780, y: 980, type: "destination", desc: "Founded in 1264; home to Mob Quad and the world's oldest continuously functioning library." },
+      { id: "exam_sch", name: "Examination Schools", x: 890, y: 940, type: "square" },
+      { id: "university_col", name: "University", x: 810, y: 900, type: "destination", desc: "Claims a tradition of foundation in 872 by King Alfred; houses the marble Shelley Memorial." },
+      { id: "queens", name: "Queen's", x: 890, y: 900, type: "interchange", desc: "Founded in 1341 in honour of Queen Philippa of Hainault, showcasing a grand Palladian front quad." },
+      { id: "st_edmund_hall", name: "St Edmund Hall", x: 890, y: 820, type: "destination", desc: "Affectionately known as 'Teddy Hall', the last surviving medieval academic hall in Oxford." },
+      { id: "bridge_sighs", name: "Bridge of Sighs", x: 730, y: 750, type: "square" },
+      { id: "new_college", name: "New", x: 890, y: 660, type: "interchange", desc: "Founded in 1379 by William of Wykeham; its gardens are bounded by Oxford's medieval city wall." },
+      { id: "town_hall", name: "Town Hall", x: 430, y: 980, type: "interchange", desc: "Victorian civic landmark on St Aldate's housing the Museum of Oxford and grand assembly rooms." },
+      { id: "christ_church", name: "Christ Church", x: 430, y: 1020, type: "destination", desc: "Founded by Cardinal Wolsey and Henry VIII; its chapel serves as Oxford's Cathedral and inspired Hogwarts' Great Hall." },
+      { id: "gds_south", name: "G&D's (St Aldate's)", x: 430, y: 1060, type: "square", desc: "George & Davis' St Aldate's ice-cream parlour just south of Christ Church Meadow." },
+      { id: "head_of_river", name: "Head of the River", x: 430, y: 1180, type: "interchange", desc: "Historic waterside pub beside Folly Bridge where Oxford college rowing crews celebrate." },
+      { id: "hinksey_pool", name: "Hinksey Outdoor Pool", x: 430, y: 1300, type: "destination", desc: "Heated Art Deco outdoor lido opened in 1934 in South Oxford." },
+      { id: "university_parks", name: "University Parks", x: 550, y: 260, type: "interchange", desc: "70 acres of riverside parkland and cricket grounds along the River Cherwell." },
+      { id: "keble", name: "Keble", x: 730, y: 380, type: "destination", desc: "Famous for William Butterfield's vibrant polychromatic Victorian brickwork." },
+      { id: "university_museum", name: "University Museum", x: 730, y: 500, type: "destination", desc: "Neo-Gothic Natural History Museum where the famous 1860 Huxley–Wilberforce evolution debate occurred." },
+      { id: "wadham", name: "Wadham", x: 730, y: 580, type: "destination", desc: "Founded in 1610; meetings of its experimental philosophy club led to the founding of the Royal Society." },
+      { id: "mansfield", name: "Mansfield", x: 890, y: 540, type: "destination", desc: "Moved from Birmingham to Oxford in 1886, famed for its Victorian Gothic chapel and quad." },
+      { id: "harris_manchester", name: "Harris Manchester", x: 890, y: 620, type: "destination", desc: "Dedicated exclusively to mature students aged 21 and over, situated on Mansfield Road." },
+      { id: "north_walk", name: "North Walk", x: 730, y: 200, type: "square" },
+      { id: "pavilion", name: "Pavilion", x: 910, y: 340, type: "destination", desc: "Historic cricket pavilion in University Parks designed by Sir Thomas Jackson." },
+      { id: "linacre", name: "Linacre", x: 970, y: 560, type: "destination", desc: "International postgraduate college on St Cross Road named after Renaissance humanist Thomas Linacre." },
+      { id: "wolfson", name: "Wolfson", x: 1060, y: 80, type: "destination", desc: "Modernist riverside graduate college spanning both banks of the River Cherwell." },
+      { id: "lmh", name: "Lady Margaret Hall", x: 1060, y: 200, type: "interchange", desc: "Oxford's first women's college (1878), nestled in leafy gardens beside the Cherwell." },
+      { id: "tennis", name: "Uni Parks Tennis Courts", x: 970, y: 420, type: "square" },
+      { id: "st_catherines", name: "St Catherine's", x: 1060, y: 620, type: "interchange", desc: "Arne Jacobsen's Grade I-listed modernist masterpiece beside the River Cherwell." },
+      { id: "magdalen", name: "Magdalen", x: 1005, y: 920, type: "interchange", desc: "Renowned for Magdalen Tower, May Morning choir singing, and its private deer park." },
+      { id: "gds_east", name: "G&D's (Cowley Rd)", x: 1080, y: 940, type: "square", desc: "George & Davis' East Oxford branch just across Magdalen Bridge on Cowley Road." },
+      { id: "st_hildas", name: "St Hilda's", x: 1010, y: 1010, type: "destination", desc: "Founded in 1893 on the eastern bank of the River Cherwell with scenic punt moorings." },
+      { id: "botanical_gardens", name: "Botanical Gardens", x: 895, y: 1040, type: "destination", desc: "Founded in 1621, the oldest botanic garden in Great Britain." },
+      { id: "cricket_island", name: "Cricket Pitch Island", x: 840, y: 1100, type: "square" },
+      { id: "boathouse_island", name: "Boathouse Island", x: 730, y: 1220, type: "interchange", desc: "The beating heart of Oxford college rowing during Torpids and Summer Eights regattas." },
+      { id: "isis", name: "Isis Towpath", x: 510, y: 1180, type: "square" },
+      { id: "longbridges", name: "Longbridges", x: 850, y: 1300, type: "destination", desc: "Scenic footbridges and river bathing meadow along the Thames towpath." },
+      { id: "plantation_rd", name: "Plantation Road", x: 430, y: 180, type: "square" },
+      { id: "st_marg_w", name: "St Margaret's Road West", x: 430, y: 100, type: "square" },
+      { id: "park_town", name: "Park Town", x: 550, y: 140, type: "square" },
+      { id: "canterbury_rd", name: "Canterbury Road", x: 550, y: 180, type: "square" },
+      { id: "norham_rd", name: "Norham Road", x: 550, y: 220, type: "square" },
+      { id: "said", name: "Said Business School", x: 130, y: 660, type: "square" },
+      { id: "rewley_rd", name: "Rewley Road", x: 190, y: 660, type: "square" },
+      { id: "hythe_br", name: "Hythe Bridge Street", x: 250, y: 660, type: "square" },
+      { id: "george_st", name: "George Street", x: 370, y: 660, type: "square" },
+      { id: "mary_mags", name: "St Mary Magdalen", x: 430, y: 620, type: "square" },
+      { id: "broad_turl", name: "Broad Street / Turl Street", x: 550, y: 660, type: "square" },
+      { id: "blackwells", name: "Blackwells", x: 670, y: 660, type: "square" },
+      { id: "turl_st_n", name: "Turl Street North", x: 550, y: 720, type: "square" },
+      { id: "turl_st", name: "Turl Street", x: 550, y: 780, type: "square" },
+      { id: "northgate", name: "St Michael at the North Gate", x: 430, y: 720, type: "square" },
+      { id: "golden_cross", name: "Golden Cross", x: 430, y: 840, type: "square" },
+      { id: "magd_st", name: "Magdalen Street", x: 430, y: 660, type: "square" },
+      { id: "walton_st", name: "Walton Street", x: 250, y: 300, type: "square" },
+      { id: "l_clarendon_st", name: "Little Clarendon Street", x: 250, y: 420, type: "square" },
+      { id: "randolph", name: "The Randolph Hotel", x: 430, y: 540, type: "square" },
+      { id: "beaumont_st", name: "Beaumont Street", x: 310, y: 540, type: "square" },
+      { id: "oratory", name: "Oxford Oratory", x: 430, y: 360, type: "square" },
+      { id: "observatory_st", name: "Observatory Street", x: 430, y: 260, type: "square" },
+      { id: "st_giles", name: "St Giles", x: 460, y: 380, type: "square" },
+      { id: "stats", name: "Stats Department", x: 490, y: 340, type: "square" },
+      { id: "banbury_rd", name: "Banbury Road", x: 520, y: 300, type: "square" },
+      { id: "north_walk_w", name: "North Walk", x: 610, y: 200, type: "square" },
+      { id: "parks_rd_n", name: "Parks Road North", x: 640, y: 320, type: "square" },
+      { id: "parks_rd", name: "Parks Road", x: 730, y: 440, type: "square" },
+      { id: "parks_rd_s", name: "Parks Road South", x: 730, y: 540, type: "square" },
+      { id: "kings_arms", name: "King's Arms", x: 730, y: 620, type: "square" },
+      { id: "turl_st_s", name: "Turl Street South", x: 550, y: 820, type: "square" },
+      { id: "st_aldates", name: "St Aldate's", x: 430, y: 940, type: "square" },
+      { id: "police", name: "Police Station", x: 430, y: 1120, type: "square" },
+      { id: "newinnhall", name: "New Inn Hall Street", x: 310, y: 720, type: "square" },
+      { id: "bonn_sq", name: "Bonn Square", x: 310, y: 840, type: "square" },
+      { id: "story_mus", name: "Story Museum", x: 350, y: 1060, type: "square" },
+      { id: "ebbes", name: "St Ebbe's Church", x: 310, y: 1020, type: "square" },
+      { id: "park_end_st", name: "Park End Street", x: 110, y: 700, type: "square" },
+      { id: "castle_q", name: "Castle Quarter", x: 190, y: 780, type: "square" },
+      { id: "new_rd", name: "New Road", x: 270, y: 860, type: "square" },
+      { id: "queen_st_e", name: "Queen Street East", x: 370, y: 900, type: "square" },
+      { id: "wheatsheaf", name: "Wheatsheaf Yard", x: 490, y: 900, type: "square" },
+      { id: "king_ed_st", name: "King Edward Street", x: 640, y: 900, type: "square" },
+      { id: "catte_st", name: "Catte Street", x: 730, y: 690, type: "square" },
+      { id: "rad_cam", name: "Radcliffe Camera", x: 730, y: 810, type: "square" },
+      { id: "uni_church", name: "University Church", x: 730, y: 900, type: "square" },
+      { id: "logic_ln", name: "Logic Lane", x: 850, y: 900, type: "square" },
+      { id: "ql", name: "Queen's Lane Cafe", x: 890, y: 860, type: "square" },
+      { id: "queens_lane", name: "Queen's Lane", x: 850, y: 780, type: "square" },
+      { id: "new_coll_ln", name: "New College Lane", x: 790, y: 780, type: "square" },
+      { id: "merton_st", name: "Merton Street", x: 850, y: 980, type: "square" },
+      { id: "blue_boar", name: "Blue Boar Street", x: 500, y: 980, type: "square" },
+      { id: "bear_ln", name: "Bear Lane", x: 570, y: 980, type: "square" },
+      { id: "magpie_ln", name: "Magpie Lane", x: 710, y: 980, type: "square" },
+      { id: "abingdon_rd", name: "Abingdon Road", x: 430, y: 1240, type: "square" },
+      { id: "chch_meadow", name: "Christchurch Meadow", x: 590, y: 1180, type: "square" },
+      { id: "boat_bridge", name: "Boathouse Bridge", x: 670, y: 1180, type: "square" },
+      { id: "greenbanks", name: "Greenbanks", x: 790, y: 1260, type: "square" },
+      { id: "high_st_e", name: "High Street East", x: 930, y: 900, type: "square" },
+      { id: "rose_ln", name: "Rose Lane", x: 970, y: 900, type: "square" },
+      { id: "st_clems", name: "St Clement's", x: 1040, y: 940, type: "square" },
+      { id: "mcs", name: "Magdalen College School", x: 1040, y: 980, type: "square" },
+      { id: "zigzags", name: "Zig-zags", x: 785, y: 1160, type: "square" },
+      { id: "punt", name: "Punt Hire", x: 950, y: 980, type: "square" },
+      { id: "deer_park", name: "Deer Park", x: 1060, y: 860, type: "square" },
+      { id: "longwall_s", name: "Longwall Street South", x: 970, y: 820, type: "square" },
+      { id: "holywell_st", name: "Holywell Street", x: 970, y: 660, type: "square" },
+      { id: "longwall_n", name: "Longwall Street North", x: 970, y: 740, type: "square" },
+      { id: "uni_club", name: "University Club", x: 890, y: 580, type: "square" },
+      { id: "mansfield_rd", name: "Mansfield Road", x: 890, y: 500, type: "square" },
+      { id: "rhodes", name: "Rhodes House", x: 810, y: 500, type: "square" },
+      { id: "s_parks_rd", name: "South Parks Road", x: 970, y: 500, type: "square" },
+      { id: "manor_rd", name: "Manor Road", x: 970, y: 620, type: "square" },
+      { id: "holywell_ford", name: "Holywell Ford", x: 1060, y: 740, type: "square" },
+      { id: "thorn_walk", name: "Thorn Walk", x: 850, y: 260, type: "square" },
+      { id: "north_walk_e", name: "North Walk", x: 850, y: 200, type: "square" },
+      { id: "norham_gard", name: "Norham Gardens", x: 955, y: 200, type: "square" },
+      { id: "duck_pond", name: "Duck Pond", x: 1060, y: 340, type: "square" },
+      { id: "parsons", name: "Parsons' Pleasure", x: 1060, y: 480, type: "square" },
+      { id: "cherwell_boat", name: "Cherwell Boathouse", x: 1060, y: 140, type: "square" },
+      { id: "holywell_mus", name: "Holywell Music Room", x: 785, y: 660, type: "square" },
+      { id: "tuck_shop", name: "Alternative Tuck Shop", x: 835, y: 660, type: "square" },
+      { id: "brasenose_ln", name: "Brasenose Lane", x: 640, y: 780, type: "square" }
+    ];
+
+    const LINE_ROUTES = {
+      black: [["hinksey_pool", "abingdon_rd", "head_of_river", "police", "gds_south", "christ_church", "town_hall", "st_aldates", "carfax", "golden_cross", "cornmarket", "northgate", "magd_st", "mary_mags", "st_johns", "randolph", "st_cross", "somerville", "oratory", "green_templeton", "observatory_st", "st_annes", "plantation_rd", "st_antonys", "st_marg_w", "st_hughs", "st_marg_e", "park_town", "canterbury_rd", "norham_rd", "university_parks", "banbury_rd", "stats", "st_giles", "somerville"]],
+      red: [
+        ["station", "park_end_st", "oxford_castle", "castle_q", "nuffield", "new_rd", "queen_st", "queen_st_e", "carfax", "wheatsheaf", "high_st", "king_ed_st", "uni_church", "all_souls", "university_col", "logic_ln", "queens", "high_st_e", "rose_ln", "magdalen", "st_clems", "mcs", "st_hildas"],
+        ["st_clems", "gds_east"],
+        ["king_ed_st", "oriel"]
+      ],
+      green: [
+        ["station", "said", "rewley_rd", "hythe_br", "gloucester_green", "george_st", "magd_st", "balliol", "broad_turl", "trinity", "blackwells", "sheldonian", "holywell_mus", "tuck_shop", "new_college", "holywell_st"],
+        ["gloucester_green", "newinnhall", "st_peters", "bonn_sq", "queen_st", "westgate", "ebbes", "story_mus", "pembroke", "gds_south"]
+      ],
+      brown: [
+        ["hythe_br", "worcester", "l_clarendon_st", "oup", "walton_st", "jericho_health", "radcliffe_obs", "green_templeton"],
+        ["l_clarendon_st", "wellington_sq", "gds_jericho", "somerville"],
+        ["worcester", "beaumont_st", "ashmolean", "randolph"]
+      ],
+      magenta: [
+        ["uni_church", "sq_radcliffe", "brasenose", "rad_cam", "bodleian", "bridge_sighs", "hertford", "catte_st", "sheldonian", "kings_arms", "wadham", "parks_rd_s", "university_museum", "parks_rd", "keble", "parks_rd_n", "university_parks", "north_walk_w", "north_walk", "north_walk_e", "thorn_walk", "pavilion", "tennis", "s_parks_rd", "linacre", "manor_rd", "holywell_st", "longwall_n", "longwall_s", "rose_ln"],
+        ["university_museum", "rhodes", "mansfield_rd", "s_parks_rd"],
+        ["manor_rd", "st_catherines"],
+        ["north_walk_e", "norham_gard", "lmh"]
+      ],
+      yellow: [
+        ["st_peters", "oxford_union", "cornmarket", "covered_market", "turl_st", "brasenose_ln", "bodleian", "new_coll_ln", "queens_lane", "st_edmund_hall", "ql", "queens", "exam_sch", "merton_st", "merton", "magpie_ln", "corpus_christi", "bear_ln", "blue_boar", "town_hall"],
+        ["corpus_christi", "oriel"]
+      ],
+      purple: [["broad_turl", "exeter", "turl_st_n", "jesus", "turl_st", "turl_st_s", "lincoln", "high_st"]],
+      orange: [["mansfield_rd", "mansfield", "uni_club", "harris_manchester", "new_college"]],
+      blue: [
+        ["wolfson", "cherwell_boat", "lmh", "duck_pond", "parsons", "st_catherines", "holywell_ford", "deer_park", "magdalen", "punt", "botanical_gardens", "cricket_island", "zigzags", "boathouse_island", "boat_bridge", "chch_meadow", "isis", "head_of_river"],
+        ["boathouse_island", "greenbanks", "longbridges"]
+      ]
+    };
+
+    const STATION_MAP = new Map();
+    STATIONS.forEach(s => { s.lines = new Set(); STATION_MAP.set(s.id, s); });
+
+    const ADJACENCY = {};
+    Object.keys(LINES).forEach(lineId => {
+      ADJACENCY[lineId] = new Map();
+      (LINE_ROUTES[lineId] || []).forEach(branch => {
+        for (let i = 0; i < branch.length; i++) {
+          const u = branch[i];
+          const st = STATION_MAP.get(u);
+          if (!st) continue;
+          st.lines.add(lineId);
+          if (!ADJACENCY[lineId].has(u)) ADJACENCY[lineId].set(u, new Set());
+          if (i > 0) {
+            const v = branch[i - 1];
+            ADJACENCY[lineId].get(u).add(v);
+            if (!ADJACENCY[lineId].has(v)) ADJACENCY[lineId].set(v, new Set());
+            ADJACENCY[lineId].get(v).add(u);
+          }
+        }
+      });
+    });
+
+    STATIONS.forEach(s => { if (s.type === "interchange") s.type = "destination"; });
+    STATIONS.forEach(s => { if (s.lines.size > 1) s.interchange = true; });
+    const SOUVENIR_POOL = STATIONS.filter(s => s.type !== 'square' && s.id !== 'sheldonian');
+
+    const HAZARD_CARDS = [
+      { id: 'work_handed_in', title: 'WORK HANDED IN', count: 8, desc: "You've finished your work and handed it in early. Take an extra turn to celebrate your success!", effect: 'EXTRA_TURN' },
+      { id: 'oxford_graduate', title: 'OXFORD GRADUATE', count: 5, desc: "You've finished your exams, the results are in, and you've passed with flying colours. Move directly to your next destination!", effect: 'GOTO_NEXT_TARGET' },
+      { id: 'i_scream_for', title: 'I SCREAM FOR...', count: 5, desc: "In the summer heat you get a hankering for an ice-cream. Head to your favourite branch of G&D's and take a friend with you!", effect: 'GOTO_GDS_FRIEND' },
+      { id: 'problem_sheet', title: 'PROBLEM SHEET', count: 5, desc: "You're getting nowhere with question 2(ii)(a) and turn to a friend for advice. Ask a friendly player to direct you anywhere on the board.", effect: 'DIRECT_ANYWHERE' },
+      { id: 'freshers_flu', title: "FRESHERS' FLU", count: 4, desc: "In the first weeks of life at university, it's hard to avoid the dreaded freshers' flu. Go to the Jericho Health Centre for some TLC and miss a turn.", effect: 'GOTO_JERICHO_SKIP' },
+      { id: 'summer_eights', title: 'SUMMER EIGHTS', count: 4, desc: "It's 5th week of Trinity and all the action is down on the river. All players go to Boathouse Island to cheer on the crews!", effect: 'ALL_BOATHOUSE' },
+      { id: 'lectures_cancelled', title: 'LECTURES CANCELLED', count: 4, desc: "Your whole lecture series has been cancelled, freeing up time in your schedule. Rearrange all the blockers on the board!", effect: 'MOVE_ALL_BLOCKERS' },
+      { id: 'found_it', title: 'FOUND IT!', count: 4, desc: "You've finally cracked question 2. Move one blocker to clear your path to question 3.", effect: 'MOVE_ONE_BLOCKER' },
+      { id: 'lecture_clash', title: 'LECTURE CLASH', count: 4, desc: "Two of your lectures have been scheduled for the same time slot. Miss a turn while you choose which one to prioritize.", effect: 'MISS_TURN' },
+      { id: 'oh_clarity', title: 'OH...', count: 4, desc: "You have a moment of clarity in your tutorial and the topic suddenly makes perfect sense. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
+      { id: 'all_nighter', title: 'ALL-NIGHTER', count: 4, desc: "As the work piles up, the only way forward is to work through the night. Miss a turn whilst you sleep it off.", effect: 'MISS_TURN' },
+      { id: 'class_rescheduled', title: 'CLASS RESCHEDULED', count: 4, desc: "Your tutor can no longer make the class today and has moved it to another time and place. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
+      { id: 'forgotten_something', title: 'FORGOTTEN SOMETHING?', count: 4, desc: "You got all the way across town to your lecture but your notes aren't in your bag. Move to the furthest point on your current line!", effect: 'GOTO_FURTHEST_LINE' },
+      { id: 'new_route', title: 'NEW ROUTE!', count: 4, desc: "You find a shortcut which saves a whole minute off the time it takes to get to lectures. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
+      { id: 'half_marathon', title: 'OXFORD HALF-MARATHON', count: 4, desc: "All the roads are closed for the half-marathon and the streets are crammed. Miss a turn whilst you wait for the runners to finish!", effect: 'MISS_TURN' },
+      { id: 'essay_crisis', title: 'ESSAY CRISIS', count: 3, desc: "The deadline is looming and your essay is not looking good. You decide to go to the Bodleian to get it done. Move directly to the Bodleian.", effect: 'GOTO_BODLEIAN' }
+    ];
+
+    const SWITCH_PENALTY = 3.5;
+    const APSP = new Map();
+    function precomputeAPSP() {
+      STATIONS.forEach(src => {
+        const dist = new Map();
+        const pq = [];
+        src.lines.forEach(l => {
+          const k = `${src.id}@${l}`;
+          dist.set(k, 0);
+          pq.push({ k, c: 0 });
+        });
+        while (pq.length) {
+          pq.sort((a, b) => a.c - b.c);
+          const { k, c } = pq.shift();
+          if (c > (dist.get(k) ?? Infinity)) continue;
+          const [sid, lid] = k.split('@');
+          (ADJACENCY[lid]?.get(sid) || new Set()).forEach(nid => {
+            const nk = `${nid}@${lid}`;
+            if (c + 1 < (dist.get(nk) ?? Infinity)) { dist.set(nk, c + 1); pq.push({ k: nk, c: c + 1 }); }
+          });
+          const stObj = STATION_MAP.get(sid);
+          if (stObj && stObj.lines.size > 1) {
+            stObj.lines.forEach(ol => {
+              if (ol !== lid) {
+                const nk = `${sid}@${ol}`;
+                if (c + SWITCH_PENALTY < (dist.get(nk) ?? Infinity)) { dist.set(nk, c + SWITCH_PENALTY); pq.push({ k: nk, c: c + SWITCH_PENALTY }); }
+              }
+            });
+          }
+        }
+        STATIONS.forEach(dst => {
+          let best = Infinity;
+          dst.lines.forEach(l => { const v = dist.get(`${dst.id}@${l}`); if (v !== undefined && v < best) best = v; });
+          APSP.set(`${src.id}|${dst.id}`, best);
+        });
+      });
+    }
+    precomputeAPSP();
+
+    function graphDist(fromId, toId, lineId = null) {
+      if (fromId === toId) return 0;
+      const base = APSP.get(`${fromId}|${toId}`) ?? 22;
+      if (!lineId) return base;
+      const dst = STATION_MAP.get(toId);
+      if (dst && dst.lines.has(lineId)) return Math.max(0.5, base - 0.9);
+      return base;
+    }
+
+    const BOT_PROFILES = {
+      easy: { tier: 'Fresher AI (Easy)', weights: { dist: -1.1, targetHit: 22, interchange: 2.0, blockerRisk: -1.2 }, noise: 4.5 },
+      medium: { tier: 'GA Commuter (Medium)', weights: { dist: -2.85, targetHit: 48, interchange: 4.4, blockerRisk: -3.2 }, noise: 0.3 },
+      hard: { tier: 'MCTS Don (Hard)', weights: { dist: -3.2, targetHit: 58, interchange: 5.2, blockerRisk: -4.0 }, noise: 0, rollouts: 300 }
+    };
+
+    const PLAYER_PALETTE = [
+      { hex: '#c83737', name: 'Crimson' },
+      { hex: '#1d6fa5', name: 'Oxford Blue' },
+      { hex: '#2d7a4d', name: 'Emerald' },
+      { hex: '#ca8a04', name: 'Antique Gold' },
+      { hex: '#9e2a6b', name: 'Magenta' },
+      { hex: '#7c4d3a', name: 'Chestnut' }
+    ];
+
+    const SPEED_MAP = {
+      1: { label: 'Slow (1300ms)', ms: 1300 },
+      2: { label: 'Normal (750ms)', ms: 750 },
+      3: { label: 'Fast (380ms)', ms: 380 },
+      4: { label: 'Turbo (140ms)', ms: 140 }
+    };
+
+    const settings = { sound: true, radar: true, botConfirm: true, botSpeedLevel: 2 };
+    const state = {
+      phase: 'WELCOME',
+      players: [],
+      currentIdx: 0,
+      blockers: new Set(),
+      initialBlockersLeft: [],
+      hazardDeck: [],
+      hazardDiscard: [],
+      dieRoll: null,
+      reachableMoves: [],
+      pendingMoveOption: null,
+      pendingHazard: null,
+      blockerMovesLeft: 0,
+      pickedUpBlocker: null,
+      afterBlockerCallback: null,
+      beaconStationId: null,
+      drawerCollapsed: false,
+      actionLog: [],
+      botTurnLogs: [],
+      telemetryHistory: [],
+      botTimer: null
+    };
+
+    const view = { x: 0, y: 0, scale: 1, mode: 'full', dragging: false, lastX: 0, lastY: 0, pinchStart: 0 };
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function buildDeck() {
+      const d = [];
+      HAZARD_CARDS.forEach(c => { for (let i = 0; i < c.count; i++) d.push({ ...c }); });
+      return shuffle(d);
+    }
+
+    function drawHazard() {
+      if (state.hazardDeck.length === 0) { state.hazardDeck = shuffle(state.hazardDiscard); state.hazardDiscard = []; }
+      const card = state.hazardDeck.pop();
+      state.hazardDiscard.push(card);
+      document.getElementById('hud-hazard-count').textContent = state.hazardDeck.length;
+      return card;
+    }
+
+    function addLog(text, isBot = false) {
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      state.actionLog.unshift({ timestamp, text });
+      if (isBot) state.botTurnLogs.push(text);
+      const listEl = document.getElementById('action-log-list');
+      listEl.innerHTML = state.actionLog.map(item => `
+        <div class="border-b border-white/10 pb-1 last:border-0">
+          <span class="text-amber-300">[${item.timestamp}]</span> ${item.text}
+        </div>
+      `).join('');
+    }
+
+    function activePlayer() { return state.players[state.currentIdx]; }
+    function playerObjectives(p) { const rem = p.souvenirs.filter(s => !s.visited).map(s => s.stationId); return rem.length > 0 ? rem : ['sheldonian']; }
+
+    function computeReachableMoves(stationId, currentLine, maxSteps, canReopenOnSix) {
+      const st = STATION_MAP.get(stationId);
+      if (!st) return [];
+      const candidateLines = currentLine ? [currentLine] : Array.from(st.lines);
+      const bestByTargetAndLine = new Map();
+
+      candidateLines.forEach(lineId => {
+        const adj = ADJACENCY[lineId];
+        if (!adj || !adj.has(stationId)) return;
+        const queue = [{ curr: stationId, prev: null, steps: 0, path: [stationId], reopenedBlocker: null }];
+
+        while (queue.length > 0) {
+          const node = queue.shift();
+          if (node.steps > 0) {
+            const key = `${node.curr}|${lineId}`;
+            if (!bestByTargetAndLine.has(key) || node.steps < bestByTargetAndLine.get(key).steps) {
+              bestByTargetAndLine.set(key, { stationId: node.curr, lineId, steps: node.steps, path: node.path, reopenedBlocker: node.reopenedBlocker });
+            }
+          }
+          if (node.steps >= maxSteps) continue;
+          const nbrs = Array.from(adj.get(node.curr) || []);
+          let nextNodes = nbrs.filter(n => n !== node.prev);
+          if (nextNodes.length === 0 && node.prev) nextNodes = [node.prev];
+
+          for (const nxt of nextNodes) {
+            const blocked = state.blockers.has(nxt);
+            if (blocked && !canReopenOnSix) continue;
+            queue.push({ curr: nxt, prev: node.curr, steps: node.steps + 1, path: [...node.path, nxt], reopenedBlocker: blocked ? nxt : node.reopenedBlocker });
+          }
+        }
+      });
+      return Array.from(bestByTargetAndLine.values());
+    }
+
+    function triggerPassAndPlayCurtain(callback) {
+      const p = activePlayer();
+      const humanPlayers = state.players.filter(pl => pl.type === 'human');
+      if (humanPlayers.length > 0 && p.type === 'human') {
+        document.getElementById('pass-phone-title').textContent = `Pass to ${p.name}`;
+        const readyBtn = document.getElementById('btn-pass-phone-ready');
+        readyBtn.onclick = () => {
+          document.getElementById('modal-pass-phone').classList.add('hidden');
+          if (callback) callback();
+        };
+        document.getElementById('modal-pass-phone').classList.remove('hidden');
+      } else {
+        if (callback) callback();
+      }
+    }
+
+    function initMatch(configs, autoBlockers) {
+      clearTimeout(state.botTimer);
+      state.blockers.clear();
+      state.hazardDeck = buildDeck();
+      state.hazardDiscard = [];
+      state.dieRoll = null;
+      state.reachableMoves = [];
+      state.beaconStationId = null;
+      state.actionLog = [];
+      state.botTurnLogs = [];
+      state.telemetryHistory = [];
+
+      const handSize = configs.length >= 7 ? 5 : 6;
+      let pool = shuffle(SOUVENIR_POOL);
+
+      state.players = configs.map((cfg, idx) => {
+        if (pool.length < handSize) pool = shuffle(SOUVENIR_POOL);
+        const cards = pool.splice(0, handSize).map(st => ({
+          stationId: st.id, name: st.name, lines: Array.from(st.lines), desc: st.desc || 'Historic Oxford college and landmark.', visited: false
+        }));
+        return {
+          id: idx, name: cfg.name.trim() || `Player ${idx + 1}`, type: cfg.type, color: PLAYER_PALETTE[idx % PLAYER_PALETTE.length],
+          stationId: 'sheldonian', currentLine: null, souvenirs: cards, skipNextTurn: false, extraTurn: false
+        };
+      });
+
+      state.currentIdx = 0;
+      document.getElementById('hud-hazard-count').textContent = state.hazardDeck.length;
+
+      document.getElementById('modal-welcome').classList.add('hidden');
+      document.getElementById('modal-victory').classList.add('hidden');
+
+      if (autoBlockers) {
+        state.players.forEach(p => { for (let b = 0; b < 2; b++) { const sid = pickAIBlockerStation(p); if (sid) state.blockers.add(sid); } });
+        state.phase = 'ROLL_DIE';
+        addLog('Match started at Sheldonian Theatre with initial blockers placed.');
+        setCameraMode('turn');
+        renderMap();
+        syncHUD();
+        maybeTriggerBotTurn();
+      } else {
+        state.initialBlockersLeft = state.players.map(() => 2);
+        state.phase = 'PLACE_BLOCKERS';
+        addLog('Match started! Players placing initial blocking counters.');
+        setCameraMode('turn');
+        renderMap();
+        syncHUD();
+
+        triggerPassAndPlayCurtain(() => {
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+        });
+      }
+    }
+
+    function placeInitialBlocker(stationId) {
+      if (stationId === 'sheldonian' || state.blockers.has(stationId)) return;
+      const p = activePlayer();
+      sfx.blocker();
+      state.blockers.add(stationId);
+      state.initialBlockersLeft[state.currentIdx]--;
+      addLog(`${p.name} closed ${STATION_MAP.get(stationId).name} with a blocker.`, p.type !== 'human');
+
+      let next = -1;
+      for (let i = 1; i <= state.players.length; i++) {
+        const idx = (state.currentIdx + i) % state.players.length;
+        if (state.initialBlockersLeft[idx] > 0) { next = idx; break; }
+      }
+
+      if (next === -1) {
+        state.currentIdx = 0;
+        state.phase = 'ROLL_DIE';
+        addLog('All blockers placed! Roll the die to depart the Sheldonian.');
+        setCameraMode('turn');
+        triggerPassAndPlayCurtain(() => {
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+        });
+      } else {
+        state.currentIdx = next;
+        triggerPassAndPlayCurtain(() => {
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+        });
+      }
+    }
+
+    function teleportPlayer(targetPlayer, stationId) {
+      const st = STATION_MAP.get(stationId);
+      if (!st) return false;
+      targetPlayer.stationId = stationId;
+      targetPlayer.currentLine = st.lines.size > 1 ? null : Array.from(st.lines)[0];
+
+      const match = targetPlayer.souvenirs.find(s => !s.visited && s.stationId === stationId);
+      if (match) {
+        match.visited = true;
+        sfx.stamp();
+        addLog(`🎓 ${targetPlayer.name} visited ${match.name}!`, activePlayer().type !== 'human');
+        openSouvenirDetailOverlay(targetPlayer, stationId, true);
+        return true;
+      }
+      if (targetPlayer.souvenirs.every(s => s.visited) && stationId === 'sheldonian') {
+        declareVictory(targetPlayer);
+        return true;
+      }
+      return false;
+    }
+
+    function resolveHazardCard() {
+      const card = state.pendingHazard;
+      if (!card) return;
+      state.pendingHazard = null;
+      document.getElementById('modal-hazard').classList.add('hidden');
+
+      const p = activePlayer();
+      const isBot = p.type !== 'human';
+
+      switch (card.effect) {
+        case 'EXTRA_TURN':
+          p.extraTurn = true;
+          addLog(`${p.name} gained an extra turn!`, isBot);
+          finishTurn();
+          break;
+        case 'GOTO_NEXT_TARGET': {
+          const targets = playerObjectives(p);
+          targets.sort((a, b) => graphDist(p.stationId, a, p.currentLine) - graphDist(p.stationId, b, p.currentLine));
+          const dest = targets[0];
+          addLog(`${p.name} graduated straight to ${STATION_MAP.get(dest).name}!`, isBot);
+          if (teleportPlayer(p, dest)) return;
+          finishTurn();
+          break;
+        }
+        case 'GOTO_GDS_FRIEND': {
+          let branch = 'gds_jericho';
+          let friendId = null;
+          if (!isBot) {
+            branch = document.getElementById('haz-gds-branch')?.value || 'gds_jericho';
+            friendId = parseInt(document.getElementById('haz-friend-id')?.value ?? '-1', 10);
+          } else {
+            const branches = ['gds_jericho', 'gds_south', 'gds_east'];
+            const t = playerObjectives(p)[0];
+            branches.sort((a, b) => graphDist(a, t) - graphDist(b, t));
+            branch = branches[0];
+            friendId = state.players.find(o => o.id !== p.id)?.id ?? null;
+          }
+          const friend = state.players.find(o => o.id === friendId);
+          addLog(`${p.name}${friend ? ` & ${friend.name}` : ''} went for ice cream at ${STATION_MAP.get(branch).name}!`, isBot);
+          if (teleportPlayer(p, branch)) return;
+          if (friend && teleportPlayer(friend, branch)) return;
+          finishTurn();
+          break;
+        }
+        case 'DIRECT_ANYWHERE': {
+          let destId = 'hinksey_pool';
+          if (!isBot) destId = document.getElementById('haz-direct-station')?.value || 'hinksey_pool';
+          else {
+            const t = playerObjectives(p)[0];
+            const cands = STATIONS.filter(s => s.type !== 'square');
+            cands.sort((a, b) => graphDist(b.id, t) - graphDist(a.id, t));
+            destId = cands[0].id;
+          }
+          addLog(`${p.name} was directed to ${STATION_MAP.get(destId).name}.`, isBot);
+          if (teleportPlayer(p, destId)) return;
+          finishTurn();
+          break;
+        }
+        case 'GOTO_JERICHO_SKIP':
+          p.skipNextTurn = true;
+          addLog(`${p.name} sent to Jericho Health Centre (misses next turn).`, isBot);
+          if (teleportPlayer(p, 'jericho_health')) return;
+          finishTurn();
+          break;
+        case 'ALL_BOATHOUSE':
+          addLog('Summer Eights! All players summoned to Boathouse Island.', isBot);
+          for (const pl of state.players) { if (teleportPlayer(pl, 'boathouse_island')) return; }
+          finishTurn();
+          break;
+        case 'GOTO_FURTHEST_LINE': {
+          const lineId = p.currentLine || Array.from(STATION_MAP.get(p.stationId).lines)[0];
+          const adj = ADJACENCY[lineId];
+          const nodes = adj ? Array.from(adj.keys()) : [p.stationId];
+          const curr = STATION_MAP.get(p.stationId);
+          nodes.sort((a, b) => Math.hypot(STATION_MAP.get(b).x - curr.x, STATION_MAP.get(b).y - curr.y) - Math.hypot(STATION_MAP.get(a).x - curr.x, STATION_MAP.get(a).y - curr.y));
+          const furthest = nodes[0] || p.stationId;
+          addLog(`${p.name} rushed back to ${STATION_MAP.get(furthest).name}!`, isBot);
+          if (teleportPlayer(p, furthest)) return;
+          finishTurn();
+          break;
+        }
+        case 'GOTO_BODLEIAN':
+          addLog(`${p.name} sent to the Bodleian Library for an Essay Crisis.`, isBot);
+          if (teleportPlayer(p, 'bodleian')) return;
+          finishTurn();
+          break;
+        case 'MISS_TURN':
+          p.skipNextTurn = true;
+          addLog(`${p.name} will miss their next turn.`, isBot);
+          finishTurn();
+          break;
+        case 'MOVE_ONE_BLOCKER':
+        case 'MOVE_ALL_BLOCKERS': {
+          if (state.blockers.size === 0) { finishTurn(); return; }
+          state.blockerMovesLeft = card.effect === 'MOVE_ALL_BLOCKERS' ? state.blockers.size : 1;
+          state.pickedUpBlocker = null;
+          state.afterBlockerCallback = () => finishTurn();
+          state.phase = 'MOVE_BLOCKER';
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+          break;
+        }
+        default: finishTurn();
+      }
+    }
+
+    function handleBlockerRelocateTap(stationId) {
+      const p = activePlayer();
+      const isBot = p.type !== 'human';
+      if (!state.pickedUpBlocker) {
+        if (!state.blockers.has(stationId)) return;
+        state.blockers.delete(stationId);
+        state.pickedUpBlocker = stationId;
+        sfx.blocker();
+        renderMap();
+        syncHUD();
+        return;
+      }
+
+      if (stationId === 'sheldonian' || state.blockers.has(stationId)) return;
+      state.blockers.add(stationId);
+      state.pickedUpBlocker = null;
+      state.blockerMovesLeft--;
+      sfx.blocker();
+      addLog(`${p.name} relocated a blocker to ${STATION_MAP.get(stationId).name}.`, isBot);
+
+      if (state.blockerMovesLeft <= 0) {
+        const cb = state.afterBlockerCallback;
+        state.afterBlockerCallback = null;
+        if (cb) cb();
+        else finishTurn();
+      } else {
+        renderMap();
+        syncHUD();
+      }
+    }
+
+    function finishTurn() {
+      if (state.phase === 'GAME_OVER') return;
+      const finishedPlayer = activePlayer();
+      state.reachableMoves = [];
+      state.dieRoll = null;
+
+      const advanceToNextPlayer = () => {
+        if (finishedPlayer.extraTurn) {
+          finishedPlayer.extraTurn = false;
+          state.phase = 'ROLL_DIE';
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+          return;
+        }
+
+        let nextIdx = state.currentIdx;
+        for (let i = 0; i < state.players.length + 1; i++) {
+          nextIdx = (nextIdx + 1) % state.players.length;
+          const nextP = state.players[nextIdx];
+          if (nextP.skipNextTurn) { nextP.skipNextTurn = false; addLog(`${nextP.name} missed their turn.`); continue; }
+          break;
+        }
+
+        const nextPlayer = state.players[nextIdx];
+        state.currentIdx = nextIdx;
+        state.phase = 'ROLL_DIE';
+        setCameraMode('turn');
+
+        triggerPassAndPlayCurtain(() => {
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+        });
+      };
+
+      if (finishedPlayer.type !== 'human' && state.botTurnLogs.length > 0) {
+        const logsCopy = [...state.botTurnLogs];
+        state.botTurnLogs = [];
+
+        if (settings.botConfirm) {
+          const profile = BOT_PROFILES[finishedPlayer.type];
+          const av = document.getElementById('bot-summary-avatar');
+          av.style.backgroundColor = finishedPlayer.color.hex;
+          document.getElementById('bot-summary-tier').textContent = profile.tier;
+          document.getElementById('bot-summary-name').textContent = finishedPlayer.name;
+          document.getElementById('bot-summary-actions').innerHTML = logsCopy
+            .map(line => `<li class="flex items-start gap-2"><span class="text-[#b8860b] font-bold">•</span><span>${line}</span></li>`)
+            .join('');
+
+          const btnCont = document.getElementById('btn-bot-continue');
+          btnCont.onclick = () => {
+            document.getElementById('modal-bot-summary').classList.add('hidden');
+            advanceToNextPlayer();
+          };
+          document.getElementById('modal-bot-summary').classList.remove('hidden');
+          renderMap();
+          syncHUD();
+          return;
+        }
+      }
+      advanceToNextPlayer();
+    }
+
+    function declareVictory(winner) {
+      state.phase = 'GAME_OVER';
+      sfx.win();
+      addLog(`🏆 ${winner.name} won The Oxford Game!`);
+      document.getElementById('victory-winner-name').textContent = `${winner.name} Wins!`;
+      const sorted = [...state.players].sort((a, b) => b.souvenirs.filter(s => s.visited).length - a.souvenirs.filter(s => s.visited).length);
+      document.getElementById('victory-standings').innerHTML = sorted.map((p, i) => {
+        const v = p.souvenirs.filter(s => s.visited).length;
+        return `<div class="flex items-center justify-between py-1 border-b border-slate-100 last:border-0">
+          <span class="font-bold text-slate-800">${i + 1}. ${p.name}</span>
+          <span class="font-mono-tech font-bold text-[#002147]">${v}/${p.souvenirs.length} Visited</span>
+        </div>`;
+      }).join('');
+      document.getElementById('modal-victory').classList.remove('hidden');
+      renderMap();
+      syncHUD();
+    }
+
+    function pickAIBlockerStation(aiPlayer) {
+      const targets = new Set(playerObjectives(aiPlayer));
+      const cands = STATIONS.filter(s => s.id !== 'sheldonian' && !state.blockers.has(s.id) && !targets.has(s.id));
+      let best = cands[0]?.id;
+      let bestScore = -Infinity;
+
+      cands.forEach(st => {
+        let score = (st.interchange ? 4.0 : 1.0) + Math.random() * 2.0;
+        if (graphDist(aiPlayer.stationId, st.id, aiPlayer.currentLine) <= 2) score -= 6;
+        state.players.forEach(opp => {
+          if (opp.id === aiPlayer.id) return;
+          const d = graphDist(opp.stationId, st.id, opp.currentLine);
+          if (d >= 1 && d <= 4) score += 5.0;
+        });
+        if (score > bestScore) { bestScore = score; best = st.id; }
+      });
+      return best;
+    }
+
+    function runMCTSRollout(player, opt, rollouts) {
+      const targets = playerObjectives(player);
+      if (targets.includes(opt.stationId)) return 0.99;
+      let total = 0;
+      for (let r = 0; r < rollouts; r++) {
+        let sId = opt.stationId;
+        let lId = opt.lineId;
+        let rem = [...targets];
+        let turn = 0;
+        while (turn < 5 && rem.length > 0) {
+          turn++;
+          const d = 1 + Math.floor(Math.random() * 6);
+          const moves = computeReachableMoves(sId, lId, d, d === 6);
+          if (!moves.length) break;
+          let chosen = moves[0];
+          let bestDist = Infinity;
+          for (const m of moves) {
+            if (rem.includes(m.stationId)) { chosen = m; bestDist = 0; break; }
+            const minD = Math.min(...rem.map(t => graphDist(m.stationId, t, m.lineId)));
+            if (minD < bestDist) { bestDist = minD; chosen = m; }
+          }
+          sId = chosen.stationId;
+          lId = chosen.lineId;
+          if (rem.includes(sId)) rem = rem.filter(x => x !== sId);
+        }
+        const done = targets.length - rem.length;
+        const leftD = rem.length ? Math.min(...rem.map(t => graphDist(sId, t, lId))) : 0;
+        total += done * 25 - leftD;
+      }
+      return Math.max(0.05, Math.min(0.98, 0.5 + (total / rollouts) / 45));
+    }
+
+    function handleRollDie() {
+      if (state.phase !== 'ROLL_DIE') return;
+      const p = activePlayer();
+      sfx.dice();
+      const d = 1 + Math.floor(Math.random() * 6);
+      state.dieRoll = d;
+
+      const dieEl = document.getElementById('die-face');
+      dieEl.textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][d - 1];
+      document.getElementById('btn-roll-die').classList.add('die-rolling');
+      setTimeout(() => document.getElementById('btn-roll-die').classList.remove('die-rolling'), 450);
+
+      state.reachableMoves = computeReachableMoves(p.stationId, p.currentLine, d, d === 6);
+      addLog(`${p.name} rolled a ${d}. ${state.reachableMoves.length} destinations reachable.`, p.type !== 'human');
+
+      if (state.reachableMoves.length === 0) {
+        addLog(`${p.name} has no valid moves for roll ${d}!`);
+        setTimeout(() => finishTurn(), 700);
+        return;
+      }
+
+      state.phase = 'SELECT_MOVE';
+      setCameraMode('objectives');
+      renderMap();
+      syncHUD();
+      maybeTriggerBotTurn();
+    }
+
+    function openMoveConfirmation(stationId) {
+      const opt = state.reachableMoves.find(m => m.stationId === stationId);
+      if (!opt) return;
+      state.pendingMoveOption = opt;
+      const st = STATION_MAP.get(stationId);
+      const lineName = LINES[opt.lineId]?.name.split(' (')[0] || 'Route';
+
+      document.getElementById('confirm-move-steps-badge').textContent = `${opt.steps} step${opt.steps > 1 ? 's' : ''}`;
+      document.getElementById('confirm-move-station').textContent = st.name;
+      const pill = document.getElementById('confirm-move-line-pill');
+      pill.textContent = `Via ${lineName}`;
+      pill.style.backgroundColor = LINES[opt.lineId]?.color || '#1e293b';
+
+      const notes = [];
+      if (opt.reopenedBlocker) notes.push(`• Rolling a 6 reopens blocker at ${STATION_MAP.get(opt.reopenedBlocker).name}!`);
+      if (st.interchange) notes.push(`• Interchange stop: You can switch lines & draw a Hazard card.`);
+      const activeP = activePlayer();
+      const isTarget = activeP.souvenirs.find(s => !s.visited && s.stationId === stationId);
+      if (isTarget) notes.push(`🎓 Reaching this stop completes Souvenir: <strong>${isTarget.name}</strong>!`);
+
+      document.getElementById('confirm-move-notes').innerHTML = notes.length > 0 ? notes.join('<br>') : 'Standard station stop.';
+      document.getElementById('modal-confirm-move').classList.remove('hidden');
+    }
+
+    function executeConfirmedMove(opt) {
+      document.getElementById('modal-confirm-move').classList.add('hidden');
+      state.pendingMoveOption = null;
+      const p = activePlayer();
+      const isBot = p.type !== 'human';
+
+      if (opt.reopenedBlocker) {
+        state.blockers.delete(opt.reopenedBlocker);
+        addLog(`${p.name} rolled a 6 and reopened closed station ${STATION_MAP.get(opt.reopenedBlocker).name}!`, isBot);
+      }
+
+      p.stationId = opt.stationId;
+      p.currentLine = opt.lineId;
+      sfx.step();
+
+      const st = STATION_MAP.get(opt.stationId);
+      const souvenirCard = p.souvenirs.find(s => !s.visited && s.stationId === opt.stationId);
+
+      if (souvenirCard) {
+        souvenirCard.visited = true;
+        sfx.stamp();
+        addLog(`🎓 ${p.name} arrived at Souvenir destination: ${souvenirCard.name}!`, isBot);
+
+        if (p.souvenirs.every(s => s.visited) && opt.stationId === 'sheldonian') {
+          declareVictory(p);
+          return;
+        }
+
+        openSouvenirDetailOverlay(p, opt.stationId, true);
+        return;
+      }
+
+      if (st.interchange && st.lines.size > 1) {
+        if (isBot) botDecideInterchangeSwitch(p, st, null);
+        else openSwitchLineModal(p, st, null);
+      } else {
+        finishTurn();
+      }
+    }
+
+    function openSwitchLineModal(p, st, stampedCard) {
+      document.getElementById('switch-line-station-title').textContent = `${st.name} Interchange`;
+      const banner = document.getElementById('switch-line-souvenir-banner');
+      if (stampedCard) {
+        banner.textContent = `🎓 Visited Souvenir: ${stampedCard.name}!`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const optsEl = document.getElementById('switch-line-options');
+      const linesArr = Array.from(st.lines);
+      optsEl.innerHTML = linesArr.map(lid => {
+        const lObj = LINES[lid];
+        const isCurrent = lid === p.currentLine;
+        return `
+          <button type="button" onclick="confirmLineSwitch('${lid}')"
+            class="w-full p-3 rounded-2xl flex items-center justify-between text-white font-bold text-xs shadow transition active:scale-98"
+            style="background:${lObj.color};">
+            <span>${lObj.name}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-black/25">${isCurrent ? 'Stay (No Hazard)' : 'Switch Line (+ Hazard)'}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('modal-switch-line').classList.remove('hidden');
+    }
+
+    window.confirmLineSwitch = function (lineId) {
+      document.getElementById('modal-switch-line').classList.add('hidden');
+      const p = activePlayer();
+      const isBot = p.type !== 'human';
+
+      if (lineId !== p.currentLine) {
+        p.currentLine = lineId;
+        const card = drawHazard();
+        state.pendingHazard = card;
+        sfx.hazard();
+        addLog(`${p.name} switched to ${LINES[lineId].name.split(' (')[0]} and drew Hazard: ${card.title}.`, isBot);
+        openHazardModal(card);
+      } else {
+        addLog(`${p.name} stayed on ${LINES[lineId].name.split(' (')[0]}.`, isBot);
+        finishTurn();
+      }
+    };
+
+    function openHazardModal(card) {
+      document.getElementById('hazard-title').textContent = card.title;
+      document.getElementById('hazard-desc').textContent = card.desc;
+      document.getElementById('hazard-count-badge').textContent = `×${card.count}`;
+
+      const box = document.getElementById('hazard-interactive-box');
+      box.innerHTML = '';
+      if (card.effect === 'GOTO_GDS_FRIEND') {
+        box.classList.remove('hidden');
+        box.innerHTML = `
+          <div class="text-xs font-bold text-amber-900">Choose G&amp;D's Branch &amp; Friend Companion:</div>
+          <select id="haz-gds-branch" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
+            <option value="gds_jericho">G&amp;D's Jericho</option>
+            <option value="gds_south">G&amp;D's St Aldate's</option>
+            <option value="gds_east">G&amp;D's Cowley Road</option>
+          </select>
+          <select id="haz-friend-id" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
+            ${state.players.filter(pl => pl.id !== activePlayer().id).map(pl => `<option value="${pl.id}">${pl.name}</option>`).join('')}
+          </select>
+        `;
+      } else if (card.effect === 'DIRECT_ANYWHERE') {
+        box.classList.remove('hidden');
+        box.innerHTML = `
+          <div class="text-xs font-bold text-amber-900">Direct yourself anywhere in Oxford:</div>
+          <select id="haz-direct-station" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
+            ${STATIONS.filter(s => s.type !== 'square').map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          </select>
+        `;
+      } else {
+        box.classList.add('hidden');
+      }
+
+      document.getElementById('modal-hazard').classList.remove('hidden');
+    }
+
+    function botDecideInterchangeSwitch(p, st, stampedCard) {
+      const targets = playerObjectives(p);
+      let bestLine = p.currentLine;
+      let bestD = Math.min(...targets.map(t => graphDist(p.stationId, t, p.currentLine)));
+
+      st.lines.forEach(lid => {
+        if (lid === p.currentLine) return;
+        const d = Math.min(...targets.map(t => graphDist(p.stationId, t, lid)));
+        if (d + 2.1 < bestD) { bestD = d; bestLine = lid; }
+      });
+      window.confirmLineSwitch(bestLine);
+    }
+
+    function maybeTriggerBotTurn() {
+      clearTimeout(state.botTimer);
+      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER') return;
+      const p = activePlayer();
+      if (!p || p.type === 'human') return;
+
+      const delay = SPEED_MAP[settings.botSpeedLevel].ms;
+      const profile = BOT_PROFILES[p.type];
+
+      state.botTimer = setTimeout(() => {
+        if (state.phase === 'PLACE_BLOCKERS') {
+          const stId = pickAIBlockerStation(p);
+          placeInitialBlocker(stId);
+        } else if (state.phase === 'ROLL_DIE') {
+          state.botTurnLogs = [];
+          handleRollDie();
+        } else if (state.phase === 'SELECT_MOVE') {
+          const moves = state.reachableMoves;
+          if (!moves.length) { finishTurn(); return; }
+          const targets = playerObjectives(p);
+          let bestOpt = moves[0];
+          let bestScore = -Infinity;
+
+          moves.forEach(opt => {
+            let sc = 0;
+            if (p.type === 'hard') {
+              sc = runMCTSRollout(p, opt, profile.rollouts) * 100;
+            } else {
+              const hit = targets.includes(opt.stationId) ? profile.weights.targetHit : 0;
+              const minD = Math.min(...targets.map(t => graphDist(opt.stationId, t, opt.lineId)));
+              const inter = STATION_MAP.get(opt.stationId).interchange ? profile.weights.interchange : 0;
+              sc = hit + minD * profile.weights.dist + inter + (Math.random() - 0.5) * 2 * profile.noise;
+            }
+            if (sc > bestScore) { bestScore = sc; bestOpt = opt; }
+          });
+
+          const cardEntry = {
+            botName: p.name, tier: profile.tier, position: STATION_MAP.get(p.stationId).name,
+            roll: state.dieRoll, selectedMove: STATION_MAP.get(bestOpt.stationId).name,
+            score: bestScore.toFixed(2), timestamp: new Date().toLocaleTimeString()
+          };
+          state.telemetryHistory.unshift(cardEntry);
+          renderTelemetryCards();
+
+          executeConfirmedMove(bestOpt);
+        } else if (state.phase === 'MOVE_BLOCKER') {
+          if (!state.pickedUpBlocker && state.blockers.size > 0) {
+            const firstB = Array.from(state.blockers)[0];
+            handleBlockerRelocateTap(firstB);
+            maybeTriggerBotTurn();
+          } else {
+            const destB = pickAIBlockerStation(p);
+            handleBlockerRelocateTap(destB);
+            if (state.phase === 'MOVE_BLOCKER') maybeTriggerBotTurn();
+          }
+        }
+      }, delay);
+    }
+
+    function renderTelemetryCards() {
+      const container = document.getElementById('telemetry-cards-container');
+      if (state.telemetryHistory.length === 0) {
+        container.innerHTML = `<div class="bg-white p-3.5 rounded-2xl border border-slate-200 text-slate-500 italic">No AI telemetry recorded yet. Bot turns will generate scrollable heuristic &amp; MCTS cards here.</div>`;
+        return;
+      }
+      container.innerHTML = state.telemetryHistory.map(item => `
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs space-y-1 font-mono-tech">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="font-bold text-[#002147]">${item.botName} (${item.tier})</span>
+            <span class="text-slate-400">${item.timestamp}</span>
+          </div>
+          <div class="text-xs text-slate-700">Pos: ${item.position} | Rolled: ${item.roll}</div>
+          <div class="text-xs text-emerald-800 font-semibold">Move: ${item.selectedMove} (Score: ${item.score})</div>
+        </div>
+      `).join('');
+    }
+
+    function renderMap() {
+      const linesLayer = document.getElementById('layer-lines');
+      const stationsLayer = document.getElementById('layer-stations');
+      const highlightsLayer = document.getElementById('layer-highlights');
+      const blockersLayer = document.getElementById('layer-blockers');
+      const labelsLayer = document.getElementById('layer-labels');
+      const playersLayer = document.getElementById('layer-players');
+      const sightLayer = document.getElementById('layer-sightline');
+
+      let linesSVG = '';
+      Object.entries(LINE_ROUTES).forEach(([lineId, branches]) => {
+        const col = LINES[lineId].color;
+        branches.forEach(seq => {
+          const pts = seq.map(sid => STATION_MAP.get(sid)).filter(Boolean).map(s => `${s.x},${s.y}`).join(' ');
+          linesSVG += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" />`;
+        });
+      });
+      linesLayer.innerHTML = linesSVG;
+
+      const reachableSet = new Set(state.reachableMoves.map(m => m.stationId));
+      let hlSVG = '';
+      if (state.phase === 'SELECT_MOVE') {
+        reachableSet.forEach(sid => {
+          const s = STATION_MAP.get(sid);
+          if (!s) return;
+          hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="18" fill="rgba(245,158,11,0.28)" stroke="#d97706" stroke-width="3" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
+        });
+      }
+      highlightsLayer.innerHTML = hlSVG;
+
+      const currP = activePlayer();
+      if (currP && state.beaconStationId) {
+        const src = STATION_MAP.get(currP.stationId);
+        const dst = STATION_MAP.get(state.beaconStationId);
+        if (src && dst) {
+          sightLayer.innerHTML = `
+            <line x1="${src.x}" y1="${src.y}" x2="${dst.x}" y2="${dst.y}" stroke="#c83737" stroke-width="3.5" stroke-dasharray="8 6" class="sightline-path" />
+            <circle cx="${dst.x}" cy="${dst.y}" r="22" fill="none" stroke="#c83737" stroke-width="3.5" class="beacon-ring" />
+          `;
+        }
+      } else {
+        sightLayer.innerHTML = '';
+      }
+
+      const showObjectives = currP && (currP.type === 'human' || state.phase === 'PLACE_BLOCKERS') && document.getElementById('modal-pass-phone').classList.contains('hidden');
+      const myObjectives = showObjectives ? new Set(playerObjectives(currP)) : new Set();
+      let stSVG = '';
+      let lblSVG = '';
+
+      STATIONS.forEach(s => {
+        const isObj = myObjectives.has(s.id);
+        const isReach = reachableSet.has(s.id);
+        const primaryCol = LINES[Array.from(s.lines)[0]]?.color || '#1e293b';
+
+        if (isObj) {
+          stSVG += `<circle cx="${s.x}" cy="${s.y}" r="15" fill="rgba(184,134,11,0.32)" stroke="#b8860b" stroke-width="2" />`;
+        }
+
+        if (s.interchange) {
+          const r = s.id === 'sheldonian' ? 12 : (isReach ? 11 : 9.5);
+          if (s.type === 'square') {
+            const sz = isReach ? 13 : 10;
+            stSVG += `<rect x="${s.x - sz / 2}" y="${s.y - sz / 2}" width="${sz}" height="${sz}" fill="#ffffff" stroke="${s.id === 'sheldonian' ? '#002147' : '#1e293b'}" stroke-width="2" class="cursor-pointer" data-sid="${s.id}" />`;
+          } else {
+            stSVG += `<circle cx="${s.x}" cy="${s.y}" r="${r}" fill="#ffffff" stroke="${s.id === 'sheldonian' ? '#002147' : '#1e293b'}" stroke-width="${s.id === 'sheldonian' ? 4 : 3}" class="cursor-pointer" data-sid="${s.id}" />`;
+          }
+        } else if (s.type === 'square') {
+          const sz = isReach ? 13 : 10;
+          stSVG += `<rect x="${s.x - sz / 2}" y="${s.y - sz / 2}" width="${sz}" height="${sz}" fill="${primaryCol}" stroke="#1e293b" stroke-width="2" class="cursor-pointer" data-sid="${s.id}" />`;
+        } else {
+          const r = isReach ? 10.5 : 8.5;
+          stSVG += `<circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${primaryCol}" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer" data-sid="${s.id}" />`;
+        }
+
+        const showLbl = s.id === 'sheldonian' || isObj || isReach || (s.type === 'destination' && view.scale >= 1.15) || (s.type === 'square' && view.scale >= 1.85);
+        if (showLbl) {
+          const fs = s.id === 'sheldonian' ? 12.5 : (s.type === 'square' ? 9.5 : 11);
+          const weight = (s.id === 'sheldonian' || isObj) ? '800' : '600';
+          const fill = s.id === 'sheldonian' ? '#002147' : (isObj ? '#92400e' : '#1e293b');
+          lblSVG += `
+            <text x="${s.x + 12}" y="${s.y + 4}" font-size="${fs}" font-weight="${weight}" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4" stroke-linejoin="round" pointer-events="none">${s.name}</text>
+            <text x="${s.x + 12}" y="${s.y + 4}" font-size="${fs}" font-weight="${weight}" fill="${fill}" pointer-events="none">${s.name}</text>
+          `;
+        }
+      });
+      stationsLayer.innerHTML = stSVG;
+      labelsLayer.innerHTML = lblSVG;
+
+      let blkSVG = '';
+      state.blockers.forEach(sid => {
+        const s = STATION_MAP.get(sid);
+        if (!s) return;
+        blkSVG += `
+          <g class="cursor-pointer" data-sid="${sid}" filter="url(#dropShadow)">
+            <circle cx="${s.x}" cy="${s.y}" r="11.5" fill="#dc2626" stroke="#ffffff" stroke-width="2.2" />
+            <rect x="${s.x - 5.5}" y="${s.y - 1.8}" width="11" height="3.6" rx="1" fill="#ffffff" />
+          </g>
+        `;
+      });
+      blockersLayer.innerHTML = blkSVG;
+      document.getElementById('hud-blocker-count').textContent = state.blockers.size;
+
+      const byStation = new Map();
+      state.players.forEach(p => {
+        if (!byStation.has(p.stationId)) byStation.set(p.stationId, []);
+        byStation.get(p.stationId).push(p);
+      });
+
+      let plySVG = '';
+      byStation.forEach((list, sid) => {
+        const s = STATION_MAP.get(sid);
+        if (!s) return;
+        list.forEach((p, idx) => {
+          const ang = (idx / list.length) * Math.PI * 2 - Math.PI / 2;
+          const dist = list.length > 1 ? 14 : 0;
+          const px = s.x + Math.cos(ang) * dist;
+          const py = s.y + Math.sin(ang) * dist - 6;
+          plySVG += `
+            <g filter="url(#dropShadow)" pointer-events="none">
+              <circle cx="${px}" cy="${py}" r="13" fill="${p.color.hex}" stroke="#ffffff" stroke-width="2.2" />
+              <text x="${px}" y="${py + 4}" text-anchor="middle" font-size="11">🎓</text>
+            </g>
+          `;
+        });
+      });
+      playersLayer.innerHTML = plySVG;
+
+      document.querySelectorAll('[data-sid]').forEach(el => {
+        el.addEventListener('click', e => { e.stopPropagation(); onStationClicked(el.getAttribute('data-sid')); });
+      });
+      updateRadarPips();
+    }
+
+    function onStationClicked(stationId) {
+      const p = activePlayer();
+      if (!p || p.type !== 'human') return;
+      if (state.phase === 'PLACE_BLOCKERS') placeInitialBlocker(stationId);
+      else if (state.phase === 'SELECT_MOVE') { if (state.reachableMoves.some(m => m.stationId === stationId)) openMoveConfirmation(stationId); }
+      else if (state.phase === 'MOVE_BLOCKER') handleBlockerRelocateTap(stationId);
+    }
+
+    const svgEl = document.getElementById('oxford-map-svg');
+    const worldGroup = document.getElementById('map-world');
+    function applyMapTransform() { worldGroup.setAttribute('transform', `translate(${view.x}, ${view.y}) scale(${view.scale})`); }
+
+    function setCameraMode(mode) {
+      view.mode = mode;
+      document.querySelectorAll('.cam-mode-btn').forEach(btn => {
+        btn.classList.remove('bg-[#002147]', 'text-white');
+        btn.classList.add('text-slate-700');
+      });
+      const activeBtn = document.getElementById(mode === 'turn' ? 'cam-my-turn' : mode === 'objectives' ? 'cam-objectives' : 'cam-full-map');
+      if (activeBtn) { activeBtn.classList.add('bg-[#002147]', 'text-white'); activeBtn.classList.remove('text-slate-700'); }
+
+      const p = activePlayer();
+      if (mode === 'full' || !p) { view.x = 0; view.y = 0; view.scale = 1; }
+      else if (mode === 'turn') {
+        const s = STATION_MAP.get(p.stationId) || { x: 645, y: 660 };
+        view.scale = 1.65; view.x = 550 - s.x * view.scale; view.y = 580 - s.y * view.scale;
+      } else if (mode === 'objectives') {
+        const pts = [STATION_MAP.get(p.stationId), ...playerObjectives(p).map(id => STATION_MAP.get(id))].filter(Boolean);
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        pts.forEach(pt => { minX = Math.min(minX, pt.x); maxX = Math.max(maxX, pt.x); minY = Math.min(minY, pt.y); maxY = Math.max(maxY, pt.y); });
+        const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+        const span = Math.max(360, maxX - minX + 220, maxY - minY + 260);
+        view.scale = Math.max(0.85, Math.min(1.85, 1050 / span));
+        view.x = 550 - cx * view.scale; view.y = 580 - cy * view.scale;
+      }
+      applyMapTransform();
+      renderMap();
+    }
+
+    function updateRadarPips() {
+      const overlay = document.getElementById('radar-overlay');
+      const p = activePlayer();
+      if (!settings.radar || !p || state.phase === 'WELCOME') { overlay.innerHTML = ''; return; }
+      const rect = svgEl.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      const vbW = 1100, vbH = 1280;
+      const scaleFit = Math.min(rect.width / vbW, rect.height / vbH);
+      const offX = (rect.width - vbW * scaleFit) / 2, offY = (rect.height - vbH * scaleFit) / 2;
+
+      const pips = [];
+      playerObjectives(p).forEach(tid => {
+        const st = STATION_MAP.get(tid);
+        if (!st) return;
+        const wx = st.x * view.scale + view.x, wy = st.y * view.scale + view.y;
+        const sx = wx * scaleFit + offX, sy = wy * scaleFit + offY;
+        if (sx < 24 || sx > rect.width - 24 || sy < 24 || sy > rect.height - 135) {
+          const cx = Math.max(48, Math.min(rect.width - 48, sx));
+          const cy = Math.max(24, Math.min(rect.height - 145, sy));
+          pips.push({ cx, cy, label: st.name, st });
+        }
+      });
+      overlay.innerHTML = pips.slice(0, 5).map(pip => `
+        <div class="absolute w-7 h-7 rounded-full bg-[#002147] text-amber-300 font-bold text-xs flex items-center justify-center shadow-lg border-2 border-amber-300"
+          style="left:${pip.cx}px; top:${pip.cy}px; transform:translate(-50%, -50%);">
+          📍
+        </div>
+      `).join('');
+    }
+
+    window.focusStation = function (wx, wy) {
+      view.scale = Math.max(1.35, view.scale);
+      view.x = 550 - wx * view.scale; view.y = 580 - wy * view.scale;
+      applyMapTransform(); renderMap();
+    };
+
+    const pointers = new Map();
+    svgEl.addEventListener('pointerdown', e => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      view.dragging = true; view.lastX = e.clientX; view.lastY = e.clientY;
+      if (pointers.size === 2) { const [a, b] = Array.from(pointers.values()); view.pinchStart = Math.hypot(a.x - b.x, a.y - b.y); }
+    });
+    svgEl.addEventListener('pointermove', e => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 2) {
+        const [a, b] = Array.from(pointers.values());
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (view.pinchStart > 0) {
+          const factor = d / view.pinchStart;
+          const oldScale = view.scale;
+          view.scale = Math.max(0.75, Math.min(2.8, view.scale * factor));
+          view.x = 550 - (550 - view.x) * (view.scale / oldScale);
+          view.y = 640 - (640 - view.y) * (view.scale / oldScale);
+          applyMapTransform(); renderMap();
+        }
+        view.pinchStart = d;
+        return;
+      }
+      if (view.dragging) {
+        view.x += (e.clientX - view.lastX) * 1.4; view.y += (e.clientY - view.lastY) * 1.4;
+        view.lastX = e.clientX; view.lastY = e.clientY;
+        applyMapTransform(); updateRadarPips();
+      }
+    });
+    svgEl.addEventListener('pointerup', e => { pointers.delete(e.pointerId); if (pointers.size < 2) view.pinchStart = 0; view.dragging = false; });
+    svgEl.addEventListener('wheel', e => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.14 : 0.88;
+      const oldScale = view.scale;
+      view.scale = Math.max(0.75, Math.min(2.8, view.scale * factor));
+      view.x = 550 - (550 - view.x) * (view.scale / oldScale);
+      view.y = 640 - (640 - view.y) * (view.scale / oldScale);
+      applyMapTransform(); renderMap();
+    }, { passive: false });
+
+    function syncHUD() {
+      const p = activePlayer();
+      if (!p) return;
+
+      document.getElementById('status-player-name').textContent = p.name;
+      const roleMap = { human: 'Human', easy: 'Fresher Bot', medium: 'GA Bot', hard: 'MCTS Bot' };
+      document.getElementById('status-player-role').textContent = roleMap[p.type] || 'Player';
+      document.getElementById('status-player-location').textContent = `Active Turn • ${STATION_MAP.get(p.stationId)?.name || 'Sheldonian'}`;
+
+      const lineBadge = document.getElementById('status-line-badge');
+      if (p.currentLine) {
+        lineBadge.textContent = LINES[p.currentLine].name.split(' (')[0];
+        lineBadge.style.backgroundColor = LINES[p.currentLine].color;
+      } else {
+        lineBadge.textContent = 'All Connected Lines';
+        lineBadge.style.backgroundColor = 'rgba(255,255,255,0.2)';
+      }
+
+      const instr = document.getElementById('status-instruction');
+      if (state.phase === 'PLACE_BLOCKERS') instr.textContent = `Tap any stop (except Sheldonian) to place blocker (${state.initialBlockersLeft[state.currentIdx]} remaining). Your destination rings are shown.`;
+      else if (state.phase === 'ROLL_DIE') instr.textContent = p.currentLine ? `Roll the die to travel along ${LINES[p.currentLine].name.split(' (')[0]}.` : `At ${STATION_MAP.get(p.stationId).name}: Roll the die! Any connected line is open.`;
+      else if (state.phase === 'SELECT_MOVE') instr.textContent = `Rolled ${state.dieRoll}! Tap any highlighted stop (1–${state.dieRoll} steps) to preview move.`;
+      else if (state.phase === 'MOVE_BLOCKER') instr.textContent = state.pickedUpBlocker ? `Tap an open station to place blocker (${state.blockerMovesLeft} left).` : `Tap a red closed-station blocker cone on the map to pick it up.`;
+      else if (state.phase === 'GAME_OVER') instr.textContent = 'Match finished! Review map, action log, or telemetry.';
+
+      const pillsBar = document.getElementById('player-pills-bar');
+      pillsBar.innerHTML = state.players.map((pl, idx) => {
+        const visitedCount = pl.souvenirs.filter(s => s.visited).length;
+        return `
+          <button type="button" onclick="openPlayerInspector(${idx})" title="Inspect ${pl.name}'s progress" style="background:${pl.color.hex};"
+            class="h-7 px-2.5 rounded-full text-white font-extrabold text-xs flex items-center gap-1 shadow transition active:scale-90 shrink-0 opacity-85 hover:opacity-100">
+            <span>🎓 ${visitedCount}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('hud-hazard-count').textContent = state.hazardDeck.length;
+      document.getElementById('hud-blocker-count').textContent = state.blockers.size;
+
+      const viewer = p.type === 'human' ? p : (state.players.find(pl => pl.type === 'human') || p);
+      const visitedNum = viewer.souvenirs.filter(s => s.visited).length;
+      document.getElementById('drawer-owner-label').textContent = `(${viewer.name})`;
+      document.getElementById('drawer-progress-badge').textContent = visitedNum === viewer.souvenirs.length ? 'Return to Sheldonian!' : `${visitedNum}/${viewer.souvenirs.length}`;
+
+      // Souvenir cards ordered: unvisited first, visited after
+      const sortedSouvenirs = [...viewer.souvenirs].sort((a, b) => (a.visited === b.visited ? 0 : a.visited ? 1 : -1));
+      const strip = document.getElementById('souvenir-cards-strip');
+      strip.innerHTML = sortedSouvenirs.map(card => {
+        const primaryLine = LINES[card.lines[0]] || LINES.black;
+        const isPulsing = state.beaconStationId === card.stationId;
+        return `
+          <div class="shrink-0 w-32 sm:w-36 rounded-2xl overflow-hidden border-2 bg-white shadow-xs flex flex-col justify-between transition select-none ${card.visited ? 'border-emerald-500 bg-emerald-50/70' : isPulsing ? 'border-[#c83737] ring-2 ring-[#c83737]/40 -translate-y-0.5' : 'border-slate-200 hover:border-[#002147]'}">
+            <div style="background:${primaryLine.color};" class="px-2 py-1.5 text-white flex items-center justify-between">
+              <span class="text-[8px] font-bold uppercase tracking-wider truncate max-w-[55%]">${card.lines.join('/')}</span>
+              <div class="flex items-center gap-1">
+                <button type="button" onclick="openSouvenirDetailOverlay(activePlayer(), '${card.stationId}', false)" title="View Full Card" class="w-5 h-5 rounded-md bg-black/25 hover:bg-black/45 text-amber-200 text-[10px] flex items-center justify-center transition">🔍</button>
+                <button type="button" onclick="toggleBeacon('${card.stationId}')" title="Locate on Map" class="w-5 h-5 rounded-md bg-black/25 hover:bg-black/45 text-white text-[10px] flex items-center justify-center transition">📍</button>
+              </div>
+            </div>
+            <div class="p-2 flex-1 cursor-pointer" onclick="toggleBeacon('${card.stationId}')">
+              <div class="font-oxford font-bold text-[11px] text-[#002147] leading-snug truncate">${card.name}</div>
+              <p class="text-[9px] text-slate-500 line-clamp-3 mt-0.5 leading-tight">${card.desc}</p>
+            </div>
+            <div class="px-2 pb-1.5 pt-0 text-[9px] font-bold uppercase tracking-wider text-slate-400 text-center bg-slate-50/50">
+              ${card.visited ? '✅ Visited' : '○ Pending'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.toggleBeacon = function (sid) {
+      state.beaconStationId = state.beaconStationId === sid ? null : sid;
+      if (state.beaconStationId) {
+        const st = STATION_MAP.get(sid);
+        if (st) window.focusStation(st.x, st.y);
+      }
+      renderMap();
+      syncHUD();
+    };
+
+    window.openPlayerInspector = function (playerIdx) {
+      const targetP = state.players[playerIdx];
+      if (!targetP) return;
+      const currP = activePlayer();
+      const isSelf = currP && currP.type === 'human' && currP.id === targetP.id;
+
+      const av = document.getElementById('inspector-avatar');
+      av.style.backgroundColor = targetP.color.hex;
+      document.getElementById('inspector-name').textContent = targetP.name;
+
+      const visited = targetP.souvenirs.filter(s => s.visited);
+      const unvisited = targetP.souvenirs.filter(s => !s.visited);
+      document.getElementById('inspector-sub').textContent = `At ${STATION_MAP.get(targetP.stationId).name} • ${visited.length}/${targetP.souvenirs.length} Visited`;
+
+      const listEl = document.getElementById('inspector-souvenir-list');
+      if (isSelf) {
+        document.getElementById('inspector-list-caption').textContent = 'Your Souvenir Hand (Visited Bold First)';
+        listEl.innerHTML = [
+          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${c.name}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
+          ...unvisited.map(c => `<li class="flex items-center justify-between italic text-slate-500 py-1 border-b border-slate-100 last:border-0"><span>○ ${c.name}</span><span class="text-[10px] uppercase">Pending</span></li>`)
+        ].join('');
+      } else {
+        document.getElementById('inspector-list-caption').textContent = `${targetP.name}'s Souvenir Status`;
+        listEl.innerHTML = [
+          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${c.name}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
+          ...unvisited.map(c => `<li class="flex items-center justify-between font-mono-tech text-slate-400 py-1 border-b border-slate-100 last:border-0"><span>------</span><span class="text-[10px] uppercase">Unknown</span></li>`)
+        ].join('');
+      }
+      document.getElementById('modal-player-inspector').classList.remove('hidden');
+    };
+
+    function openSouvenirDetailOverlay(ownerPlayer, stationId, isArrivalPopup = false) {
+      const card = ownerPlayer.souvenirs.find(s => s.stationId === stationId);
+      if (!card) return;
+      const primaryLine = LINES[card.lines[0]] || LINES.black;
+
+      document.getElementById('souvenir-detail-banner').style.backgroundColor = primaryLine.color;
+      document.getElementById('souvenir-detail-line').textContent = card.lines.map(l => LINES[l]?.name || l).join(' • ');
+      document.getElementById('souvenir-detail-name').textContent = card.name;
+      document.getElementById('souvenir-detail-status').textContent = card.visited ? '✅ Visited' : '📍 Unvisited';
+      document.getElementById('souvenir-detail-desc').textContent = card.desc;
+
+      const closeBtn = document.getElementById('btn-souvenir-close');
+      closeBtn.textContent = isArrivalPopup ? 'Continue Turn' : 'Close Card';
+      closeBtn.onclick = () => {
+        document.getElementById('modal-souvenir-detail').classList.add('hidden');
+        if (isArrivalPopup) {
+          const p = activePlayer();
+          const st = STATION_MAP.get(p.stationId);
+          if (st && st.interchange && st.lines.size > 1) {
+            if (p.type !== 'human') botDecideInterchangeSwitch(p, st, card);
+            else openSwitchLineModal(p, st, card);
+          } else {
+            finishTurn();
+          }
+        }
+      };
+
+      document.getElementById('btn-souvenir-locate').onclick = () => {
+        document.getElementById('modal-souvenir-detail').classList.add('hidden');
+        state.beaconStationId = card.stationId;
+        const st = STATION_MAP.get(card.stationId);
+        if (st) window.focusStation(st.x, st.y);
+        renderMap();
+        syncHUD();
+      };
+      document.getElementById('modal-souvenir-detail').classList.remove('hidden');
+    }
+
+    let setupRoster = [
+      { name: 'Player 1', type: 'human' },
+      { name: 'Dr. Turing (MCTS)', type: 'hard' },
+      { name: 'Commuter Bot (GA)', type: 'medium' }
+    ];
+
+    function renderWelcomeRoster() {
+      const container = document.getElementById('setup-players-list');
+      container.innerHTML = setupRoster.map((slot, idx) => `
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:${PLAYER_PALETTE[idx % PLAYER_PALETTE.length].hex}"></div>
+          <div class="flex-1 min-w-0 flex flex-col gap-2">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player Name</label>
+              <input type="text" value="${slot.name}" oninput="setupRoster[${idx}].name = this.value" placeholder="Enter player name..."
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller / AI Difficulty</label>
+              <select onchange="setupRoster[${idx}].type = this.value"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
+                <option value="human" ${slot.type === 'human' ? 'selected' : ''}>Human (Pass &amp; Play)</option>
+                <option value="easy" ${slot.type === 'easy' ? 'selected' : ''}>Bot: Fresher (Easy)</option>
+                <option value="medium" ${slot.type === 'medium' ? 'selected' : ''}>Bot: GA Commuter (Medium)</option>
+                <option value="hard" ${slot.type === 'hard' ? 'selected' : ''}>Bot: MCTS Don (Hard)</option>
+              </select>
+            </div>
+          </div>
+          ${setupRoster.length > 2 ? `
+            <button type="button" onclick="removeRosterSlot(${idx})" aria-label="Remove player"
+              class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    window.removeRosterSlot = function (idx) { if (setupRoster.length > 2) { setupRoster.splice(idx, 1); renderWelcomeRoster(); } };
+
+    document.getElementById('btn-add-player').addEventListener('click', () => {
+      if (setupRoster.length >= 6) return;
+      const presets = ['Ada Lovelace', 'J.R.R. Tolkien', 'Dorothy Hodgkin', 'Fresher Bot'];
+      setupRoster.push({ name: presets[(setupRoster.length - 2) % presets.length], type: 'medium' });
+      renderWelcomeRoster();
+    });
+
+    document.getElementById('btn-start-game').addEventListener('click', () => {
+      const autoBlk = document.getElementById('chk-auto-blockers').checked;
+      initMatch(setupRoster, autoBlk);
+    });
+
+    document.getElementById('btn-cancel-move').addEventListener('click', () => { state.pendingMoveOption = null; document.getElementById('modal-confirm-move').classList.add('hidden'); });
+    document.getElementById('btn-accept-move').addEventListener('click', () => { if (state.pendingMoveOption) executeConfirmedMove(state.pendingMoveOption); });
+
+    document.getElementById('btn-roll-die').addEventListener('click', handleRollDie);
+    document.getElementById('btn-hazard-ok').addEventListener('click', resolveHazardCard);
+
+    document.getElementById('cam-my-turn').addEventListener('click', () => setCameraMode('turn'));
+    document.getElementById('cam-objectives').addEventListener('click', () => setCameraMode('objectives'));
+    document.getElementById('cam-full-map').addEventListener('click', () => setCameraMode('full'));
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      const old = view.scale;
+      view.scale = Math.min(2.8, view.scale * 1.25);
+      view.x = 550 - (550 - view.x) * (view.scale / old); view.y = 640 - (640 - view.y) * (view.scale / old);
+      applyMapTransform(); renderMap();
+    });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      const old = view.scale;
+      view.scale = Math.max(0.75, view.scale * 0.8);
+      view.x = 550 - (550 - view.x) * (view.scale / old); view.y = 640 - (640 - view.y) * (view.scale / old);
+      applyMapTransform(); renderMap();
+    });
+
+    document.getElementById('btn-toggle-log').addEventListener('click', () => {
+      const drawer = document.getElementById('action-log-drawer');
+      const chev = document.getElementById('log-chevron');
+      const open = drawer.classList.toggle('hidden');
+      chev.textContent = open ? '▼' : '▲';
+    });
+    document.getElementById('btn-close-log').addEventListener('click', () => {
+      document.getElementById('action-log-drawer').classList.add('hidden');
+      document.getElementById('log-chevron').textContent = '▼';
+    });
+
+    document.getElementById('drawer-header-bar').addEventListener('click', () => {
+      state.drawerCollapsed = !state.drawerCollapsed;
+      const drawer = document.getElementById('souvenir-drawer');
+      const btn = document.getElementById('btn-toggle-drawer');
+      if (state.drawerCollapsed) { drawer.style.transform = 'translateY(calc(100% - 44px))'; btn.textContent = '▲'; }
+      else { drawer.style.transform = 'translateY(0px)'; btn.textContent = '▼'; }
+    });
+
+    function openSettingsModal(defaultTab = 'settings') {
+      switchSettingsTab(defaultTab);
+      document.getElementById('modal-settings').classList.remove('hidden');
+    }
+
+    function switchSettingsTab(tabName) {
+      document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+        const active = btn.getAttribute('data-tab') === tabName;
+        btn.className = `settings-tab-btn px-3.5 py-2 rounded-t-xl text-xs font-bold transition ${active ? 'bg-[#f8f5ee] text-[#002147]' : 'bg-white/10 text-slate-200 hover:bg-white/20'}`;
+      });
+      ['settings', 'help', 'telemetry'].forEach(t => { document.getElementById(`tab-panel-${t}`).classList.toggle('hidden', t !== tabName); });
+    }
+
+    document.querySelectorAll('.settings-tab-btn').forEach(btn => { btn.addEventListener('click', () => switchSettingsTab(btn.getAttribute('data-tab'))); });
+
+    document.getElementById('btn-welcome-settings').addEventListener('click', () => openSettingsModal('settings'));
+    document.getElementById('btn-open-settings-hud').addEventListener('click', () => openSettingsModal('settings'));
+    document.getElementById('btn-close-settings').addEventListener('click', () => document.getElementById('modal-settings').classList.add('hidden'));
+
+    document.getElementById('btn-victory-review').addEventListener('click', () => {
+      document.getElementById('modal-victory').classList.add('hidden');
+      setCameraMode('full');
+    });
+
+    document.getElementById('btn-download-match-log').addEventListener('click', () => {
+      const textLog = state.actionLog.map(item => `[${item.timestamp}] ${item.text}`).join('\n');
+      const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textLog);
+      const dl = document.createElement('a');
+      dl.setAttribute("href", dataStr);
+      dl.setAttribute("download", `oxford_game_match_log_${Date.now()}.txt`);
+      document.body.appendChild(dl); dl.click(); dl.remove();
+    });
+
+    document.getElementById('btn-download-telemetry').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.telemetryHistory, null, 2));
+      const dl = document.createElement('a');
+      dl.setAttribute("href", dataStr); dl.setAttribute("download", `oxford_game_telemetry_${Date.now()}.json`);
+      document.body.appendChild(dl); dl.click(); dl.remove();
+    });
+
+    document.getElementById('btn-clear-telemetry').addEventListener('click', () => {
+      state.telemetryHistory = [];
+      renderTelemetryCards();
+    });
+
+    document.getElementById('btn-return-welcome').addEventListener('click', () => {
+      clearTimeout(state.botTimer);
+      state.phase = 'WELCOME';
+      state.telemetryHistory = [];
+      document.getElementById('modal-settings').classList.add('hidden');
+      document.getElementById('modal-victory').classList.add('hidden');
+      document.getElementById('modal-welcome').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-inspector').addEventListener('click', () => { document.getElementById('modal-player-inspector').classList.add('hidden'); });
+
+    window.onload = function () {
+      renderWelcomeRoster();
+      renderMap();
+    };
+  </script>
+
+</body>
+
+</html>
