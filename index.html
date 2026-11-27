@@ -1,14 +1,18 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#002147">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>The Oxford Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -63,14 +67,18 @@
       scrollbar-width: none;
     }
 
-    @keyframes pulseBeacon {
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
-      0%,
-      100% {
+    @keyframes pulseBeacon {
+      0%, 100% {
         transform: scale(1);
         opacity: 0.92;
       }
-
       50% {
         transform: scale(1.42);
         opacity: 0.35;
@@ -93,1561 +101,20 @@
       animation: dashMarch 0.9s linear infinite;
     }
 
+    @keyframes dieShake {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-16deg) scale(1.1); }
+      40% { transform: rotate(14deg) scale(1.12); }
+      60% { transform: rotate(-10deg) scale(1.08); }
+      80% { transform: rotate(8deg) scale(1.04); }
+    }
+
+    .die-rolling {
+      animation: dieShake 0.45s ease-in-out;
+    }
+
     .bottom-sheet {
       transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-  </style>
-  <style>
-    *,
-    ::before,
-    ::after {
-      --tw-border-spacing-x: 0;
-      --tw-border-spacing-y: 0;
-      --tw-translate-x: 0;
-      --tw-translate-y: 0;
-      --tw-rotate: 0;
-      --tw-skew-x: 0;
-      --tw-skew-y: 0;
-      --tw-scale-x: 1;
-      --tw-scale-y: 1;
-      --tw-pan-x: ;
-      --tw-pan-y: ;
-      --tw-pinch-zoom: ;
-      --tw-scroll-snap-strictness: proximity;
-      --tw-gradient-from-position: ;
-      --tw-gradient-via-position: ;
-      --tw-gradient-to-position: ;
-      --tw-ordinal: ;
-      --tw-slashed-zero: ;
-      --tw-numeric-figure: ;
-      --tw-numeric-spacing: ;
-      --tw-numeric-fraction: ;
-      --tw-ring-inset: ;
-      --tw-ring-offset-width: 0px;
-      --tw-ring-offset-color: #fff;
-      --tw-ring-color: rgb(59 130 246 / 0.5);
-      --tw-ring-offset-shadow: 0 0 #0000;
-      --tw-ring-shadow: 0 0 #0000;
-      --tw-shadow: 0 0 #0000;
-      --tw-shadow-colored: 0 0 #0000;
-      --tw-blur: ;
-      --tw-brightness: ;
-      --tw-contrast: ;
-      --tw-grayscale: ;
-      --tw-hue-rotate: ;
-      --tw-invert: ;
-      --tw-saturate: ;
-      --tw-sepia: ;
-      --tw-drop-shadow: ;
-      --tw-backdrop-blur: ;
-      --tw-backdrop-brightness: ;
-      --tw-backdrop-contrast: ;
-      --tw-backdrop-grayscale: ;
-      --tw-backdrop-hue-rotate: ;
-      --tw-backdrop-invert: ;
-      --tw-backdrop-opacity: ;
-      --tw-backdrop-saturate: ;
-      --tw-backdrop-sepia: ;
-      --tw-contain-size: ;
-      --tw-contain-layout: ;
-      --tw-contain-paint: ;
-      --tw-contain-style:
-    }
-
-    ::backdrop {
-      --tw-border-spacing-x: 0;
-      --tw-border-spacing-y: 0;
-      --tw-translate-x: 0;
-      --tw-translate-y: 0;
-      --tw-rotate: 0;
-      --tw-skew-x: 0;
-      --tw-skew-y: 0;
-      --tw-scale-x: 1;
-      --tw-scale-y: 1;
-      --tw-pan-x: ;
-      --tw-pan-y: ;
-      --tw-pinch-zoom: ;
-      --tw-scroll-snap-strictness: proximity;
-      --tw-gradient-from-position: ;
-      --tw-gradient-via-position: ;
-      --tw-gradient-to-position: ;
-      --tw-ordinal: ;
-      --tw-slashed-zero: ;
-      --tw-numeric-figure: ;
-      --tw-numeric-spacing: ;
-      --tw-numeric-fraction: ;
-      --tw-ring-inset: ;
-      --tw-ring-offset-width: 0px;
-      --tw-ring-offset-color: #fff;
-      --tw-ring-color: rgb(59 130 246 / 0.5);
-      --tw-ring-offset-shadow: 0 0 #0000;
-      --tw-ring-shadow: 0 0 #0000;
-      --tw-shadow: 0 0 #0000;
-      --tw-shadow-colored: 0 0 #0000;
-      --tw-blur: ;
-      --tw-brightness: ;
-      --tw-contrast: ;
-      --tw-grayscale: ;
-      --tw-hue-rotate: ;
-      --tw-invert: ;
-      --tw-saturate: ;
-      --tw-sepia: ;
-      --tw-drop-shadow: ;
-      --tw-backdrop-blur: ;
-      --tw-backdrop-brightness: ;
-      --tw-backdrop-contrast: ;
-      --tw-backdrop-grayscale: ;
-      --tw-backdrop-hue-rotate: ;
-      --tw-backdrop-invert: ;
-      --tw-backdrop-opacity: ;
-      --tw-backdrop-saturate: ;
-      --tw-backdrop-sepia: ;
-      --tw-contain-size: ;
-      --tw-contain-layout: ;
-      --tw-contain-paint: ;
-      --tw-contain-style:
-    }
-
-    /* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
-    *,
-    ::after,
-    ::before {
-      box-sizing: border-box;
-      border-width: 0;
-      border-style: solid;
-      border-color: #e5e7eb
-    }
-
-    ::after,
-    ::before {
-      --tw-content: ''
-    }
-
-    :host,
-    html {
-      line-height: 1.5;
-      -webkit-text-size-adjust: 100%;
-      -moz-tab-size: 4;
-      tab-size: 4;
-      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      font-feature-settings: normal;
-      font-variation-settings: normal;
-      -webkit-tap-highlight-color: transparent
-    }
-
-    body {
-      margin: 0;
-      line-height: inherit
-    }
-
-    hr {
-      height: 0;
-      color: inherit;
-      border-top-width: 1px
-    }
-
-    abbr:where([title]) {
-      -webkit-text-decoration: underline dotted;
-      text-decoration: underline dotted
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      font-size: inherit;
-      font-weight: inherit
-    }
-
-    a {
-      color: inherit;
-      text-decoration: inherit
-    }
-
-    b,
-    strong {
-      font-weight: bolder
-    }
-
-    code,
-    kbd,
-    pre,
-    samp {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-feature-settings: normal;
-      font-variation-settings: normal;
-      font-size: 1em
-    }
-
-    small {
-      font-size: 80%
-    }
-
-    sub,
-    sup {
-      font-size: 75%;
-      line-height: 0;
-      position: relative;
-      vertical-align: baseline
-    }
-
-    sub {
-      bottom: -.25em
-    }
-
-    sup {
-      top: -.5em
-    }
-
-    table {
-      text-indent: 0;
-      border-color: inherit;
-      border-collapse: collapse
-    }
-
-    button,
-    input,
-    optgroup,
-    select,
-    textarea {
-      font-family: inherit;
-      font-feature-settings: inherit;
-      font-variation-settings: inherit;
-      font-size: 100%;
-      font-weight: inherit;
-      line-height: inherit;
-      letter-spacing: inherit;
-      color: inherit;
-      margin: 0;
-      padding: 0
-    }
-
-    button,
-    select {
-      text-transform: none
-    }
-
-    button,
-    input:where([type=button]),
-    input:where([type=reset]),
-    input:where([type=submit]) {
-      -webkit-appearance: button;
-      background-color: transparent;
-      background-image: none
-    }
-
-    :-moz-focusring {
-      outline: auto
-    }
-
-    :-moz-ui-invalid {
-      box-shadow: none
-    }
-
-    progress {
-      vertical-align: baseline
-    }
-
-    ::-webkit-inner-spin-button,
-    ::-webkit-outer-spin-button {
-      height: auto
-    }
-
-    [type=search] {
-      -webkit-appearance: textfield;
-      outline-offset: -2px
-    }
-
-    ::-webkit-search-decoration {
-      -webkit-appearance: none
-    }
-
-    ::-webkit-file-upload-button {
-      -webkit-appearance: button;
-      font: inherit
-    }
-
-    summary {
-      display: list-item
-    }
-
-    blockquote,
-    dd,
-    dl,
-    figure,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    hr,
-    p,
-    pre {
-      margin: 0
-    }
-
-    fieldset {
-      margin: 0;
-      padding: 0
-    }
-
-    legend {
-      padding: 0
-    }
-
-    menu,
-    ol,
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0
-    }
-
-    dialog {
-      padding: 0
-    }
-
-    textarea {
-      resize: vertical
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      opacity: 1;
-      color: #9ca3af
-    }
-
-    [role=button],
-    button {
-      cursor: pointer
-    }
-
-    :disabled {
-      cursor: default
-    }
-
-    audio,
-    canvas,
-    embed,
-    iframe,
-    img,
-    object,
-    svg,
-    video {
-      display: block;
-      vertical-align: middle
-    }
-
-    img,
-    video {
-      max-width: 100%;
-      height: auto
-    }
-
-    [hidden]:where(:not([hidden=until-found])) {
-      display: none
-    }
-
-    .pointer-events-none {
-      pointer-events: none
-    }
-
-    .fixed {
-      position: fixed
-    }
-
-    .absolute {
-      position: absolute
-    }
-
-    .relative {
-      position: relative
-    }
-
-    .inset-0 {
-      inset: 0px
-    }
-
-    .bottom-0 {
-      bottom: 0px
-    }
-
-    .bottom-32 {
-      bottom: 8rem
-    }
-
-    .left-0 {
-      left: 0px
-    }
-
-    .left-3 {
-      left: 0.75rem
-    }
-
-    .right-0 {
-      right: 0px
-    }
-
-    .right-3 {
-      right: 0.75rem
-    }
-
-    .top-3 {
-      top: 0.75rem
-    }
-
-    .z-10 {
-      z-index: 10
-    }
-
-    .z-20 {
-      z-index: 20
-    }
-
-    .z-30 {
-      z-index: 30
-    }
-
-    .z-40 {
-      z-index: 40
-    }
-
-    .z-50 {
-      z-index: 50
-    }
-
-    .mx-auto {
-      margin-left: auto;
-      margin-right: auto
-    }
-
-    .my-auto {
-      margin-top: auto;
-      margin-bottom: auto
-    }
-
-    .mb-1 {
-      margin-bottom: 0.25rem
-    }
-
-    .mb-1\.5 {
-      margin-bottom: 0.375rem
-    }
-
-    .mb-3 {
-      margin-bottom: 0.75rem
-    }
-
-    .mt-0\.5 {
-      margin-top: 0.125rem
-    }
-
-    .mt-1 {
-      margin-top: 0.25rem
-    }
-
-    .mt-2 {
-      margin-top: 0.5rem
-    }
-
-    .mb-0\.5 {
-      margin-bottom: 0.125rem
-    }
-
-    .block {
-      display: block
-    }
-
-    .flex {
-      display: flex
-    }
-
-    .inline-flex {
-      display: inline-flex
-    }
-
-    .grid {
-      display: grid
-    }
-
-    .hidden {
-      display: none
-    }
-
-    .h-1 {
-      height: 0.25rem
-    }
-
-    .h-10 {
-      height: 2.5rem
-    }
-
-    .h-16 {
-      height: 4rem
-    }
-
-    .h-20 {
-      height: 5rem
-    }
-
-    .h-4 {
-      height: 1rem
-    }
-
-    .h-5 {
-      height: 1.25rem
-    }
-
-    .h-7 {
-      height: 1.75rem
-    }
-
-    .h-8 {
-      height: 2rem
-    }
-
-    .h-9 {
-      height: 2.25rem
-    }
-
-    .h-\[100dvh\] {
-      height: 100dvh
-    }
-
-    .h-\[1px\] {
-      height: 1px
-    }
-
-    .h-full {
-      height: 100%
-    }
-
-    .h-6 {
-      height: 1.5rem
-    }
-
-    .max-h-40 {
-      max-height: 10rem
-    }
-
-    .max-h-60 {
-      max-height: 15rem
-    }
-
-    .max-h-64 {
-      max-height: 16rem
-    }
-
-    .max-h-\[42dvh\] {
-      max-height: 42dvh
-    }
-
-    .max-h-\[52dvh\] {
-      max-height: 52dvh
-    }
-
-    .max-h-\[88dvh\] {
-      max-height: 88dvh
-    }
-
-    .w-10 {
-      width: 2.5rem
-    }
-
-    .w-16 {
-      width: 4rem
-    }
-
-    .w-20 {
-      width: 5rem
-    }
-
-    .w-4 {
-      width: 1rem
-    }
-
-    .w-5 {
-      width: 1.25rem
-    }
-
-    .w-7 {
-      width: 1.75rem
-    }
-
-    .w-8 {
-      width: 2rem
-    }
-
-    .w-9 {
-      width: 2.25rem
-    }
-
-    .w-full {
-      width: 100%
-    }
-
-    .w-6 {
-      width: 1.5rem
-    }
-
-    .min-w-0 {
-      min-width: 0px
-    }
-
-    .max-w-lg {
-      max-width: 32rem
-    }
-
-    .max-w-md {
-      max-width: 28rem
-    }
-
-    .max-w-sm {
-      max-width: 24rem
-    }
-
-    .flex-1 {
-      flex: 1 1 0%
-    }
-
-    .shrink-0 {
-      flex-shrink: 0
-    }
-
-    .cursor-pointer {
-      cursor: pointer
-    }
-
-    .grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr))
-    }
-
-    .flex-col {
-      flex-direction: column
-    }
-
-    .items-start {
-      align-items: flex-start
-    }
-
-    .items-end {
-      align-items: flex-end
-    }
-
-    .items-center {
-      align-items: center
-    }
-
-    .justify-end {
-      justify-content: flex-end
-    }
-
-    .justify-center {
-      justify-content: center
-    }
-
-    .justify-between {
-      justify-content: space-between
-    }
-
-    .gap-0\.5 {
-      gap: 0.125rem
-    }
-
-    .gap-1 {
-      gap: 0.25rem
-    }
-
-    .gap-1\.5 {
-      gap: 0.375rem
-    }
-
-    .gap-2 {
-      gap: 0.5rem
-    }
-
-    .gap-2\.5 {
-      gap: 0.625rem
-    }
-
-    .gap-3 {
-      gap: 0.75rem
-    }
-
-    .space-y-1> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-1\.5> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(0.375rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-2> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-2\.5> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(0.625rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-3> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(0.75rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-4> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(1rem * var(--tw-space-y-reverse))
-    }
-
-    .space-y-6> :not([hidden])~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
-      margin-bottom: calc(1.5rem * var(--tw-space-y-reverse))
-    }
-
-    .overflow-hidden {
-      overflow: hidden
-    }
-
-    .overflow-x-auto {
-      overflow-x: auto
-    }
-
-    .overflow-y-auto {
-      overflow-y: auto
-    }
-
-    .truncate {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap
-    }
-
-    .rounded {
-      border-radius: 0.25rem
-    }
-
-    .rounded-2xl {
-      border-radius: 1rem
-    }
-
-    .rounded-3xl {
-      border-radius: 1.5rem
-    }
-
-    .rounded-full {
-      border-radius: 9999px
-    }
-
-    .rounded-xl {
-      border-radius: 0.75rem
-    }
-
-    .rounded-t-3xl {
-      border-top-left-radius: 1.5rem;
-      border-top-right-radius: 1.5rem
-    }
-
-    .rounded-t-xl {
-      border-top-left-radius: 0.75rem;
-      border-top-right-radius: 0.75rem
-    }
-
-    .border {
-      border-width: 1px
-    }
-
-    .border-2 {
-      border-width: 2px
-    }
-
-    .border-4 {
-      border-width: 4px
-    }
-
-    .border-b-2 {
-      border-bottom-width: 2px
-    }
-
-    .border-t {
-      border-top-width: 1px
-    }
-
-    .border-t-2 {
-      border-top-width: 2px
-    }
-
-    .border-\[\#002147\] {
-      --tw-border-opacity: 1;
-      border-color: rgb(0 33 71 / var(--tw-border-opacity, 1))
-    }
-
-    .border-\[\#b8860b\] {
-      --tw-border-opacity: 1;
-      border-color: rgb(184 134 11 / var(--tw-border-opacity, 1))
-    }
-
-    .border-\[\#c83737\] {
-      --tw-border-opacity: 1;
-      border-color: rgb(200 55 55 / var(--tw-border-opacity, 1))
-    }
-
-    .border-amber-300 {
-      --tw-border-opacity: 1;
-      border-color: rgb(252 211 77 / var(--tw-border-opacity, 1))
-    }
-
-    .border-emerald-400 {
-      --tw-border-opacity: 1;
-      border-color: rgb(52 211 153 / var(--tw-border-opacity, 1))
-    }
-
-    .border-red-200 {
-      --tw-border-opacity: 1;
-      border-color: rgb(254 202 202 / var(--tw-border-opacity, 1))
-    }
-
-    .border-slate-200 {
-      --tw-border-opacity: 1;
-      border-color: rgb(226 232 240 / var(--tw-border-opacity, 1))
-    }
-
-    .border-white {
-      --tw-border-opacity: 1;
-      border-color: rgb(255 255 255 / var(--tw-border-opacity, 1))
-    }
-
-    .border-white\/10 {
-      border-color: rgb(255 255 255 / 0.1)
-    }
-
-    .border-white\/15 {
-      border-color: rgb(255 255 255 / 0.15)
-    }
-
-    .border-white\/20 {
-      border-color: rgb(255 255 255 / 0.2)
-    }
-
-    .border-white\/25 {
-      border-color: rgb(255 255 255 / 0.25)
-    }
-
-    .border-slate-300 {
-      --tw-border-opacity: 1;
-      border-color: rgb(203 213 225 / var(--tw-border-opacity, 1))
-    }
-
-    .bg-\[\#001733\] {
-      --tw-bg-opacity: 1;
-      background-color: rgb(0 23 51 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-\[\#002147\] {
-      --tw-bg-opacity: 1;
-      background-color: rgb(0 33 71 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-\[\#002147\]\/90 {
-      background-color: rgb(0 33 71 / 0.9)
-    }
-
-    .bg-\[\#b8860b\] {
-      --tw-bg-opacity: 1;
-      background-color: rgb(184 134 11 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-\[\#c83737\] {
-      --tw-bg-opacity: 1;
-      background-color: rgb(200 55 55 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-\[\#f8f5ee\] {
-      --tw-bg-opacity: 1;
-      background-color: rgb(248 245 238 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-amber-100 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-amber-50 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(255 251 235 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-black\/25 {
-      background-color: rgb(0 0 0 / 0.25)
-    }
-
-    .bg-emerald-100 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-red-50 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-red-600 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-slate-100 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-slate-200 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-slate-200\/80 {
-      background-color: rgb(226 232 240 / 0.8)
-    }
-
-    .bg-slate-300 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-slate-800 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-slate-950\/60 {
-      background-color: rgb(2 6 23 / 0.6)
-    }
-
-    .bg-slate-950\/65 {
-      background-color: rgb(2 6 23 / 0.65)
-    }
-
-    .bg-slate-950\/75 {
-      background-color: rgb(2 6 23 / 0.75)
-    }
-
-    .bg-white {
-      --tw-bg-opacity: 1;
-      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
-    }
-
-    .bg-white\/10 {
-      background-color: rgb(255 255 255 / 0.1)
-    }
-
-    .bg-white\/15 {
-      background-color: rgb(255 255 255 / 0.15)
-    }
-
-    .bg-white\/20 {
-      background-color: rgb(255 255 255 / 0.2)
-    }
-
-    .bg-white\/95 {
-      background-color: rgb(255 255 255 / 0.95)
-    }
-
-    .bg-slate-50 {
-      --tw-bg-opacity: 1;
-      background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1))
-    }
-
-    .p-1 {
-      padding: 0.25rem
-    }
-
-    .p-1\.5 {
-      padding: 0.375rem
-    }
-
-    .p-2\.5 {
-      padding: 0.625rem
-    }
-
-    .p-3 {
-      padding: 0.75rem
-    }
-
-    .p-3\.5 {
-      padding: 0.875rem
-    }
-
-    .p-4 {
-      padding: 1rem
-    }
-
-    .p-5 {
-      padding: 1.25rem
-    }
-
-    .p-6 {
-      padding: 1.5rem
-    }
-
-    .px-1\.5 {
-      padding-left: 0.375rem;
-      padding-right: 0.375rem
-    }
-
-    .px-2 {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem
-    }
-
-    .px-2\.5 {
-      padding-left: 0.625rem;
-      padding-right: 0.625rem
-    }
-
-    .px-3 {
-      padding-left: 0.75rem;
-      padding-right: 0.75rem
-    }
-
-    .px-3\.5 {
-      padding-left: 0.875rem;
-      padding-right: 0.875rem
-    }
-
-    .px-4 {
-      padding-left: 1rem;
-      padding-right: 1rem
-    }
-
-    .px-5 {
-      padding-left: 1.25rem;
-      padding-right: 1.25rem
-    }
-
-    .py-0\.5 {
-      padding-top: 0.125rem;
-      padding-bottom: 0.125rem
-    }
-
-    .py-1 {
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem
-    }
-
-    .py-1\.5 {
-      padding-top: 0.375rem;
-      padding-bottom: 0.375rem
-    }
-
-    .py-2 {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem
-    }
-
-    .py-2\.5 {
-      padding-top: 0.625rem;
-      padding-bottom: 0.625rem
-    }
-
-    .py-3 {
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem
-    }
-
-    .py-3\.5 {
-      padding-top: 0.875rem;
-      padding-bottom: 0.875rem
-    }
-
-    .py-4 {
-      padding-top: 1rem;
-      padding-bottom: 1rem
-    }
-
-    .pb-0 {
-      padding-bottom: 0px
-    }
-
-    .pb-0\.5 {
-      padding-bottom: 0.125rem
-    }
-
-    .pb-3 {
-      padding-bottom: 0.75rem
-    }
-
-    .pl-2 {
-      padding-left: 0.5rem
-    }
-
-    .pr-1 {
-      padding-right: 0.25rem
-    }
-
-    .pt-0\.5 {
-      padding-top: 0.125rem
-    }
-
-    .pt-1 {
-      padding-top: 0.25rem
-    }
-
-    .pt-4 {
-      padding-top: 1rem
-    }
-
-    .text-left {
-      text-align: left
-    }
-
-    .text-center {
-      text-align: center
-    }
-
-    .font-sans {
-      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
-    }
-
-    .text-2xl {
-      font-size: 1.5rem;
-      line-height: 2rem
-    }
-
-    .text-3xl {
-      font-size: 1.875rem;
-      line-height: 2.25rem
-    }
-
-    .text-4xl {
-      font-size: 2.25rem;
-      line-height: 2.5rem
-    }
-
-    .text-5xl {
-      font-size: 3rem;
-      line-height: 1
-    }
-
-    .text-\[10px\] {
-      font-size: 10px
-    }
-
-    .text-\[11px\] {
-      font-size: 11px
-    }
-
-    .text-base {
-      font-size: 1rem;
-      line-height: 1.5rem
-    }
-
-    .text-lg {
-      font-size: 1.125rem;
-      line-height: 1.75rem
-    }
-
-    .text-sm {
-      font-size: 0.875rem;
-      line-height: 1.25rem
-    }
-
-    .text-xl {
-      font-size: 1.25rem;
-      line-height: 1.75rem
-    }
-
-    .text-xs {
-      font-size: 0.75rem;
-      line-height: 1rem
-    }
-
-    .font-bold {
-      font-weight: 700
-    }
-
-    .font-extrabold {
-      font-weight: 800
-    }
-
-    .font-medium {
-      font-weight: 500
-    }
-
-    .font-semibold {
-      font-weight: 600
-    }
-
-    .uppercase {
-      text-transform: uppercase
-    }
-
-    .italic {
-      font-style: italic
-    }
-
-    .leading-none {
-      line-height: 1
-    }
-
-    .leading-relaxed {
-      line-height: 1.625
-    }
-
-    .leading-snug {
-      line-height: 1.375
-    }
-
-    .leading-tight {
-      line-height: 1.25
-    }
-
-    .tracking-\[0\.22em\] {
-      letter-spacing: 0.22em
-    }
-
-    .tracking-\[0\.25em\] {
-      letter-spacing: 0.25em
-    }
-
-    .tracking-\[0\.2em\] {
-      letter-spacing: 0.2em
-    }
-
-    .tracking-wide {
-      letter-spacing: 0.025em
-    }
-
-    .tracking-wider {
-      letter-spacing: 0.05em
-    }
-
-    .tracking-widest {
-      letter-spacing: 0.1em
-    }
-
-    .text-\[\#002147\] {
-      --tw-text-opacity: 1;
-      color: rgb(0 33 71 / var(--tw-text-opacity, 1))
-    }
-
-    .text-\[\#b8860b\] {
-      --tw-text-opacity: 1;
-      color: rgb(184 134 11 / var(--tw-text-opacity, 1))
-    }
-
-    .text-amber-200 {
-      --tw-text-opacity: 1;
-      color: rgb(253 230 138 / var(--tw-text-opacity, 1))
-    }
-
-    .text-amber-200\/90 {
-      color: rgb(253 230 138 / 0.9)
-    }
-
-    .text-amber-300 {
-      --tw-text-opacity: 1;
-      color: rgb(252 211 77 / var(--tw-text-opacity, 1))
-    }
-
-    .text-emerald-900 {
-      --tw-text-opacity: 1;
-      color: rgb(6 78 59 / var(--tw-text-opacity, 1))
-    }
-
-    .text-red-700 {
-      --tw-text-opacity: 1;
-      color: rgb(185 28 28 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-100 {
-      --tw-text-opacity: 1;
-      color: rgb(241 245 249 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-200 {
-      --tw-text-opacity: 1;
-      color: rgb(226 232 240 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-300 {
-      --tw-text-opacity: 1;
-      color: rgb(203 213 225 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-400 {
-      --tw-text-opacity: 1;
-      color: rgb(148 163 184 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-500 {
-      --tw-text-opacity: 1;
-      color: rgb(100 116 139 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-700 {
-      --tw-text-opacity: 1;
-      color: rgb(51 65 85 / var(--tw-text-opacity, 1))
-    }
-
-    .text-slate-800 {
-      --tw-text-opacity: 1;
-      color: rgb(30 41 59 / var(--tw-text-opacity, 1))
-    }
-
-    .text-white {
-      --tw-text-opacity: 1;
-      color: rgb(255 255 255 / var(--tw-text-opacity, 1))
-    }
-
-    .text-red-600 {
-      --tw-text-opacity: 1;
-      color: rgb(220 38 38 / var(--tw-text-opacity, 1))
-    }
-
-    .accent-\[\#002147\] {
-      accent-color: #002147
-    }
-
-    .opacity-90 {
-      opacity: 0.9
-    }
-
-    .shadow {
-      --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-      --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-2xl {
-      --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-      --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-\[0_-8px_30px_rgba\(0\2c 0\2c 0\2c 0\.16\)\] {
-      --tw-shadow: 0 -8px 30px rgba(0, 0, 0, 0.16);
-      --tw-shadow-colored: 0 -8px 30px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-inner {
-      --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-      --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-lg {
-      --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-md {
-      --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-sm {
-      --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .shadow-xl {
-      --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
-      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-    }
-
-    .backdrop-blur-md {
-      --tw-backdrop-blur: blur(12px);
-      -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-      backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
-    }
-
-    .backdrop-blur-sm {
-      --tw-backdrop-blur: blur(4px);
-      -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-      backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
-    }
-
-    .transition {
-      transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
-      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      transition-duration: 150ms
-    }
-
-    .hover\:bg-\[\#00316b\]:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(0 49 107 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-\[\#00336e\]:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(0 51 110 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-amber-200:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(253 230 138 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-amber-400:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(251 191 36 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-amber-500:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-red-100:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-slate-100:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-slate-300:hover {
-      --tw-bg-opacity: 1;
-      background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1))
-    }
-
-    .hover\:bg-white\/20:hover {
-      background-color: rgb(255 255 255 / 0.2)
-    }
-
-    .hover\:bg-white\/25:hover {
-      background-color: rgb(255 255 255 / 0.25)
-    }
-
-    .hover\:text-white:hover {
-      --tw-text-opacity: 1;
-      color: rgb(255 255 255 / var(--tw-text-opacity, 1))
-    }
-
-    .focus\:border-\[\#002147\]:focus {
-      --tw-border-opacity: 1;
-      border-color: rgb(0 33 71 / var(--tw-border-opacity, 1))
-    }
-
-    .focus\:bg-white:focus {
-      --tw-bg-opacity: 1;
-      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
-    }
-
-    .focus\:outline-none:focus {
-      outline: 2px solid transparent;
-      outline-offset: 2px
-    }
-
-    .active\:scale-90:active {
-      --tw-scale-x: .9;
-      --tw-scale-y: .9;
-      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
-    }
-
-    .active\:scale-95:active {
-      --tw-scale-x: .95;
-      --tw-scale-y: .95;
-      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
-    }
-
-    .active\:scale-\[0\.99\]:active {
-      --tw-scale-x: 0.99;
-      --tw-scale-y: 0.99;
-      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
-    }
-
-    .disabled\:pointer-events-none:disabled {
-      pointer-events: none
-    }
-
-    .disabled\:opacity-45:disabled {
-      opacity: 0.45
-    }
-
-    @media (min-width: 640px) {
-      .sm\:bottom-36 {
-        bottom: 9rem
-      }
-
-      .sm\:inline {
-        display: inline
-      }
-
-      .sm\:h-20 {
-        height: 5rem
-      }
-
-      .sm\:w-20 {
-        width: 5rem
-      }
-
-      .sm\:p-5 {
-        padding: 1.25rem
-      }
-
-      .sm\:p-6 {
-        padding: 1.5rem
-      }
-
-      .sm\:px-4 {
-        padding-left: 1rem;
-        padding-right: 1rem
-      }
-
-      .sm\:py-2\.5 {
-        padding-top: 0.625rem;
-        padding-bottom: 0.625rem
-      }
-
-      .sm\:text-3xl {
-        font-size: 1.875rem;
-        line-height: 2.25rem
-      }
-
-      .sm\:text-base {
-        font-size: 1rem;
-        line-height: 1.5rem
-      }
-
-      .sm\:text-lg {
-        font-size: 1.125rem;
-        line-height: 1.75rem
-      }
-
-      .sm\:text-sm {
-        font-size: 0.875rem;
-        line-height: 1.25rem
-      }
-
-      .sm\:text-xl {
-        font-size: 1.25rem;
-        line-height: 1.75rem
-      }
     }
   </style>
 </head>
@@ -1655,7 +122,7 @@
 <body class="flex flex-col h-[100dvh] w-full overflow-hidden">
 
   <!-- ===================================================================== -->
-  <!-- 1. TOP STATUS PANEL (REFERENCE DESIGN COMPLIANT)                      -->
+  <!-- 1. TOP STATUS PANEL                                                   -->
   <!-- ===================================================================== -->
   <header id="top-status-header"
     class="relative z-30 shrink-0 bg-[#002147] text-white border-b-2 border-[#b8860b] shadow-lg">
@@ -1675,11 +142,11 @@
                 class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#b8860b] text-[#002147]">Human</span>
             </div>
             <div id="status-player-location" class="text-xs text-amber-200/90 font-medium truncate mt-0.5">Active Turn •
-              Sheldonian Theatre</div>
+              Sheldonian</div>
           </div>
         </div>
 
-        <button id="btn-open-settings-hud" type="button" title="Settings, Rules &amp; AI Telemetry"
+        <button id="btn-open-settings-hud" type="button" title="Settings, Rules & AI Telemetry"
           class="w-9 h-9 rounded-2xl bg-[#b8860b] hover:bg-amber-500 text-[#002147] font-bold flex items-center justify-center shadow shrink-0 active:scale-95 transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -1741,341 +208,64 @@
 
       <g id="map-world">
         <!-- Geography & Waterways -->
-        <g id="layer-geography" opacity="0.55">
-          <rect x="520" y="210" width="230" height="175" rx="28" fill="#dcead5" stroke="#b9d4ad" stroke-width="2">
-          </rect>
-          <text x="635" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#4b6b43"
+        <g id="layer-geography" opacity="0.6">
+          <polygon points="645,395 730,260 970,260 970,560 845,555 645,475" fill="#dcead5" stroke="#b9d4ad" stroke-width="2" stroke-linejoin="round"></polygon>
+          <text x="800" y="380" text-anchor="middle" font-size="11" font-weight="700" fill="#4b6b43"
             letter-spacing="1.5">UNIVERSITY PARKS</text>
+
           <path d="M 480 990 Q 650 970 840 1030 L 760 1190 L 480 1160 Z" fill="#e1edd9" stroke="#bfd6b2"
             stroke-width="2"></path>
           <text x="640" y="1085" text-anchor="middle" font-size="11" font-weight="700" fill="#4b6b43"
             letter-spacing="1.5">CHRIST CHURCH MEADOW</text>
-          <path d="M 985 60 L 985 880 L 750 1185 L 440 1185" fill="none" stroke="#cbe4f2" stroke-width="18"
-            stroke-linecap="round" stroke-linejoin="round"></path>
+
+          <polyline points="250,1180 430,1180 730,1220 895,1040 1005,920 1060,740 1060,480 1060,200 1060,80" fill="none" stroke="#cbe4f2" stroke-width="22" stroke-linecap="butt" stroke-linejoin="miter"></polyline>
         </g>
 
-        <g id="layer-lines">
-          <polyline
-            points="85,660 155,745 230,785 230,865 335,875 430,875 540,875 645,875 735,875 825,875 935,875 1020,905 965,995"
-            fill="none" stroke="#c83737" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline
-            points="230,660 230,785 155,925 255,1025 430,1065 430,945 430,875 430,660 535,660 645,660 765,660 740,760 905,660"
-            fill="none" stroke="#2d7a4d" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline
-            points="150,525 295,525 430,435 335,435 245,435 150,390 230,320 340,320 365,480 430,515 430,660 230,660"
-            fill="none" stroke="#7c4d3a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline
-            points="430,1225 430,1145 430,1065 430,1005 430,945 430,755 430,660 430,585 430,515 430,435 430,320 430,245 430,170 430,95 560,95 560,320 605,510 645,660 740,760 645,760 535,760 535,710 485,710 535,660"
-            fill="none" stroke="#22252a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline
-            points="985,260 775,260 560,320 645,395 645,475 645,565 645,660 645,710 645,760 645,810 645,842 645,875"
-            fill="none" stroke="#9e2a6b" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline points="985,260 845,350 905,445 845,555 780,475 645,475" fill="none" stroke="#9e2a6b"
-            stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline points="905,445 905,660 825,875 935,875" fill="none" stroke="#9e2a6b" stroke-width="7.5"
-            stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline
-            points="230,785 315,755 380,755 430,755 645,760 740,760 825,810 825,875 825,930 745,980 645,980 645,925 645,875"
-            fill="none" stroke="#ca8a04" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline points="985,95 985,260 985,460 935,875 855,1035 785,1110 715,1185 805,1245" fill="none"
-            stroke="#1d6fa5" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <polyline points="715,1185 575,1185 430,1145" fill="none" stroke="#1d6fa5" stroke-width="7.5"
-            stroke-linecap="round" stroke-linejoin="round"></polyline>
-        </g>
+        <g id="layer-lines"></g>
         <g id="layer-sightline"></g>
-        <g id="layer-stations">
-          <circle cx="430" cy="95" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_hughs"></circle>
-          <rect x="555" y="90" width="10" height="10" fill="#22252a" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_north_parks"></rect>
-          <circle cx="430" cy="170" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_antonys"></circle>
-          <circle cx="430" cy="245" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_annes"></circle>
-          <circle cx="430" cy="320" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="green_templeton"></circle>
-          <circle cx="340" cy="320" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="radcliffe_obs"></circle>
-          <circle cx="230" cy="320" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="jericho_health"></circle>
-          <circle cx="150" cy="390" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="oup"></circle>
-          <circle cx="245" cy="435" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="wellington_sq"></circle>
-          <circle cx="335" cy="435" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="gds_jericho"></circle>
-          <circle cx="430" cy="435" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="somerville"></circle>
-          <circle cx="150" cy="525" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="worcester"></circle>
-          <circle cx="295" cy="525" r="8.5" fill="#7c4d3a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="ashmolean"></circle>
-          <rect x="360" y="475" width="10" height="10" fill="#7c4d3a" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_walton"></rect>
-          <circle cx="430" cy="515" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="st_cross"></circle>
-          <circle cx="430" cy="585" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_johns"></circle>
-          <circle cx="85" cy="660" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="station"></circle>
-          <circle cx="230" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="gloucester_green"></circle>
-          <circle cx="155" cy="745" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="oxford_castle"></circle>
-          <circle cx="230" cy="785" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="st_peters"></circle>
-          <circle cx="230" cy="865" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="nuffield"></circle>
-          <circle cx="155" cy="925" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="westgate"></circle>
-          <circle cx="255" cy="1025" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="pembroke"></circle>
-          <circle cx="430" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="balliol"></circle>
-          <circle cx="535" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="trinity"></circle>
-          <circle cx="645" cy="660" r="12" fill="#ffffff" stroke="#002147" stroke-width="4" class="cursor-pointer"
-            data-sid="sheldonian"></circle>
-          <circle cx="315" cy="755" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="oxford_union"></circle>
-          <circle cx="380" cy="755" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="covered_market"></circle>
-          <circle cx="430" cy="755" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="sq_cornmarket"></circle>
-          <circle cx="535" cy="710" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="exeter"></circle>
-          <circle cx="485" cy="710" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="jesus"></circle>
-          <circle cx="535" cy="760" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="lincoln"></circle>
-          <circle cx="645" cy="710" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="hertford"></circle>
-          <circle cx="645" cy="760" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="bodleian"></circle>
-          <circle cx="645" cy="810" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="brasenose"></circle>
-          <rect x="640" y="837" width="10" height="10" fill="#9e2a6b" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_radcliffe"></rect>
-          <rect x="330" y="870" width="10" height="10" fill="#c83737" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_high_w"></rect>
-          <circle cx="430" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="sq_carfax"></circle>
-          <rect x="535" y="870" width="10" height="10" fill="#c83737" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_high_mid"></rect>
-          <circle cx="645" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="all_souls"></circle>
-          <circle cx="645" cy="925" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="oriel"></circle>
-          <circle cx="645" cy="980" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="corpus_christi"></circle>
-          <circle cx="745" cy="980" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="merton"></circle>
-          <rect x="820" y="925" width="10" height="10" fill="#ca8a04" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_high_e"></rect>
-          <circle cx="735" cy="875" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="university_col"></circle>
-          <circle cx="825" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="queens"></circle>
-          <circle cx="825" cy="810" r="8.5" fill="#ca8a04" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_edmund_hall"></circle>
-          <circle cx="740" cy="760" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="sq_catte"></circle>
-          <circle cx="765" cy="660" r="8.5" fill="#2d7a4d" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="new_college"></circle>
-          <circle cx="430" cy="945" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="town_hall"></circle>
-          <circle cx="430" cy="1005" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="christ_church"></circle>
-          <circle cx="430" cy="1065" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="gds_south"></circle>
-          <circle cx="430" cy="1145" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="head_of_river"></circle>
-          <circle cx="430" cy="1225" r="8.5" fill="#22252a" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="hinksey_pool"></circle>
-          <circle cx="560" cy="320" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="university_parks"></circle>
-          <rect x="600" y="505" width="10" height="10" fill="#22252a" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_parks_rd"></rect>
-          <circle cx="645" cy="395" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="keble"></circle>
-          <circle cx="645" cy="475" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="university_museum"></circle>
-          <circle cx="645" cy="565" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="wadham"></circle>
-          <circle cx="780" cy="475" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="mansfield"></circle>
-          <circle cx="845" cy="555" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="harris_manchester"></circle>
-          <rect x="770" y="255" width="10" height="10" fill="#9e2a6b" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_parks_n"></rect>
-          <circle cx="845" cy="350" r="8.5" fill="#9e2a6b" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="pavilion"></circle>
-          <circle cx="905" cy="445" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="linacre"></circle>
-          <circle cx="985" cy="95" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="wolfson"></circle>
-          <circle cx="985" cy="260" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="lmh"></circle>
-          <rect x="980" y="455" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_marston"></rect>
-          <circle cx="905" cy="660" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="st_catherines"></circle>
-          <circle cx="935" cy="875" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="magdalen"></circle>
-          <circle cx="1020" cy="905" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="gds_east"></circle>
-          <circle cx="965" cy="995" r="8.5" fill="#c83737" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="st_hildas"></circle>
-          <circle cx="855" cy="1035" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="botanical_gardens"></circle>
-          <rect x="780" y="1105" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_cherwell"></rect>
-          <circle cx="715" cy="1185" r="9.5" fill="#ffffff" stroke="#1e293b" stroke-width="3" class="cursor-pointer"
-            data-sid="boathouse_island"></circle>
-          <rect x="570" y="1180" width="10" height="10" fill="#1d6fa5" stroke="#1e293b" stroke-width="2"
-            class="cursor-pointer" data-sid="sq_isis"></rect>
-          <circle cx="805" cy="1245" r="8.5" fill="#1d6fa5" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer"
-            data-sid="longbridges"></circle>
-        </g>
+        <g id="layer-stations"></g>
         <g id="layer-highlights"></g>
         <g id="layer-blockers"></g>
-        <g id="layer-labels">
-          <text x="442" y="439" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Somerville</text>
-          <text x="442" y="439" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Somerville</text>
-
-          <text x="442" y="519" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">St Cross</text>
-          <text x="442" y="519" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St Cross</text>
-
-          <text x="242" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Gloucester Green</text>
-          <text x="242" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Gloucester
-            Green</text>
-
-          <text x="242" y="789" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">St Peter's</text>
-          <text x="242" y="789" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St Peter's</text>
-
-          <text x="442" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Balliol</text>
-          <text x="442" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Balliol</text>
-
-          <text x="547" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Trinity</text>
-          <text x="547" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Trinity</text>
-
-          <text x="657" y="664" font-size="12.5" font-weight="800" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Sheldonian</text>
-          <text x="657" y="664" font-size="12.5" font-weight="800" fill="#002147"
-            pointer-events="none">Sheldonian</text>
-
-          <text x="442" y="759" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Cornmarket Sq</text>
-          <text x="442" y="759" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Cornmarket
-            Sq</text>
-
-          <text x="657" y="764" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Bodleian</text>
-          <text x="657" y="764" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Bodleian</text>
-
-          <text x="442" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Carfax Sq</text>
-          <text x="442" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Carfax Sq</text>
-
-          <text x="657" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">All Souls'</text>
-          <text x="657" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">All Souls'</text>
-
-          <text x="837" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Queen's</text>
-          <text x="837" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Queen's</text>
-
-          <text x="752" y="764" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Catte St Sq</text>
-          <text x="752" y="764" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Catte St Sq</text>
-
-          <text x="442" y="949" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Town Hall</text>
-          <text x="442" y="949" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Town Hall</text>
-
-          <text x="442" y="1069" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">G&amp;D's (St Aldate's)</text>
-          <text x="442" y="1069" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">G&amp;D's (St
-            Aldate's)</text>
-
-          <text x="442" y="1149" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Head of the River</text>
-          <text x="442" y="1149" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Head of the
-            River</text>
-
-          <text x="572" y="324" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">University Parks</text>
-          <text x="572" y="324" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">University
-            Parks</text>
-
-          <text x="657" y="479" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">University Museum</text>
-          <text x="657" y="479" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">University
-            Museum</text>
-
-          <text x="917" y="449" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Linacre</text>
-          <text x="917" y="449" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Linacre</text>
-
-          <text x="997" y="264" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Lady Margaret Hall</text>
-          <text x="997" y="264" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Lady Margaret
-            Hall</text>
-
-          <text x="917" y="664" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">St Catherine's</text>
-          <text x="917" y="664" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">St
-            Catherine's</text>
-
-          <text x="947" y="879" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Magdalen</text>
-          <text x="947" y="879" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Magdalen</text>
-
-          <text x="727" y="1189" font-size="11" font-weight="600" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4"
-            stroke-linejoin="round" pointer-events="none">Boathouse Island</text>
-          <text x="727" y="1189" font-size="11" font-weight="600" fill="#1e293b" pointer-events="none">Boathouse
-            Island</text>
-        </g>
+        <g id="layer-labels"></g>
         <g id="layer-players"></g>
       </g>
     </svg>
 
-    <!-- Radar Pips Overlay -->
+    <!-- Non-blocking Toast Feedback Banner -->
+    <div id="map-toast"
+      class="pointer-events-none hidden absolute top-3 left-1/2 -translate-x-1/2 z-30 px-3.5 py-2 rounded-2xl bg-[#002147]/95 text-amber-200 text-xs font-bold shadow-xl border border-[#b8860b] max-w-[85vw] text-center">
+    </div>
+
+    <!-- Interactive Radar Pips Overlay -->
     <div id="radar-overlay" class="pointer-events-none absolute inset-0 overflow-hidden z-10"></div>
 
-    <!-- Camera & Zoom Controls (Left Thumb Zone) -->
-    <div class="absolute left-3 top-3 z-20 flex flex-col gap-2">
-      <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 p-1.5 flex flex-col gap-1">
+    <!-- Compact Camera & Zoom Controls (Left Thumb Zone) -->
+    <div class="absolute left-2.5 top-2.5 z-20 flex flex-col gap-1.5 opacity-90 hover:opacity-100 transition-opacity">
+      <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-md border border-slate-200/80 p-1 flex flex-col gap-0.5">
         <button id="cam-my-turn" type="button"
-          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 bg-[#002147] text-white transition"
+          class="cam-mode-btn px-2 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-[#002147] text-white transition"
           title="Center on Active Player">
           <span>🎯</span><span class="hidden sm:inline">My Turn</span>
         </button>
         <button id="cam-objectives" type="button"
-          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:bg-slate-100 transition"
-          title="Fit Current Position &amp; Targets">
+          class="cam-mode-btn px-2 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1 text-slate-700 hover:bg-slate-100 transition"
+          title="Fit Current Position & Targets">
           <span>🧭</span><span class="hidden sm:inline">Objectives</span>
         </button>
         <button id="cam-full-map" type="button"
-          class="cam-mode-btn px-2.5 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:bg-slate-100 transition"
+          class="cam-mode-btn px-2 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1 text-slate-700 hover:bg-slate-100 transition"
           title="Full Map Overview">
           <span>🗺️</span><span class="hidden sm:inline">Full Map</span>
         </button>
       </div>
 
       <div
-        class="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 p-1 flex flex-col items-center">
+        class="bg-white/90 backdrop-blur-md rounded-xl shadow-md border border-slate-200/80 p-0.5 flex flex-col items-center">
         <button id="btn-zoom-in" type="button"
-          class="w-9 h-9 rounded-xl font-extrabold text-lg text-[#002147] hover:bg-slate-100 active:scale-90">+</button>
-        <div class="w-5 h-[1px] bg-slate-200"></div>
+          class="w-7 h-7 rounded-lg font-extrabold text-base text-[#002147] hover:bg-slate-100 active:scale-90">+</button>
+        <div class="w-4 h-[1px] bg-slate-200"></div>
         <button id="btn-zoom-out" type="button"
-          class="w-9 h-9 rounded-xl font-extrabold text-lg text-[#002147] hover:bg-slate-100 active:scale-90">−</button>
+          class="w-7 h-7 rounded-lg font-extrabold text-base text-[#002147] hover:bg-slate-100 active:scale-90">−</button>
       </div>
     </div>
 
@@ -2090,7 +280,7 @@
   </main>
 
   <!-- ===================================================================== -->
-  <!-- 3. SOUVENIR CARDS BOTTOM PANEL (ORDERED, NARROW, TRUNCATED WITH 📍 & 🔍) -->
+  <!-- 3. SOUVENIR CARDS BOTTOM PANEL                                        -->
   <!-- ===================================================================== -->
   <section id="souvenir-drawer"
     class="bottom-sheet fixed bottom-0 left-0 right-0 z-20 bg-[#f8f5ee]/98 backdrop-blur-md border-t-2 border-[#b8860b] rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.16)] flex flex-col">
@@ -2113,12 +303,11 @@
     </div>
 
     <div id="souvenir-cards-strip" class="px-3 pb-3 pt-0.5 flex gap-2.5 overflow-x-auto no-scrollbar">
-      <!-- Populated dynamically -->
     </div>
   </section>
 
   <!-- ===================================================================== -->
-  <!-- MODAL: WELCOME SCREEN (STACKED INPUTS & "MATRICULATE!" BUTTON)       -->
+  <!-- MODAL: WELCOME SCREEN                                                 -->
   <!-- ===================================================================== -->
   <div id="modal-welcome"
     class="fixed inset-0 z-50 bg-[#002147]/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
@@ -2151,94 +340,7 @@
               + Add Player
             </button>
           </div>
-          <div id="setup-players-list" class="space-y-2.5 max-h-[42dvh] overflow-y-auto pr-1">
-            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
-              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#c83737">
-              </div>
-              <div class="flex-1 min-w-0 flex flex-col gap-2">
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
-                    Name</label>
-                  <input type="text" value="Player 1" oninput="setupRoster[0].name = this.value"
-                    placeholder="Enter player name..."
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
-                    AI Difficulty</label>
-                  <select onchange="setupRoster[0].type = this.value"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                    <option value="human" selected="">Human (Pass &amp; Play)</option>
-                    <option value="easy">Bot: Fresher (Easy)</option>
-                    <option value="medium">Bot: GA Commuter (Medium)</option>
-                    <option value="hard">Bot: MCTS Don (Hard)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="button" onclick="removeRosterSlot(0)" aria-label="Remove player"
-                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
-
-            </div>
-
-            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
-              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#1d6fa5">
-              </div>
-              <div class="flex-1 min-w-0 flex flex-col gap-2">
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
-                    Name</label>
-                  <input type="text" value="Dr. Turing (MCTS)" oninput="setupRoster[1].name = this.value"
-                    placeholder="Enter player name..."
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
-                    AI Difficulty</label>
-                  <select onchange="setupRoster[1].type = this.value"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                    <option value="human">Human (Pass &amp; Play)</option>
-                    <option value="easy">Bot: Fresher (Easy)</option>
-                    <option value="medium">Bot: GA Commuter (Medium)</option>
-                    <option value="hard" selected="">Bot: MCTS Don (Hard)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="button" onclick="removeRosterSlot(1)" aria-label="Remove player"
-                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
-
-            </div>
-
-            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-3">
-              <div class="w-6 h-6 rounded-full shrink-0 mt-1 border border-white shadow" style="background:#2d7a4d">
-              </div>
-              <div class="flex-1 min-w-0 flex flex-col gap-2">
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player
-                    Name</label>
-                  <input type="text" value="Commuter Bot (GA)" oninput="setupRoster[2].name = this.value"
-                    placeholder="Enter player name..."
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Controller /
-                    AI Difficulty</label>
-                  <select onchange="setupRoster[2].type = this.value"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]">
-                    <option value="human">Human (Pass &amp; Play)</option>
-                    <option value="easy">Bot: Fresher (Easy)</option>
-                    <option value="medium" selected="">Bot: GA Commuter (Medium)</option>
-                    <option value="hard">Bot: MCTS Don (Hard)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="button" onclick="removeRosterSlot(2)" aria-label="Remove player"
-                class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center shrink-0 mt-1">✕</button>
-
-            </div>
-          </div>
+          <div id="setup-players-list" class="space-y-2.5 max-h-[42dvh] overflow-y-auto pr-1"></div>
         </div>
 
         <label class="flex items-center gap-2.5 bg-white p-3 rounded-2xl border border-slate-200 cursor-pointer">
@@ -2274,9 +376,30 @@
         you start your turn.
       </p>
       <button id="btn-pass-phone-ready" type="button"
-        class="w-full py-4 rounded-2xl bg-[#b8860b] hover:bg-amber-500 text-[#002147] font-oxford font-extrabold text-base tracking-wider shadow-2xl active:scale-98 transition">
+        class="w-full py-4 rounded-2xl bg-[#b8860b] hover:bg-amber-500 text-[#002147] font-oxford font-extrabold text-base tracking-wider shadow-2xl active:scale-95 transition">
         I AM READY — START TURN
       </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: TURN SKIP CONFIRMATION POPUP                                 -->
+  <!-- ===================================================================== -->
+  <div id="modal-turn-skip"
+    class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#c83737] shadow-2xl overflow-hidden">
+      <div class="bg-[#c83737] text-white px-5 py-3.5 flex items-center gap-2">
+        <span class="text-xl">⏳</span>
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-amber-200">Academic Delay</div>
+          <h3 class="font-oxford font-extrabold text-lg leading-tight">Turn Skipped</h3>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        <p id="turn-skip-desc" class="text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200 leading-relaxed font-sans"></p>
+        <button id="btn-turn-skip-ok" type="button"
+          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-white font-bold text-sm shadow-lg transition">Understood</button>
+      </div>
     </div>
   </div>
 
@@ -2284,7 +407,7 @@
   <!-- MODAL: MOVE CONFIRMATION DIALOG                                     -->
   <!-- ===================================================================== -->
   <div id="modal-confirm-move"
-    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden">
       <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center justify-between">
         <span class="font-oxford font-bold text-base text-amber-300">Confirm Journey</span>
@@ -2317,7 +440,7 @@
   <!-- MODAL: SWITCH LINE (+ DRAW HAZARD) INTERCHANGE DIALOG             -->
   <!-- ===================================================================== -->
   <div id="modal-switch-line"
-    class="hidden fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-4">
+    class="hidden fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden">
       <div class="bg-[#002147] text-white px-5 py-3.5">
         <div class="text-[10px] uppercase tracking-widest text-amber-300 font-bold">White Interchange Station</div>
@@ -2363,10 +486,30 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- MODAL: BOT TURN SUMMARY POPUP                                         -->
+  <!-- MODAL: FRIENDLY PLAYER DIRECTION (HUMAN CHOOSES ON MAP)               -->
+  <!-- ===================================================================== -->
+  <div id="modal-direct-player"
+    class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden">
+      <div class="bg-[#002147] text-white px-5 py-3.5">
+        <div class="text-[10px] uppercase tracking-widest text-amber-300 font-bold" id="direct-ps-badge">Problem Sheet Advice</div>
+        <h3 id="direct-ps-title" class="font-oxford font-bold text-lg">Direct Player on Map</h3>
+      </div>
+      <div class="p-5 space-y-4">
+        <p id="direct-ps-desc" class="text-xs text-slate-700 leading-relaxed">
+          Choose any station on the map to send them to:
+        </p>
+        <button id="btn-direct-ps-map" type="button"
+          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-lg transition">Pick Stop on Map</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: COMPREHENSIVE BOT TURN SUMMARY POPUP                           -->
   <!-- ===================================================================== -->
   <div id="modal-bot-summary"
-    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden">
       <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center gap-3">
         <div id="bot-summary-avatar"
@@ -2379,10 +522,9 @@
         </div>
       </div>
       <div class="p-5 space-y-4">
-        <ul id="bot-summary-actions"
-          class="space-y-2 text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200"></ul>
+        <p id="bot-summary-text" class="text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200 leading-relaxed font-sans"></p>
         <button id="btn-bot-continue" type="button"
-          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-lg active:scale-98 transition">Continue</button>
+          class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-lg active:scale-95 transition">Continue</button>
       </div>
     </div>
   </div>
@@ -2391,7 +533,7 @@
   <!-- MODAL: PLAYER PROGRESS INSPECTOR (PRIVACY-AWARE)                    -->
   <!-- ===================================================================== -->
   <div id="modal-player-inspector"
-    class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-4">
+    class="hidden fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#b8860b] shadow-2xl overflow-hidden">
       <div class="bg-[#002147] text-white px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -2482,15 +624,23 @@
                 <div class="font-bold text-slate-800">Sound Effects</div>
                 <div class="text-[11px] text-slate-500">Dice rattles, station chimes, and hazard alerts</div>
               </div>
-              <input id="set-sound" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+              <input id="set-sound" type="checkbox" checked class="w-5 h-5 accent-[#002147] cursor-pointer">
             </label>
             <div class="h-[1px] bg-slate-100"></div>
             <label class="flex items-center justify-between cursor-pointer">
               <div>
                 <div class="font-bold text-slate-800">Off-Screen Radar Pips</div>
-                <div class="text-[11px] text-slate-500">Directional edge indicators pointing to destinations</div>
+                <div class="text-[11px] text-slate-500">Interactive edge indicators pointing to destinations</div>
               </div>
-              <input id="set-radar" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+              <input id="set-radar" type="checkbox" checked class="w-5 h-5 accent-[#002147] cursor-pointer">
+            </label>
+            <div class="h-[1px] bg-slate-100"></div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <div class="font-bold text-slate-800">Show Waypoint Station Labels</div>
+                <div class="text-[11px] text-slate-500">Display street &amp; square waypoint names when zoomed in</div>
+              </div>
+              <input id="set-waypoint-labels" type="checkbox" class="w-5 h-5 accent-[#002147] cursor-pointer">
             </label>
           </div>
 
@@ -2503,7 +653,7 @@
                 <div class="text-[11px] text-slate-500">Show summary popup after each bot turn requiring tap to continue
                 </div>
               </div>
-              <input id="set-bot-confirm" type="checkbox" checked="" class="w-5 h-5 accent-[#002147]">
+              <input id="set-bot-confirm" type="checkbox" checked class="w-5 h-5 accent-[#002147] cursor-pointer">
             </label>
             <div class="h-[1px] bg-slate-100"></div>
             <div class="space-y-1.5">
@@ -2536,7 +686,8 @@
           <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
             <div class="font-bold text-[#002147] mb-1">2. Movement &amp; Rolling a 6</div>
             <p class="text-xs">Roll the die and move <strong>up to</strong> that number of stops. Rolling a
-              <strong>6</strong> lets you reopen and relocate any closed stop you pass through.</p>
+              <strong>6</strong> lets you pass through closed stops, reopening them and letting you immediately relocate
+              those blockers anywhere on the board.</p>
           </div>
           <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
             <div class="font-bold text-[#002147] mb-1">3. Interchanges &amp; Souvenirs</div>
@@ -2603,6 +754,73 @@
   <script>
     /**
      * =========================================================================
+     * 0. PWA MANIFEST, SERVICE WORKER & SAFE UI HELPERS
+     * =========================================================================
+     */
+    (function setupPWA() {
+      try {
+        const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#002147"/><circle cx="96" cy="96" r="68" fill="none" stroke="#b8860b" stroke-width="10"/><text x="96" y="114" text-anchor="middle" font-size="76">🎓</text></svg>`;
+        const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(iconSvg);
+        const manifest = {
+          name: 'The Oxford Game',
+          short_name: 'Oxford Game',
+          start_url: '.',
+          display: 'standalone',
+          background_color: '#f8f5ee',
+          theme_color: '#002147',
+          icons: [{ src: iconUrl, sizes: '192x192', type: 'image/svg+xml' }]
+        };
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+        document.head.appendChild(manifestLink);
+
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+          const swCode = `
+            const CACHE = 'oxford-game-v1';
+            self.addEventListener('install', e => {
+              self.skipWaiting();
+              e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./']).catch(() => {})));
+            });
+            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+            self.addEventListener('fetch', e => {
+              if (e.request.method !== 'GET') return;
+              e.respondWith(
+                fetch(e.request).then(res => {
+                  const copy = res.clone();
+                  caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+                  return res;
+                }).catch(() => caches.match(e.request))
+              );
+            });
+          `;
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => { });
+        }
+      } catch (_) { }
+    })();
+
+    function escapeHTML(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('map-toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+    }
+
+    /**
+     * =========================================================================
      * 1. PROCEDURAL WEB AUDIO SOUND ENGINE
      * =========================================================================
      */
@@ -2649,20 +867,26 @@
         this.tone(240, 'sawtooth', 0.24, 0.12, 0.14);
       }
       blocker() { this.tone(190, 'square', 0.11, 0.08); }
+      invalid() { this.tone(160, 'sine', 0.09, 0.07); }
       win() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 'triangle', 0.26, 0.16, i * 0.12)); }
     }
     const sfx = new SoundEngine();
 
+    /**
+     * =========================================================================
+     * 2. OXFORD TUBE NETWORK DATA & GRAPH
+     * =========================================================================
+     */
     const LINES = {
-      red: { id: "red", name: "Red Line (High St & East)", color: "#c83737" },
-      green: { id: "green", name: "Green Line (Broad & Westgate)", color: "#2d7a4d" },
-      brown: { id: "brown", name: "Brown Line (Jericho & Walton)", color: "#7c4d3a" },
-      black: { id: "black", name: "Black Line (St Giles & South)", color: "#22252a" },
-      magenta: { id: "magenta", name: "Pink Line (Parks & Catte St)", color: "#9e2a6b" },
-      yellow: { id: "yellow", name: "Yellow Line (Central Loop)", color: "#f0d000" },
-      blue: { id: "blue", name: "Blue Line (Cherwell & Isis)", color: "#1d6fa5" },
-      purple: { id: "purple", name: "Purple Line (Turl St)", color: "#9b70ff" },
-      orange: { id: "orange", name: "Orange Line (Mansfield Rd)", color: "#eb9824" }
+      red: { id: "red", name: "Red Line", color: "#c83737" },
+      green: { id: "green", name: "Green Line", color: "#2d7a4d" },
+      brown: { id: "brown", name: "Brown Line", color: "#7c4d3a" },
+      black: { id: "black", name: "Black Line", color: "#22252a" },
+      magenta: { id: "magenta", name: "Pink Line", color: "#9e2a6b" },
+      yellow: { id: "yellow", name: "Yellow Line", color: "#f0d000" },
+      blue: { id: "blue", name: "Blue Line", color: "#1d6fa5" },
+      purple: { id: "purple", name: "Purple Line", color: "#9b70ff" },
+      orange: { id: "orange", name: "Orange Line", color: "#eb9824" }
     };
 
     const STATIONS = [
@@ -2766,7 +990,7 @@
       { id: "st_giles", name: "St Giles", x: 460, y: 380, type: "square" },
       { id: "stats", name: "Stats Department", x: 490, y: 340, type: "square" },
       { id: "banbury_rd", name: "Banbury Road", x: 520, y: 300, type: "square" },
-      { id: "north_walk_w", name: "North Walk", x: 610, y: 200, type: "square" },
+      { id: "north_walk_w", name: "North Walk West", x: 610, y: 200, type: "square" },
       { id: "parks_rd_n", name: "Parks Road North", x: 640, y: 320, type: "square" },
       { id: "parks_rd", name: "Parks Road", x: 730, y: 440, type: "square" },
       { id: "parks_rd_s", name: "Parks Road South", x: 730, y: 540, type: "square" },
@@ -2816,7 +1040,7 @@
       { id: "manor_rd", name: "Manor Road", x: 970, y: 620, type: "square" },
       { id: "holywell_ford", name: "Holywell Ford", x: 1060, y: 740, type: "square" },
       { id: "thorn_walk", name: "Thorn Walk", x: 850, y: 260, type: "square" },
-      { id: "north_walk_e", name: "North Walk", x: 850, y: 200, type: "square" },
+      { id: "north_walk_e", name: "North Walk East", x: 850, y: 200, type: "square" },
       { id: "norham_gard", name: "Norham Gardens", x: 955, y: 200, type: "square" },
       { id: "duck_pond", name: "Duck Pond", x: 1060, y: 340, type: "square" },
       { id: "parsons", name: "Parsons' Pleasure", x: 1060, y: 480, type: "square" },
@@ -2887,6 +1111,11 @@
     STATIONS.forEach(s => { if (s.lines.size > 1) s.interchange = true; });
     const SOUVENIR_POOL = STATIONS.filter(s => s.type !== 'square' && s.id !== 'sheldonian');
 
+    /**
+     * =========================================================================
+     * 3. EXACT 70-CARD HAZARD DECK
+     * =========================================================================
+     */
     const HAZARD_CARDS = [
       { id: 'work_handed_in', title: 'WORK HANDED IN', count: 8, desc: "You've finished your work and handed it in early. Take an extra turn to celebrate your success!", effect: 'EXTRA_TURN' },
       { id: 'oxford_graduate', title: 'OXFORD GRADUATE', count: 5, desc: "You've finished your exams, the results are in, and you've passed with flying colours. Move directly to your next destination!", effect: 'GOTO_NEXT_TARGET' },
@@ -2896,18 +1125,25 @@
       { id: 'summer_eights', title: 'SUMMER EIGHTS', count: 4, desc: "It's 5th week of Trinity and all the action is down on the river. All players go to Boathouse Island to cheer on the crews!", effect: 'ALL_BOATHOUSE' },
       { id: 'lectures_cancelled', title: 'LECTURES CANCELLED', count: 4, desc: "Your whole lecture series has been cancelled, freeing up time in your schedule. Rearrange all the blockers on the board!", effect: 'MOVE_ALL_BLOCKERS' },
       { id: 'found_it', title: 'FOUND IT!', count: 4, desc: "You've finally cracked question 2. Move one blocker to clear your path to question 3.", effect: 'MOVE_ONE_BLOCKER' },
-      { id: 'lecture_clash', title: 'LECTURE CLASH', count: 4, desc: "Two of your lectures have been scheduled for the same time slot. Miss a turn while you choose which one to prioritize.", effect: 'MISS_TURN' },
+      { id: 'lecture_clash', title: 'LECTURE CLASH', count: 4, desc: "Two of your lectures have been scheduled for the same time slot. Miss a turn whilst you choose which one to prioritize.", effect: 'MISS_TURN' },
       { id: 'oh_clarity', title: 'OH...', count: 4, desc: "You have a moment of clarity in your tutorial and the topic suddenly makes perfect sense. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
       { id: 'all_nighter', title: 'ALL-NIGHTER', count: 4, desc: "As the work piles up, the only way forward is to work through the night. Miss a turn whilst you sleep it off.", effect: 'MISS_TURN' },
       { id: 'class_rescheduled', title: 'CLASS RESCHEDULED', count: 4, desc: "Your tutor can no longer make the class today and has moved it to another time and place. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
-      { id: 'forgotten_something', title: 'FORGOTTEN SOMETHING?', count: 4, desc: "You got all the way across town to your lecture but your notes aren't in your bag. Move to the furthest point on your current line!", effect: 'GOTO_FURTHEST_LINE' },
+      { id: 'forgotten_something', title: 'FORGOTTEN SOMETHING?', count: 4, desc: "You got all the way across town to your lecture but your notes aren't in your bag. Move to the furthest point on the line you just travelled on!", effect: 'GOTO_FURTHEST_LINE' },
       { id: 'new_route', title: 'NEW ROUTE!', count: 4, desc: "You find a shortcut which saves a whole minute off the time it takes to get to lectures. Move one blocker.", effect: 'MOVE_ONE_BLOCKER' },
       { id: 'half_marathon', title: 'OXFORD HALF-MARATHON', count: 4, desc: "All the roads are closed for the half-marathon and the streets are crammed. Miss a turn whilst you wait for the runners to finish!", effect: 'MISS_TURN' },
       { id: 'essay_crisis', title: 'ESSAY CRISIS', count: 3, desc: "The deadline is looming and your essay is not looking good. You decide to go to the Bodleian to get it done. Move directly to the Bodleian.", effect: 'GOTO_BODLEIAN' }
     ];
 
+    /**
+     * =========================================================================
+     * 4. PATHFINDING, BLOCKER-AWARE ROUTING & AI PROFILES
+     * =========================================================================
+     */
     const SWITCH_PENALTY = 3.5;
+    const BLOCKER_DETOUR_COST = 9.0;
     const APSP = new Map();
+
     function precomputeAPSP() {
       STATIONS.forEach(src => {
         const dist = new Map();
@@ -2954,10 +1190,70 @@
       return base;
     }
 
+    function blockerAwareDist(fromId, toId, lineId = null, blockerSet = state.blockers) {
+      if (!blockerSet || blockerSet.size === 0) return graphDist(fromId, toId, lineId);
+      if (fromId === toId) return blockerSet.has(toId) ? BLOCKER_DETOUR_COST : 0;
+
+      const src = STATION_MAP.get(fromId);
+      if (!src) return 22;
+      const startLines = lineId ? [lineId] : Array.from(src.lines);
+      const dist = new Map();
+      const pq = [];
+
+      startLines.forEach(l => {
+        const k = `${fromId}@${l}`;
+        dist.set(k, 0);
+        pq.push({ k, c: 0 });
+      });
+
+      while (pq.length) {
+        pq.sort((a, b) => a.c - b.c);
+        const { k, c } = pq.shift();
+        if (c > (dist.get(k) ?? Infinity)) continue;
+        const [sid, lid] = k.split('@');
+        if (sid === toId) return c;
+
+        (ADJACENCY[lid]?.get(sid) || new Set()).forEach(nid => {
+          const stepCost = 1 + (blockerSet.has(nid) ? BLOCKER_DETOUR_COST : 0);
+          const nk = `${nid}@${lid}`;
+          if (c + stepCost < (dist.get(nk) ?? Infinity)) {
+            dist.set(nk, c + stepCost);
+            pq.push({ k: nk, c: c + stepCost });
+          }
+        });
+
+        const stObj = STATION_MAP.get(sid);
+        if (stObj && stObj.lines.size > 1) {
+          stObj.lines.forEach(ol => {
+            if (ol !== lid) {
+              const nk = `${sid}@${ol}`;
+              if (c + SWITCH_PENALTY < (dist.get(nk) ?? Infinity)) {
+                dist.set(nk, c + SWITCH_PENALTY);
+                pq.push({ k: nk, c: c + SWITCH_PENALTY });
+              }
+            }
+          });
+        }
+      }
+      return graphDist(fromId, toId, lineId) + BLOCKER_DETOUR_COST;
+    }
+
+    function analyzeBlockerObstruction(player) {
+      if (state.blockers.size === 0) return { pathObstructed: false, hazardUtility: 0 };
+      const targets = playerObjectives(player);
+      const bestClean = Math.min(...targets.map(t => graphDist(player.stationId, t, player.currentLine)));
+      const bestBlocked = Math.min(...targets.map(t => blockerAwareDist(player.stationId, t, player.currentLine)));
+      const targetDirectlyBlocked = targets.some(t => state.blockers.has(t));
+      const pathObstructed = targetDirectlyBlocked || (bestBlocked - bestClean >= 4.0);
+      const remainingRatio = state.hazardDeck.length / 70;
+      const hazardUtility = pathObstructed ? (0.45 + 0.55 * remainingRatio) : 0.12;
+      return { pathObstructed, hazardUtility };
+    }
+
     const BOT_PROFILES = {
       easy: { tier: 'Fresher AI (Easy)', weights: { dist: -1.1, targetHit: 22, interchange: 2.0, blockerRisk: -1.2 }, noise: 4.5 },
       medium: { tier: 'GA Commuter (Medium)', weights: { dist: -2.85, targetHit: 48, interchange: 4.4, blockerRisk: -3.2 }, noise: 0.3 },
-      hard: { tier: 'MCTS Don (Hard)', weights: { dist: -3.2, targetHit: 58, interchange: 5.2, blockerRisk: -4.0 }, noise: 0, rollouts: 300 }
+      hard: { tier: 'MCTS Don (Hard)', weights: { dist: -3.2, targetHit: 58, interchange: 5.2, blockerRisk: -4.0 }, noise: 0, rollouts: 140 }
     };
 
     const PLAYER_PALETTE = [
@@ -2976,7 +1272,14 @@
       4: { label: 'Turbo (140ms)', ms: 140 }
     };
 
-    const settings = { sound: true, radar: true, botConfirm: true, botSpeedLevel: 2 };
+    const settings = {
+      sound: true,
+      radar: true,
+      waypointLabels: false,
+      botConfirm: true,
+      botSpeedLevel: 2
+    };
+
     const state = {
       phase: 'WELCOME',
       players: [],
@@ -2989,14 +1292,18 @@
       reachableMoves: [],
       pendingMoveOption: null,
       pendingHazard: null,
+      directSelection: null,
       blockerMovesLeft: 0,
+      blockerActorId: null,
       pickedUpBlocker: null,
+      reopeningFromSix: false,
       afterBlockerCallback: null,
       beaconStationId: null,
       drawerCollapsed: false,
       actionLog: [],
       botTurnLogs: [],
       telemetryHistory: [],
+      finishOrder: [],
       botTimer: null
     };
 
@@ -3040,6 +1347,12 @@
     function activePlayer() { return state.players[state.currentIdx]; }
     function playerObjectives(p) { const rem = p.souvenirs.filter(s => !s.visited).map(s => s.stationId); return rem.length > 0 ? rem : ['sheldonian']; }
 
+    function recordRecentStation(player, stationId) {
+      if (!player.recentStations) player.recentStations = [];
+      player.recentStations.push(stationId);
+      if (player.recentStations.length > 6) player.recentStations.shift();
+    }
+
     function computeReachableMoves(stationId, currentLine, maxSteps, canReopenOnSix) {
       const st = STATION_MAP.get(stationId);
       if (!st) return [];
@@ -3049,14 +1362,20 @@
       candidateLines.forEach(lineId => {
         const adj = ADJACENCY[lineId];
         if (!adj || !adj.has(stationId)) return;
-        const queue = [{ curr: stationId, prev: null, steps: 0, path: [stationId], reopenedBlocker: null }];
+        const queue = [{ curr: stationId, prev: null, steps: 0, path: [stationId], reopenedBlockers: [] }];
 
         while (queue.length > 0) {
           const node = queue.shift();
           if (node.steps > 0) {
             const key = `${node.curr}|${lineId}`;
             if (!bestByTargetAndLine.has(key) || node.steps < bestByTargetAndLine.get(key).steps) {
-              bestByTargetAndLine.set(key, { stationId: node.curr, lineId, steps: node.steps, path: node.path, reopenedBlocker: node.reopenedBlocker });
+              bestByTargetAndLine.set(key, {
+                stationId: node.curr,
+                lineId,
+                steps: node.steps,
+                path: node.path,
+                reopenedBlockers: node.reopenedBlockers
+              });
             }
           }
           if (node.steps >= maxSteps) continue;
@@ -3067,7 +1386,16 @@
           for (const nxt of nextNodes) {
             const blocked = state.blockers.has(nxt);
             if (blocked && !canReopenOnSix) continue;
-            queue.push({ curr: nxt, prev: node.curr, steps: node.steps + 1, path: [...node.path, nxt], reopenedBlocker: blocked ? nxt : node.reopenedBlocker });
+            const nextReopened = blocked && !node.reopenedBlockers.includes(nxt)
+              ? [...node.reopenedBlockers, nxt]
+              : node.reopenedBlockers;
+            queue.push({
+              curr: nxt,
+              prev: node.curr,
+              steps: node.steps + 1,
+              path: [...node.path, nxt],
+              reopenedBlockers: nextReopened
+            });
           }
         }
       });
@@ -3077,7 +1405,7 @@
     function triggerPassAndPlayCurtain(callback) {
       const p = activePlayer();
       const humanPlayers = state.players.filter(pl => pl.type === 'human');
-      if (humanPlayers.length > 0 && p.type === 'human') {
+      if (humanPlayers.length > 1 && p && p.type === 'human') {
         document.getElementById('pass-phone-title').textContent = `Pass to ${p.name}`;
         const readyBtn = document.getElementById('btn-pass-phone-ready');
         readyBtn.onclick = () => {
@@ -3097,10 +1425,13 @@
       state.hazardDiscard = [];
       state.dieRoll = null;
       state.reachableMoves = [];
+      state.directSelection = null;
+      state.blockerActorId = null;
       state.beaconStationId = null;
       state.actionLog = [];
       state.botTurnLogs = [];
       state.telemetryHistory = [];
+      state.finishOrder = [];
 
       const handSize = configs.length >= 7 ? 5 : 6;
       let pool = shuffle(SOUVENIR_POOL);
@@ -3111,8 +1442,17 @@
           stationId: st.id, name: st.name, lines: Array.from(st.lines), desc: st.desc || 'Historic Oxford college and landmark.', visited: false
         }));
         return {
-          id: idx, name: cfg.name.trim() || `Player ${idx + 1}`, type: cfg.type, color: PLAYER_PALETTE[idx % PLAYER_PALETTE.length],
-          stationId: 'sheldonian', currentLine: null, souvenirs: cards, skipNextTurn: false, extraTurn: false
+          id: idx,
+          name: cfg.name.trim() || `Player ${idx + 1}`,
+          type: cfg.type,
+          color: PLAYER_PALETTE[idx % PLAYER_PALETTE.length],
+          stationId: 'sheldonian',
+          currentLine: null,
+          previousLine: null,
+          souvenirs: cards,
+          recentStations: ['sheldonian'],
+          skipNextTurn: false,
+          extraTurn: false
         };
       });
 
@@ -3127,17 +1467,16 @@
         state.phase = 'ROLL_DIE';
         addLog('Match started at Sheldonian Theatre with initial blockers placed.');
         setCameraMode('turn');
-        renderMap();
-        syncHUD();
-        maybeTriggerBotTurn();
+        triggerPassAndPlayCurtain(() => {
+          renderMap();
+          syncHUD();
+          maybeTriggerBotTurn();
+        });
       } else {
         state.initialBlockersLeft = state.players.map(() => 2);
         state.phase = 'PLACE_BLOCKERS';
         addLog('Match started! Players placing initial blocking counters.');
         setCameraMode('turn');
-        renderMap();
-        syncHUD();
-
         triggerPassAndPlayCurtain(() => {
           renderMap();
           syncHUD();
@@ -3147,12 +1486,20 @@
     }
 
     function placeInitialBlocker(stationId) {
-      if (stationId === 'sheldonian' || state.blockers.has(stationId)) return;
       const p = activePlayer();
+      const isBot = p && p.type !== 'human';
+      if (stationId === 'sheldonian') {
+        if (!isBot) { sfx.invalid(); showToast('The Sheldonian Theatre cannot be blocked.'); }
+        return;
+      }
+      if (state.blockers.has(stationId)) {
+        if (!isBot) { sfx.invalid(); showToast('That stop already has a blocking counter.'); }
+        return;
+      }
       sfx.blocker();
       state.blockers.add(stationId);
       state.initialBlockersLeft[state.currentIdx]--;
-      addLog(`${p.name} closed ${STATION_MAP.get(stationId).name} with a blocker.`, p.type !== 'human');
+      addLog(`${escapeHTML(p.name)} closed ${escapeHTML(STATION_MAP.get(stationId).name)} with a blocker.`, isBot);
 
       let next = -1;
       for (let i = 1; i <= state.players.length; i++) {
@@ -3180,25 +1527,117 @@
       }
     }
 
-    function teleportPlayer(targetPlayer, stationId) {
-      const st = STATION_MAP.get(stationId);
-      if (!st) return false;
-      targetPlayer.stationId = stationId;
-      targetPlayer.currentLine = st.lines.size > 1 ? null : Array.from(st.lines)[0];
+    /**
+     * Sequentially teleports one or more players (used by Summer Eights, I Scream For..., etc.),
+     * resolving reopened blockers and souvenir arrival popups one step at a time before finishing the turn.
+     */
+    function teleportPlayersSequentially(entries, onAllDone = null, overrideBlockerMover = null) {
+      const queue = [...entries];
 
-      const match = targetPlayer.souvenirs.find(s => !s.visited && s.stationId === stationId);
-      if (match) {
-        match.visited = true;
-        sfx.stamp();
-        addLog(`🎓 ${targetPlayer.name} visited ${match.name}!`, activePlayer().type !== 'human');
-        openSouvenirDetailOverlay(targetPlayer, stationId, true);
-        return true;
+      const stepNext = () => {
+        if (state.phase === 'GAME_OVER') return;
+        if (queue.length === 0) {
+          if (onAllDone) onAllDone();
+          else finishTurn();
+          return;
+        }
+
+        const { player: targetPlayer, stationId, actionLogMsg } = queue.shift();
+        const st = STATION_MAP.get(stationId);
+        if (!st) {
+          stepNext();
+          return;
+        }
+        const isBot = targetPlayer.type !== 'human';
+
+        const performArrival = () => {
+          targetPlayer.stationId = stationId;
+          targetPlayer.currentLine = st.lines.size > 1 ? null : Array.from(st.lines)[0];
+          recordRecentStation(targetPlayer, stationId);
+
+          const match = targetPlayer.souvenirs.find(s => !s.visited && s.stationId === stationId);
+          if (match) {
+            match.visited = true;
+            sfx.stamp();
+            const baseMsg = actionLogMsg || `${escapeHTML(targetPlayer.name)} arrived at ${escapeHTML(st.name)}!`;
+            addLog(`${baseMsg} 🎓 Visited ${escapeHTML(match.name)}!`, isBot);
+            if (!isBot) {
+              openSouvenirDetailOverlay(targetPlayer.id, stationId, true, true, stepNext);
+              return;
+            }
+          } else if (actionLogMsg) {
+            addLog(actionLogMsg, isBot);
+          }
+
+          if (targetPlayer.souvenirs.every(s => s.visited) && stationId === 'sheldonian') {
+            declareVictory(targetPlayer);
+            return;
+          }
+
+          renderMap();
+          syncHUD();
+          stepNext();
+        };
+
+        if (state.blockers.has(stationId)) {
+          state.blockers.delete(stationId);
+          sfx.blocker();
+          const mover = overrideBlockerMover || targetPlayer;
+          const moverIsBot = mover.type !== 'human';
+          addLog(`🚧 Reopened blocker at ${escapeHTML(st.name)} due to direct arrival (${escapeHTML(mover.name)} relocates it).`, moverIsBot);
+
+          state.blockerMovesLeft = 1;
+          state.blockerActorId = mover.id;
+          state.pickedUpBlocker = '__REOPENED_SIX__';
+          state.reopeningFromSix = true;
+          state.phase = 'MOVE_BLOCKER';
+          setCameraMode('full');
+          renderMap();
+          syncHUD();
+
+          state.afterBlockerCallback = () => {
+            state.blockerActorId = null;
+            performArrival();
+          };
+
+          if (moverIsBot) {
+            maybeTriggerBotTurn();
+          }
+          return;
+        }
+
+        performArrival();
+      };
+
+      stepNext();
+    }
+
+    function teleportPlayer(targetPlayer, stationId, actionLogMsg = null) {
+      teleportPlayersSequentially([{ player: targetPlayer, stationId, actionLogMsg }]);
+    }
+
+    function pickAIDirectionForHuman(botPlayer, humanPlayer) {
+      const humanTargets = new Set(playerObjectives(humanPlayer));
+      const candidates = STATIONS.filter(s => s.type !== 'square' && s.id !== humanPlayer.stationId);
+      if (!candidates.length) return 'hinksey_pool';
+
+      if (botPlayer.type === 'easy') {
+        const shuffled = shuffle(candidates);
+        return shuffled[0].id;
       }
-      if (targetPlayer.souvenirs.every(s => s.visited) && stationId === 'sheldonian') {
-        declareVictory(targetPlayer);
-        return true;
-      }
-      return false;
+
+      let best = candidates[0].id;
+      let bestScore = -Infinity;
+      candidates.forEach(st => {
+        const minTargetDist = Math.min(...Array.from(humanTargets).map(t => blockerAwareDist(st.id, t)));
+        let score = minTargetDist;
+        if (humanTargets.has(st.id)) score -= 40;
+        if (st.id === 'sheldonian') score -= 25;
+        if (state.blockers.has(st.id)) score -= 8;
+        if (botPlayer.type === 'medium') score += (Math.random() - 0.5) * 4;
+        if (score > bestScore) { bestScore = score; best = st.id; }
+      });
+      return best;
     }
 
     function resolveHazardCard() {
@@ -3213,16 +1652,16 @@
       switch (card.effect) {
         case 'EXTRA_TURN':
           p.extraTurn = true;
-          addLog(`${p.name} gained an extra turn!`, isBot);
+          addLog(`${escapeHTML(p.name)} gained an extra turn!`, isBot);
           finishTurn();
           break;
         case 'GOTO_NEXT_TARGET': {
           const targets = playerObjectives(p);
-          targets.sort((a, b) => graphDist(p.stationId, a, p.currentLine) - graphDist(p.stationId, b, p.currentLine));
+          targets.sort((a, b) => blockerAwareDist(p.stationId, a, p.currentLine) - blockerAwareDist(p.stationId, b, p.currentLine));
           const dest = targets[0];
-          addLog(`${p.name} graduated straight to ${STATION_MAP.get(dest).name}!`, isBot);
-          if (teleportPlayer(p, dest)) return;
-          finishTurn();
+          const stName = STATION_MAP.get(dest).name;
+          const msg = `${escapeHTML(p.name)} drew <strong>Oxford Graduate</strong> and proceeded directly to destination <strong>${escapeHTML(stName)}</strong>.`;
+          teleportPlayer(p, dest, msg);
           break;
         }
         case 'GOTO_GDS_FRIEND': {
@@ -3234,70 +1673,107 @@
           } else {
             const branches = ['gds_jericho', 'gds_south', 'gds_east'];
             const t = playerObjectives(p)[0];
-            branches.sort((a, b) => graphDist(a, t) - graphDist(b, t));
+            branches.sort((a, b) => blockerAwareDist(a, t) - blockerAwareDist(b, t));
             branch = branches[0];
             friendId = state.players.find(o => o.id !== p.id)?.id ?? null;
           }
           const friend = state.players.find(o => o.id === friendId);
-          addLog(`${p.name}${friend ? ` & ${friend.name}` : ''} went for ice cream at ${STATION_MAP.get(branch).name}!`, isBot);
-          if (teleportPlayer(p, branch)) return;
-          if (friend && teleportPlayer(friend, branch)) return;
-          finishTurn();
+          const stName = STATION_MAP.get(branch).name;
+          const msg = `${escapeHTML(p.name)}${friend ? ` & ${escapeHTML(friend.name)}` : ''} went for ice-cream at <strong>${escapeHTML(stName)}</strong>.`;
+          const entries = [{ player: p, stationId: branch, actionLogMsg: msg }];
+          if (friend) entries.push({ player: friend, stationId: branch, actionLogMsg: null });
+          teleportPlayersSequentially(entries, null, p);
           break;
         }
         case 'DIRECT_ANYWHERE': {
-          let destId = 'hinksey_pool';
-          if (!isBot) destId = document.getElementById('haz-direct-station')?.value || 'hinksey_pool';
-          else {
-            const t = playerObjectives(p)[0];
-            const cands = STATIONS.filter(s => s.type !== 'square');
-            cands.sort((a, b) => graphDist(b.id, t) - graphDist(a.id, t));
-            destId = cands[0].id;
+          const others = state.players.filter(pl => pl.id !== p.id);
+          if (!others.length) {
+            finishTurn();
+            return;
           }
-          addLog(`${p.name} was directed to ${STATION_MAP.get(destId).name}.`, isBot);
-          if (teleportPlayer(p, destId)) return;
-          finishTurn();
+          if (!isBot) {
+            const chosenFriendId = parseInt(document.getElementById('haz-direct-friend')?.value ?? `${others[0].id}`, 10);
+            const friend = others.find(o => o.id === chosenFriendId) || others[0];
+            if (friend.type !== 'human') {
+              const destId = pickAIDirectionForHuman(friend, p);
+              const stName = STATION_MAP.get(destId).name;
+              const msg = `${escapeHTML(p.name)} asked <strong>${escapeHTML(friend.name)}</strong> for help and was directed to <strong>${escapeHTML(stName)}</strong>.`;
+              teleportPlayer(p, destId, msg);
+            } else {
+              openDirectPlayerModal(friend, p, true);
+            }
+          } else {
+            const humanRiv = others.find(pl => pl.type === 'human');
+            if (humanRiv) {
+              openDirectPlayerModal(humanRiv, p, false);
+            } else {
+              const friend = others[0];
+              const t = playerObjectives(p)[0];
+              const cands = STATIONS.filter(s => s.type !== 'square');
+              cands.sort((a, b) => graphDist(b.id, t) - graphDist(a.id, t));
+              const destId = cands[0].id;
+              const stName = STATION_MAP.get(destId).name;
+              const msg = `${escapeHTML(p.name)} asked <strong>${escapeHTML(friend.name)}</strong> and was directed to <strong>${escapeHTML(stName)}</strong>.`;
+              teleportPlayer(p, destId, msg);
+            }
+          }
           break;
         }
-        case 'GOTO_JERICHO_SKIP':
+        case 'GOTO_JERICHO_SKIP': {
           p.skipNextTurn = true;
-          addLog(`${p.name} sent to Jericho Health Centre (misses next turn).`, isBot);
-          if (teleportPlayer(p, 'jericho_health')) return;
-          finishTurn();
+          const msg = `${escapeHTML(p.name)} contracted Freshers' Flu and was sent to <strong>Jericho Health Centre</strong>.`;
+          teleportPlayer(p, 'jericho_health', msg);
           break;
-        case 'ALL_BOATHOUSE':
+        }
+        case 'ALL_BOATHOUSE': {
           addLog('Summer Eights! All players summoned to Boathouse Island.', isBot);
-          for (const pl of state.players) { if (teleportPlayer(pl, 'boathouse_island')) return; }
-          finishTurn();
+          const entries = state.players.map((pl, idx) => ({
+            player: pl,
+            stationId: 'boathouse_island',
+            actionLogMsg: idx === 0
+              ? `All players headed to <strong>Boathouse Island</strong> for Summer Eights.`
+              : null
+          }));
+          teleportPlayersSequentially(entries, null, p);
           break;
+        }
         case 'GOTO_FURTHEST_LINE': {
-          const lineId = p.currentLine || Array.from(STATION_MAP.get(p.stationId).lines)[0];
-          const adj = ADJACENCY[lineId];
+          const travelLine = p.previousLine || p.currentLine || Array.from(STATION_MAP.get(p.stationId).lines)[0];
+          const adj = ADJACENCY[travelLine];
           const nodes = adj ? Array.from(adj.keys()) : [p.stationId];
           const curr = STATION_MAP.get(p.stationId);
-          nodes.sort((a, b) => Math.hypot(STATION_MAP.get(b).x - curr.x, STATION_MAP.get(b).y - curr.y) - Math.hypot(STATION_MAP.get(a).x - curr.x, STATION_MAP.get(a).y - curr.y));
+          nodes.sort((a, b) =>
+            Math.hypot(STATION_MAP.get(b).x - curr.x, STATION_MAP.get(b).y - curr.y) -
+            Math.hypot(STATION_MAP.get(a).x - curr.x, STATION_MAP.get(a).y - curr.y)
+          );
           const furthest = nodes[0] || p.stationId;
-          addLog(`${p.name} rushed back to ${STATION_MAP.get(furthest).name}!`, isBot);
-          if (teleportPlayer(p, furthest)) return;
-          finishTurn();
+          const stName = STATION_MAP.get(furthest).name;
+          const msg = `${escapeHTML(p.name)} forgot their notes and rushed back along ${escapeHTML(LINES[travelLine]?.name || travelLine)} to <strong>${escapeHTML(stName)}</strong>.`;
+          teleportPlayer(p, furthest, msg);
           break;
         }
-        case 'GOTO_BODLEIAN':
-          addLog(`${p.name} sent to the Bodleian Library for an Essay Crisis.`, isBot);
-          if (teleportPlayer(p, 'bodleian')) return;
-          finishTurn();
+        case 'GOTO_BODLEIAN': {
+          const msg = `${escapeHTML(p.name)} suffered an Essay Crisis and was sent directly to the <strong>Bodleian Library</strong>.`;
+          teleportPlayer(p, 'bodleian', msg);
           break;
-        case 'MISS_TURN':
+        }
+        case 'MISS_TURN': {
           p.skipNextTurn = true;
-          addLog(`${p.name} will miss their next turn.`, isBot);
-          finishTurn();
+          const msg = `${escapeHTML(p.name)} drew <strong>${escapeHTML(card.title)}</strong>: ${escapeHTML(card.desc)} (Will miss next turn).`;
+          addLog(msg, isBot);
+          openTurnSkipModal(p, card.title, card.desc);
           break;
+        }
         case 'MOVE_ONE_BLOCKER':
         case 'MOVE_ALL_BLOCKERS': {
           if (state.blockers.size === 0) { finishTurn(); return; }
           state.blockerMovesLeft = card.effect === 'MOVE_ALL_BLOCKERS' ? state.blockers.size : 1;
+          state.blockerActorId = p.id;
           state.pickedUpBlocker = null;
-          state.afterBlockerCallback = () => finishTurn();
+          state.afterBlockerCallback = () => {
+            state.blockerActorId = null;
+            finishTurn();
+          };
           state.phase = 'MOVE_BLOCKER';
           renderMap();
           syncHUD();
@@ -3308,11 +1784,72 @@
       }
     }
 
+    function openTurnSkipModal(player, cardTitle, cardDesc) {
+      document.getElementById('turn-skip-desc').innerHTML = `<strong>${escapeHTML(player.name)}</strong> drew <strong>${escapeHTML(cardTitle)}</strong>!<br><br>${escapeHTML(cardDesc)}`;
+      const btn = document.getElementById('btn-turn-skip-ok');
+      btn.onclick = () => {
+        document.getElementById('modal-turn-skip').classList.add('hidden');
+        finishTurn();
+      };
+      document.getElementById('modal-turn-skip').classList.remove('hidden');
+    }
+
+    function openDirectPlayerModal(chooserPlayer, targetPlayer, askedByHuman) {
+      document.getElementById('direct-ps-badge').textContent = askedByHuman
+        ? `${targetPlayer.name} Asked ${chooserPlayer.name}`
+        : `${targetPlayer.name} Drew Problem Sheet!`;
+      document.getElementById('direct-ps-title').textContent = `${chooserPlayer.name}: Direct ${targetPlayer.name}`;
+      document.getElementById('direct-ps-desc').innerHTML = askedByHuman
+        ? `<strong>${escapeHTML(targetPlayer.name)}</strong> drew <strong>Problem Sheet</strong> and asked <strong>${escapeHTML(chooserPlayer.name)}</strong> for help! Tap below, then tap any station on the map to direct them:`
+        : `<strong>${escapeHTML(targetPlayer.name)}</strong> drew <strong>Problem Sheet</strong>! As a "friendly" rival, tap below and select any station on the map to send them to:`;
+      const btn = document.getElementById('btn-direct-ps-map');
+      btn.onclick = () => {
+        document.getElementById('modal-direct-player').classList.add('hidden');
+        state.directSelection = {
+          chooserId: chooserPlayer.id,
+          targetId: targetPlayer.id,
+          askedByHuman
+        };
+        state.phase = 'SELECT_DIRECT_STATION';
+        setCameraMode('full');
+        renderMap();
+        syncHUD();
+      };
+      document.getElementById('modal-direct-player').classList.remove('hidden');
+    }
+
+    function handleDirectStationTap(stationId) {
+      const sel = state.directSelection;
+      if (!sel) return;
+      const st = STATION_MAP.get(stationId);
+      if (!st) return;
+
+      const chooser = state.players.find(pl => pl.id === sel.chooserId);
+      const target = state.players.find(pl => pl.id === sel.targetId);
+      state.directSelection = null;
+
+      if (!target) {
+        finishTurn();
+        return;
+      }
+
+      const msg = sel.askedByHuman
+        ? `${escapeHTML(target.name)} asked <strong>${escapeHTML(chooser?.name || 'a friend')}</strong> and was directed to <strong>${escapeHTML(st.name)}</strong>.`
+        : `${escapeHTML(target.name)} was directed by <strong>${escapeHTML(chooser?.name || 'a rival')}</strong> to <strong>${escapeHTML(st.name)}</strong>.`;
+      teleportPlayer(target, stationId, msg);
+    }
+
     function handleBlockerRelocateTap(stationId) {
-      const p = activePlayer();
+      const p = (state.blockerActorId !== null
+        ? state.players.find(pl => pl.id === state.blockerActorId)
+        : null) || activePlayer();
       const isBot = p.type !== 'human';
+
       if (!state.pickedUpBlocker) {
-        if (!state.blockers.has(stationId)) return;
+        if (!state.blockers.has(stationId)) {
+          if (!isBot) { sfx.invalid(); showToast('Tap a red blocker counter to pick it up first.'); }
+          return;
+        }
         state.blockers.delete(stationId);
         state.pickedUpBlocker = stationId;
         sfx.blocker();
@@ -3321,19 +1858,32 @@
         return;
       }
 
-      if (stationId === 'sheldonian' || state.blockers.has(stationId)) return;
+      if (stationId === 'sheldonian') {
+        if (!isBot) { sfx.invalid(); showToast('The Sheldonian Theatre cannot be blocked.'); }
+        return;
+      }
+      if (state.blockers.has(stationId)) {
+        if (!isBot) { sfx.invalid(); showToast('That stop already has a blocking counter.'); }
+        return;
+      }
       state.blockers.add(stationId);
-      state.pickedUpBlocker = null;
       state.blockerMovesLeft--;
       sfx.blocker();
-      addLog(`${p.name} relocated a blocker to ${STATION_MAP.get(stationId).name}.`, isBot);
+
+      const stName = STATION_MAP.get(stationId).name;
+      const placementMsg = `${escapeHTML(p.name)} relocated a blocker to <strong>${escapeHTML(stName)}</strong>.`;
+      addLog(placementMsg, isBot);
 
       if (state.blockerMovesLeft <= 0) {
+        state.pickedUpBlocker = null;
+        state.reopeningFromSix = false;
+        state.blockerActorId = null;
         const cb = state.afterBlockerCallback;
         state.afterBlockerCallback = null;
         if (cb) cb();
         else finishTurn();
       } else {
+        state.pickedUpBlocker = state.reopeningFromSix ? '__REOPENED_SIX__' : null;
         renderMap();
         syncHUD();
       }
@@ -3341,6 +1891,7 @@
 
     function finishTurn() {
       if (state.phase === 'GAME_OVER') return;
+      clearTimeout(state.botTimer);
       const finishedPlayer = activePlayer();
       state.reachableMoves = [];
       state.dieRoll = null;
@@ -3356,14 +1907,19 @@
         }
 
         let nextIdx = state.currentIdx;
-        for (let i = 0; i < state.players.length + 1; i++) {
+        let safetyCounter = 0;
+        while (safetyCounter < state.players.length * 2) {
+          safetyCounter++;
           nextIdx = (nextIdx + 1) % state.players.length;
           const nextP = state.players[nextIdx];
-          if (nextP.skipNextTurn) { nextP.skipNextTurn = false; addLog(`${nextP.name} missed their turn.`); continue; }
+          if (nextP.skipNextTurn) {
+            nextP.skipNextTurn = false;
+            addLog(`⏭️ ${escapeHTML(nextP.name)} missed their turn.`);
+            continue;
+          }
           break;
         }
 
-        const nextPlayer = state.players[nextIdx];
         state.currentIdx = nextIdx;
         state.phase = 'ROLL_DIE';
         setCameraMode('turn');
@@ -3385,9 +1941,7 @@
           av.style.backgroundColor = finishedPlayer.color.hex;
           document.getElementById('bot-summary-tier').textContent = profile.tier;
           document.getElementById('bot-summary-name').textContent = finishedPlayer.name;
-          document.getElementById('bot-summary-actions').innerHTML = logsCopy
-            .map(line => `<li class="flex items-start gap-2"><span class="text-[#b8860b] font-bold">•</span><span>${line}</span></li>`)
-            .join('');
+          document.getElementById('bot-summary-text').innerHTML = logsCopy.join('<br><br>');
 
           const btnCont = document.getElementById('btn-bot-continue');
           btnCont.onclick = () => {
@@ -3404,15 +1958,26 @@
     }
 
     function declareVictory(winner) {
+      clearTimeout(state.botTimer);
       state.phase = 'GAME_OVER';
+      if (!state.finishOrder.includes(winner.id)) state.finishOrder.push(winner.id);
       sfx.win();
-      addLog(`🏆 ${winner.name} won The Oxford Game!`);
+      addLog(`🏆 ${escapeHTML(winner.name)} won The Oxford Game!`);
       document.getElementById('victory-winner-name').textContent = `${winner.name} Wins!`;
-      const sorted = [...state.players].sort((a, b) => b.souvenirs.filter(s => s.visited).length - a.souvenirs.filter(s => s.visited).length);
+      const sorted = [...state.players].sort((a, b) => {
+        const fa = state.finishOrder.indexOf(a.id);
+        const fb = state.finishOrder.indexOf(b.id);
+        if (fa !== -1 || fb !== -1) {
+          if (fa === -1) return 1;
+          if (fb === -1) return -1;
+          return fa - fb;
+        }
+        return b.souvenirs.filter(s => s.visited).length - a.souvenirs.filter(s => s.visited).length;
+      });
       document.getElementById('victory-standings').innerHTML = sorted.map((p, i) => {
         const v = p.souvenirs.filter(s => s.visited).length;
         return `<div class="flex items-center justify-between py-1 border-b border-slate-100 last:border-0">
-          <span class="font-bold text-slate-800">${i + 1}. ${p.name}</span>
+          <span class="font-bold text-slate-800">${i + 1}. ${escapeHTML(p.name)}</span>
           <span class="font-mono-tech font-bold text-[#002147]">${v}/${p.souvenirs.length} Visited</span>
         </div>`;
       }).join('');
@@ -3429,10 +1994,10 @@
 
       cands.forEach(st => {
         let score = (st.interchange ? 4.0 : 1.0) + Math.random() * 2.0;
-        if (graphDist(aiPlayer.stationId, st.id, aiPlayer.currentLine) <= 2) score -= 6;
+        if (blockerAwareDist(aiPlayer.stationId, st.id, aiPlayer.currentLine) <= 2) score -= 6;
         state.players.forEach(opp => {
           if (opp.id === aiPlayer.id) return;
-          const d = graphDist(opp.stationId, st.id, opp.currentLine);
+          const d = blockerAwareDist(opp.stationId, st.id, opp.currentLine);
           if (d >= 1 && d <= 4) score += 5.0;
         });
         if (score > bestScore) { bestScore = score; best = st.id; }
@@ -3440,16 +2005,46 @@
       return best;
     }
 
+    function pickAIBlockerToRemove(aiPlayer) {
+      const blockersArr = Array.from(state.blockers);
+      if (blockersArr.length === 0) return null;
+      const targets = playerObjectives(aiPlayer);
+      let bestBlocker = blockersArr[0];
+      let bestImprovement = -Infinity;
+
+      const currentBestDist = Math.min(...targets.map(t => blockerAwareDist(aiPlayer.stationId, t, aiPlayer.currentLine)));
+
+      blockersArr.forEach(bid => {
+        const withoutB = new Set(state.blockers);
+        withoutB.delete(bid);
+        const newBestDist = Math.min(...targets.map(t => blockerAwareDist(aiPlayer.stationId, t, aiPlayer.currentLine, withoutB)));
+        let improvement = currentBestDist - newBestDist;
+        if (targets.includes(bid)) improvement += 25;
+        if (improvement > bestImprovement) {
+          bestImprovement = improvement;
+          bestBlocker = bid;
+        }
+      });
+      return bestBlocker;
+    }
+
     function runMCTSRollout(player, opt, rollouts) {
       const targets = playerObjectives(player);
       if (targets.includes(opt.stationId)) return 0.99;
+      const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(player);
+      const recent = player.recentStations || [];
+      const repeatCount = recent.filter(sid => sid === opt.stationId).length;
+      const initialBlockerDist = Math.min(...targets.map(t => blockerAwareDist(opt.stationId, t, opt.lineId)));
+      const initialRawDist = Math.min(...targets.map(t => graphDist(opt.stationId, t, opt.lineId)));
+      const blockerDetourPenalty = initialBlockerDist - initialRawDist;
+
       let total = 0;
       for (let r = 0; r < rollouts; r++) {
         let sId = opt.stationId;
         let lId = opt.lineId;
         let rem = [...targets];
         let turn = 0;
-        while (turn < 5 && rem.length > 0) {
+        while (turn < 4 && rem.length > 0) {
           turn++;
           const d = 1 + Math.floor(Math.random() * 6);
           const moves = computeReachableMoves(sId, lId, d, d === 6);
@@ -3469,7 +2064,12 @@
         const leftD = rem.length ? Math.min(...rem.map(t => graphDist(sId, t, lId))) : 0;
         total += done * 25 - leftD;
       }
-      return Math.max(0.05, Math.min(0.98, 0.5 + (total / rollouts) / 45));
+      const isInterchange = STATION_MAP.get(opt.stationId)?.interchange;
+      const hazardSearchBonus = (pathObstructed && isInterchange) ? (14 * hazardUtility) : 0;
+      const reopenBonus = (opt.reopenedBlockers?.length || 0) * 18;
+      const oscillationPenalty = repeatCount * 8;
+      const adjusted = (total / rollouts) - blockerDetourPenalty * 1.15 + hazardSearchBonus + reopenBonus - oscillationPenalty;
+      return Math.max(0.05, Math.min(0.98, 0.5 + adjusted / 45));
     }
 
     function handleRollDie() {
@@ -3485,10 +2085,10 @@
       setTimeout(() => document.getElementById('btn-roll-die').classList.remove('die-rolling'), 450);
 
       state.reachableMoves = computeReachableMoves(p.stationId, p.currentLine, d, d === 6);
-      addLog(`${p.name} rolled a ${d}. ${state.reachableMoves.length} destinations reachable.`, p.type !== 'human');
+      addLog(`${escapeHTML(p.name)} rolled a ${d}.`, p.type !== 'human');
 
       if (state.reachableMoves.length === 0) {
-        addLog(`${p.name} has no valid moves for roll ${d}!`);
+        addLog(`${escapeHTML(p.name)} rolled a ${d} with no valid moves available.`, p.type !== 'human');
         setTimeout(() => finishTurn(), 700);
         return;
       }
@@ -3505,7 +2105,7 @@
       if (!opt) return;
       state.pendingMoveOption = opt;
       const st = STATION_MAP.get(stationId);
-      const lineName = LINES[opt.lineId]?.name.split(' (')[0] || 'Route';
+      const lineName = LINES[opt.lineId]?.name || 'Route';
 
       document.getElementById('confirm-move-steps-badge').textContent = `${opt.steps} step${opt.steps > 1 ? 's' : ''}`;
       document.getElementById('confirm-move-station').textContent = st.name;
@@ -3514,11 +2114,17 @@
       pill.style.backgroundColor = LINES[opt.lineId]?.color || '#1e293b';
 
       const notes = [];
-      if (opt.reopenedBlocker) notes.push(`• Rolling a 6 reopens blocker at ${STATION_MAP.get(opt.reopenedBlocker).name}!`);
+      if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
+        const names = opt.reopenedBlockers.map(id => escapeHTML(STATION_MAP.get(id)?.name || id)).join(', ');
+        notes.push(`• Rolling a 6 reopens blocker(s) at ${names} — you will place them elsewhere on the board!`);
+      }
       if (st.interchange) notes.push(`• Interchange stop: You can switch lines & draw a Hazard card.`);
       const activeP = activePlayer();
       const isTarget = activeP.souvenirs.find(s => !s.visited && s.stationId === stationId);
-      if (isTarget) notes.push(`🎓 Reaching this stop completes Souvenir: <strong>${isTarget.name}</strong>!`);
+      if (isTarget) notes.push(`🎓 Reaching this stop completes Souvenir: <strong>${escapeHTML(isTarget.name)}</strong>!`);
+      if (activeP.souvenirs.every(s => s.visited) && stationId === 'sheldonian') {
+        notes.push(`🏆 Returning to the Sheldonian completes your degree and wins the game!`);
+      }
 
       document.getElementById('confirm-move-notes').innerHTML = notes.length > 0 ? notes.join('<br>') : 'Standard station stop.';
       document.getElementById('modal-confirm-move').classList.remove('hidden');
@@ -3530,38 +2136,86 @@
       const p = activePlayer();
       const isBot = p.type !== 'human';
 
-      if (opt.reopenedBlocker) {
-        state.blockers.delete(opt.reopenedBlocker);
-        addLog(`${p.name} rolled a 6 and reopened closed station ${STATION_MAP.get(opt.reopenedBlocker).name}!`, isBot);
-      }
+      const startStName = STATION_MAP.get(p.stationId).name;
+      const st = STATION_MAP.get(opt.stationId);
+      const lineName = LINES[opt.lineId]?.name || opt.lineId;
+      const souvenirCard = p.souvenirs.find(s => !s.visited && s.stationId === opt.stationId);
 
       p.stationId = opt.stationId;
       p.currentLine = opt.lineId;
+      p.previousLine = opt.lineId;
+      recordRecentStation(p, opt.stationId);
       sfx.step();
 
-      const st = STATION_MAP.get(opt.stationId);
-      const souvenirCard = p.souvenirs.find(s => !s.visited && s.stationId === opt.stationId);
+      let summaryText = `🎲 <strong>Dice Roll:</strong> Rolled a ${state.dieRoll}.<br>` +
+                        `📍 <strong>Route:</strong> Traveled from ${escapeHTML(startStName)} along the <strong>${escapeHTML(lineName)}</strong> to arrive at <strong>${escapeHTML(st.name)}</strong>.`;
+      
+      if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
+        opt.reopenedBlockers.forEach(bid => state.blockers.delete(bid));
+        const blkNames = opt.reopenedBlockers.map(id => escapeHTML(STATION_MAP.get(id)?.name || id)).join(', ');
+        summaryText += `<br>🚧 <strong>Blocker Capture:</strong> Passed through and reopened ${opt.reopenedBlockers.length} blocker(s) at (${blkNames}).`;
+      }
 
-      if (souvenirCard) {
-        souvenirCard.visited = true;
-        sfx.stamp();
-        addLog(`🎓 ${p.name} arrived at Souvenir destination: ${souvenirCard.name}!`, isBot);
+      const completeArrivalSequence = () => {
+        if (souvenirCard) {
+          souvenirCard.visited = true;
+          sfx.stamp();
+          const visitedCount = p.souvenirs.filter(s => s.visited).length;
+          summaryText += `<br>🎓 <strong>Souvenir Stamped:</strong> Successfully visited destination <strong>${escapeHTML(souvenirCard.name)}</strong> (${visitedCount}/${p.souvenirs.length} visited)!`;
+          addLog(summaryText, isBot);
+
+          if (p.souvenirs.every(s => s.visited) && opt.stationId === 'sheldonian') {
+            declareVictory(p);
+            return;
+          }
+
+          if (isBot) {
+            if (st.interchange && st.lines.size > 1) {
+              botDecideInterchangeSwitch(p, st, souvenirCard);
+            } else {
+              finishTurn();
+            }
+          } else {
+            openSouvenirDetailOverlay(p.id, opt.stationId, true, false);
+          }
+          return;
+        }
 
         if (p.souvenirs.every(s => s.visited) && opt.stationId === 'sheldonian') {
+          addLog(summaryText, isBot);
           declareVictory(p);
           return;
         }
 
-        openSouvenirDetailOverlay(p, opt.stationId, true);
+        if (st.interchange && st.lines.size > 1) {
+          addLog(summaryText, isBot);
+          if (isBot) botDecideInterchangeSwitch(p, st, null);
+          else openSwitchLineModal(p, st, null);
+        } else {
+          addLog(summaryText, isBot);
+          finishTurn();
+        }
+      };
+
+      if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
+        state.reachableMoves = [];
+        state.blockerMovesLeft = opt.reopenedBlockers.length;
+        state.blockerActorId = p.id;
+        state.reopeningFromSix = true;
+        state.pickedUpBlocker = '__REOPENED_SIX__';
+        state.afterBlockerCallback = () => {
+          state.blockerActorId = null;
+          completeArrivalSequence();
+        };
+        state.phase = 'MOVE_BLOCKER';
+        setCameraMode('full');
+        renderMap();
+        syncHUD();
+        maybeTriggerBotTurn();
         return;
       }
 
-      if (st.interchange && st.lines.size > 1) {
-        if (isBot) botDecideInterchangeSwitch(p, st, null);
-        else openSwitchLineModal(p, st, null);
-      } else {
-        finishTurn();
-      }
+      completeArrivalSequence();
     }
 
     function openSwitchLineModal(p, st, stampedCard) {
@@ -3581,7 +2235,7 @@
         const isCurrent = lid === p.currentLine;
         return `
           <button type="button" onclick="confirmLineSwitch('${lid}')"
-            class="w-full p-3 rounded-2xl flex items-center justify-between text-white font-bold text-xs shadow transition active:scale-98"
+            class="w-full p-3 rounded-2xl flex items-center justify-between text-white font-bold text-xs shadow transition active:scale-95"
             style="background:${lObj.color};">
             <span>${lObj.name}</span>
             <span class="text-[10px] px-2 py-0.5 rounded bg-black/25">${isCurrent ? 'Stay (No Hazard)' : 'Switch Line (+ Hazard)'}</span>
@@ -3598,14 +2252,21 @@
       const isBot = p.type !== 'human';
 
       if (lineId !== p.currentLine) {
+        p.previousLine = p.currentLine;
         p.currentLine = lineId;
         const card = drawHazard();
         state.pendingHazard = card;
         sfx.hazard();
-        addLog(`${p.name} switched to ${LINES[lineId].name.split(' (')[0]} and drew Hazard: ${card.title}.`, isBot);
-        openHazardModal(card);
+        const switchText = `🔀 <strong>Interchange Switch:</strong> Switched lines to <strong>${escapeHTML(LINES[lineId].name)}</strong> and drew Hazard card: <em>${escapeHTML(card.title)}</em> (${escapeHTML(card.desc)}).`;
+        addLog(switchText, isBot);
+        if (isBot) {
+          resolveHazardCard();
+        } else {
+          openHazardModal(card);
+        }
       } else {
-        addLog(`${p.name} stayed on ${LINES[lineId].name.split(' (')[0]}.`, isBot);
+        const stayText = `🚇 <strong>Interchange:</strong> Stayed on ${escapeHTML(LINES[lineId].name)}. Turn completed.`;
+        addLog(stayText, isBot);
         finishTurn();
       }
     };
@@ -3627,15 +2288,16 @@
             <option value="gds_east">G&amp;D's Cowley Road</option>
           </select>
           <select id="haz-friend-id" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
-            ${state.players.filter(pl => pl.id !== activePlayer().id).map(pl => `<option value="${pl.id}">${pl.name}</option>`).join('')}
+            ${state.players.filter(pl => pl.id !== activePlayer().id).map(pl => `<option value="${pl.id}">${escapeHTML(pl.name)}</option>`).join('')}
           </select>
         `;
       } else if (card.effect === 'DIRECT_ANYWHERE') {
+        const others = state.players.filter(pl => pl.id !== activePlayer().id);
         box.classList.remove('hidden');
         box.innerHTML = `
-          <div class="text-xs font-bold text-amber-900">Direct yourself anywhere in Oxford:</div>
-          <select id="haz-direct-station" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
-            ${STATIONS.filter(s => s.type !== 'square').map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          <div class="text-xs font-bold text-amber-900">Ask a friendly player to direct you anywhere on the board:</div>
+          <select id="haz-direct-friend" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
+            ${others.map(pl => `<option value="${pl.id}">${escapeHTML(pl.name)} (${pl.type === 'human' ? 'Human' : BOT_PROFILES[pl.type]?.tier || 'Bot'})</option>`).join('')}
           </select>
         `;
       } else {
@@ -3647,21 +2309,38 @@
 
     function botDecideInterchangeSwitch(p, st, stampedCard) {
       const targets = playerObjectives(p);
+      const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(p);
       let bestLine = p.currentLine;
-      let bestD = Math.min(...targets.map(t => graphDist(p.stationId, t, p.currentLine)));
+      let bestD = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, p.currentLine)));
 
       st.lines.forEach(lid => {
         if (lid === p.currentLine) return;
-        const d = Math.min(...targets.map(t => graphDist(p.stationId, t, lid)));
-        if (d + 2.1 < bestD) { bestD = d; bestLine = lid; }
+        const d = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, lid)));
+        const effectiveThreshold = pathObstructed ? (0.4 - hazardUtility * 2.0) : 2.1;
+        if (d + effectiveThreshold < bestD) { bestD = d; bestLine = lid; }
       });
+
+      if (bestLine === p.currentLine && pathObstructed && p.type !== 'easy') {
+        const altLines = Array.from(st.lines).filter(lid => lid !== p.currentLine);
+        if (altLines.length > 0 && Math.random() < (0.45 + hazardUtility * 0.45)) {
+          altLines.sort((a, b) => {
+            const da = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, a)));
+            const db = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, b)));
+            return da - db;
+          });
+          bestLine = altLines[0];
+        }
+      }
+
       window.confirmLineSwitch(bestLine);
     }
 
     function maybeTriggerBotTurn() {
       clearTimeout(state.botTimer);
-      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER') return;
-      const p = activePlayer();
+      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION') return;
+      const p = state.phase === 'MOVE_BLOCKER' && state.blockerActorId !== null
+        ? state.players.find(pl => pl.id === state.blockerActorId)
+        : activePlayer();
       if (!p || p.type === 'human') return;
 
       const delay = SPEED_MAP[settings.botSpeedLevel].ms;
@@ -3678,6 +2357,8 @@
           const moves = state.reachableMoves;
           if (!moves.length) { finishTurn(); return; }
           const targets = playerObjectives(p);
+          const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(p);
+          const recent = p.recentStations || [];
           let bestOpt = moves[0];
           let bestScore = -Infinity;
 
@@ -3687,9 +2368,14 @@
               sc = runMCTSRollout(p, opt, profile.rollouts) * 100;
             } else {
               const hit = targets.includes(opt.stationId) ? profile.weights.targetHit : 0;
-              const minD = Math.min(...targets.map(t => graphDist(opt.stationId, t, opt.lineId)));
-              const inter = STATION_MAP.get(opt.stationId).interchange ? profile.weights.interchange : 0;
-              sc = hit + minD * profile.weights.dist + inter + (Math.random() - 0.5) * 2 * profile.noise;
+              const minD = Math.min(...targets.map(t => blockerAwareDist(opt.stationId, t, opt.lineId)));
+              const isInter = STATION_MAP.get(opt.stationId).interchange;
+              const interBonus = isInter
+                ? profile.weights.interchange * (pathObstructed ? (2.2 + hazardUtility * 2.0) : 1.0)
+                : 0;
+              const reopenBonus = (opt.reopenedBlockers?.length || 0) * 18;
+              const repeatPenalty = recent.filter(sid => sid === opt.stationId).length * 7.5;
+              sc = hit + minD * profile.weights.dist + interBonus + reopenBonus - repeatPenalty + (Math.random() - 0.5) * 2 * profile.noise;
             }
             if (sc > bestScore) { bestScore = sc; bestOpt = opt; }
           });
@@ -3704,14 +2390,24 @@
 
           executeConfirmedMove(bestOpt);
         } else if (state.phase === 'MOVE_BLOCKER') {
-          if (!state.pickedUpBlocker && state.blockers.size > 0) {
-            const firstB = Array.from(state.blockers)[0];
-            handleBlockerRelocateTap(firstB);
+          if (!state.reopeningFromSix && !state.pickedUpBlocker && state.blockers.size > 0) {
+            const targetB = pickAIBlockerToRemove(p) || Array.from(state.blockers)[0];
+            handleBlockerRelocateTap(targetB);
             maybeTriggerBotTurn();
           } else {
             const destB = pickAIBlockerStation(p);
-            handleBlockerRelocateTap(destB);
-            if (state.phase === 'MOVE_BLOCKER') maybeTriggerBotTurn();
+            if (destB) {
+              handleBlockerRelocateTap(destB);
+              if (state.phase === 'MOVE_BLOCKER') maybeTriggerBotTurn();
+            } else {
+              state.pickedUpBlocker = null;
+              state.reopeningFromSix = false;
+              state.blockerActorId = null;
+              const cb = state.afterBlockerCallback;
+              state.afterBlockerCallback = null;
+              if (cb) cb();
+              else finishTurn();
+            }
           }
         }
       }, delay);
@@ -3726,15 +2422,20 @@
       container.innerHTML = state.telemetryHistory.map(item => `
         <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs space-y-1 font-mono-tech">
           <div class="flex items-center justify-between text-[11px]">
-            <span class="font-bold text-[#002147]">${item.botName} (${item.tier})</span>
-            <span class="text-slate-400">${item.timestamp}</span>
+            <span class="font-bold text-[#002147]">${escapeHTML(item.botName)} (${escapeHTML(item.tier)})</span>
+            <span class="text-slate-400">${escapeHTML(item.timestamp)}</span>
           </div>
-          <div class="text-xs text-slate-700">Pos: ${item.position} | Rolled: ${item.roll}</div>
-          <div class="text-xs text-emerald-800 font-semibold">Move: ${item.selectedMove} (Score: ${item.score})</div>
+          <div class="text-xs text-slate-700">Pos: ${escapeHTML(item.position)} | Rolled: ${item.roll}</div>
+          <div class="text-xs text-emerald-800 font-semibold">Move: ${escapeHTML(item.selectedMove)} (Score: ${item.score})</div>
         </div>
       `).join('');
     }
 
+    /**
+     * =========================================================================
+     * 5. SVG MAP RENDERER & SEMANTIC ZOOM
+     * =========================================================================
+     */
     function renderMap() {
       const linesLayer = document.getElementById('layer-lines');
       const stationsLayer = document.getElementById('layer-stations');
@@ -3762,6 +2463,10 @@
           if (!s) return;
           hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="18" fill="rgba(245,158,11,0.28)" stroke="#d97706" stroke-width="3" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
         });
+      } else if (state.phase === 'SELECT_DIRECT_STATION') {
+        STATIONS.forEach(s => {
+          hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="14" fill="rgba(245,158,11,0.22)" stroke="#d97706" stroke-width="2" class="cursor-pointer" data-sid="${s.id}" />`;
+        });
       }
       highlightsLayer.innerHTML = hlSVG;
 
@@ -3779,14 +2484,14 @@
         sightLayer.innerHTML = '';
       }
 
-      const showObjectives = currP && (currP.type === 'human' || state.phase === 'PLACE_BLOCKERS') && document.getElementById('modal-pass-phone').classList.contains('hidden');
+      const showObjectives = currP && currP.type === 'human' && state.phase !== 'SELECT_DIRECT_STATION' && document.getElementById('modal-pass-phone').classList.contains('hidden');
       const myObjectives = showObjectives ? new Set(playerObjectives(currP)) : new Set();
       let stSVG = '';
       let lblSVG = '';
 
       STATIONS.forEach(s => {
         const isObj = myObjectives.has(s.id);
-        const isReach = reachableSet.has(s.id);
+        const isReach = reachableSet.has(s.id) || state.phase === 'SELECT_DIRECT_STATION';
         const primaryCol = LINES[Array.from(s.lines)[0]]?.color || '#1e293b';
 
         if (isObj) {
@@ -3809,14 +2514,21 @@
           stSVG += `<circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${primaryCol}" stroke="#1e293b" stroke-width="2.2" class="cursor-pointer" data-sid="${s.id}" />`;
         }
 
-        const showLbl = s.id === 'sheldonian' || isObj || isReach || (s.type === 'destination' && view.scale >= 1.15) || (s.type === 'square' && view.scale >= 1.85);
+        const isWaypoint = s.type === 'square';
+        const showLbl = isWaypoint
+          ? (settings.waypointLabels && (isObj || reachableSet.has(s.id) || view.scale >= 1.75))
+          : (s.id === 'sheldonian' || isObj || reachableSet.has(s.id) || (s.interchange && view.scale >= 1.15) || (s.type === 'destination' && view.scale >= 1.45));
+
         if (showLbl) {
-          const fs = s.id === 'sheldonian' ? 12.5 : (s.type === 'square' ? 9.5 : 11);
+          const fs = s.id === 'sheldonian' ? 12.5 : (isWaypoint ? 9.5 : 11);
           const weight = (s.id === 'sheldonian' || isObj) ? '800' : '600';
           const fill = s.id === 'sheldonian' ? '#002147' : (isObj ? '#92400e' : '#1e293b');
+          const placeLeft = s.x <= 430 && s.id !== 'sheldonian';
+          const tx = placeLeft ? s.x - 12 : s.x + 12;
+          const anchor = placeLeft ? 'end' : 'start';
           lblSVG += `
-            <text x="${s.x + 12}" y="${s.y + 4}" font-size="${fs}" font-weight="${weight}" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4" stroke-linejoin="round" pointer-events="none">${s.name}</text>
-            <text x="${s.x + 12}" y="${s.y + 4}" font-size="${fs}" font-weight="${weight}" fill="${fill}" pointer-events="none">${s.name}</text>
+            <text x="${tx}" y="${s.y + 4}" text-anchor="${anchor}" font-size="${fs}" font-weight="${weight}" fill="#f8f5ee" stroke="#f8f5ee" stroke-width="4" stroke-linejoin="round" pointer-events="none">${escapeHTML(s.name)}</text>
+            <text x="${tx}" y="${s.y + 4}" text-anchor="${anchor}" font-size="${fs}" font-weight="${weight}" fill="${fill}" pointer-events="none">${escapeHTML(s.name)}</text>
           `;
         }
       });
@@ -3861,24 +2573,53 @@
         });
       });
       playersLayer.innerHTML = plySVG;
-
-      document.querySelectorAll('[data-sid]').forEach(el => {
-        el.addEventListener('click', e => { e.stopPropagation(); onStationClicked(el.getAttribute('data-sid')); });
-      });
       updateRadarPips();
     }
 
     function onStationClicked(stationId) {
+      if (state.phase === 'SELECT_DIRECT_STATION') {
+        handleDirectStationTap(stationId);
+        return;
+      }
+      if (state.phase === 'MOVE_BLOCKER') {
+        const mover = (state.blockerActorId !== null
+          ? state.players.find(pl => pl.id === state.blockerActorId)
+          : null) || activePlayer();
+        if (!mover || mover.type !== 'human') return;
+        handleBlockerRelocateTap(stationId);
+        return;
+      }
       const p = activePlayer();
       if (!p || p.type !== 'human') return;
       if (state.phase === 'PLACE_BLOCKERS') placeInitialBlocker(stationId);
-      else if (state.phase === 'SELECT_MOVE') { if (state.reachableMoves.some(m => m.stationId === stationId)) openMoveConfirmation(stationId); }
-      else if (state.phase === 'MOVE_BLOCKER') handleBlockerRelocateTap(stationId);
+      else if (state.phase === 'SELECT_MOVE') {
+        if (state.reachableMoves.some(m => m.stationId === stationId)) openMoveConfirmation(stationId);
+        else { sfx.invalid(); showToast('Tap one of the highlighted reachable stops.'); }
+      }
     }
 
     const svgEl = document.getElementById('oxford-map-svg');
     const worldGroup = document.getElementById('map-world');
-    function applyMapTransform() { worldGroup.setAttribute('transform', `translate(${view.x}, ${view.y}) scale(${view.scale})`); }
+
+    svgEl.addEventListener('click', e => {
+      const target = e.target.closest('[data-sid]');
+      if (target) {
+        e.stopPropagation();
+        onStationClicked(target.getAttribute('data-sid'));
+      }
+    });
+
+    function clampCameraPan() {
+      const maxPanX = 550 * view.scale;
+      const maxPanY = 640 * view.scale;
+      view.x = Math.max(-maxPanX, Math.min(maxPanX, view.x));
+      view.y = Math.max(-maxPanY, Math.min(maxPanY, view.y));
+    }
+
+    function applyMapTransform() {
+      clampCameraPan();
+      worldGroup.setAttribute('transform', `translate(${view.x}, ${view.y}) scale(${view.scale})`);
+    }
 
     function setCameraMode(mode) {
       view.mode = mode;
@@ -3910,7 +2651,7 @@
     function updateRadarPips() {
       const overlay = document.getElementById('radar-overlay');
       const p = activePlayer();
-      if (!settings.radar || !p || state.phase === 'WELCOME') { overlay.innerHTML = ''; return; }
+      if (!settings.radar || !p || p.type !== 'human' || state.phase === 'WELCOME') { overlay.innerHTML = ''; return; }
       const rect = svgEl.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
 
@@ -3925,21 +2666,22 @@
         const wx = st.x * view.scale + view.x, wy = st.y * view.scale + view.y;
         const sx = wx * scaleFit + offX, sy = wy * scaleFit + offY;
         if (sx < 24 || sx > rect.width - 24 || sy < 24 || sy > rect.height - 135) {
-          const cx = Math.max(48, Math.min(rect.width - 48, sx));
+          const cx = Math.max(54, Math.min(rect.width - 54, sx));
           const cy = Math.max(24, Math.min(rect.height - 145, sy));
           pips.push({ cx, cy, label: st.name, st });
         }
       });
       overlay.innerHTML = pips.slice(0, 5).map(pip => `
-        <div class="absolute w-7 h-7 rounded-full bg-[#002147] text-amber-300 font-bold text-xs flex items-center justify-center shadow-lg border-2 border-amber-300"
+        <button type="button" onclick="focusStation(${pip.st.x}, ${pip.st.y})"
+          class="pointer-events-auto absolute px-2 py-1 rounded-full bg-[#002147]/95 hover:bg-[#00316b] text-amber-300 font-bold text-[10px] flex items-center gap-1 shadow-lg border border-amber-300 transition active:scale-90"
           style="left:${pip.cx}px; top:${pip.cy}px; transform:translate(-50%, -50%);">
-          📍
-        </div>
+          <span>📍</span><span class="max-w-[72px] truncate">${escapeHTML(pip.label)}</span>
+        </button>
       `).join('');
     }
 
     window.focusStation = function (wx, wy) {
-      view.scale = Math.max(1.35, view.scale);
+      view.scale = Math.max(1.4, view.scale);
       view.x = 550 - wx * view.scale; view.y = 580 - wy * view.scale;
       applyMapTransform(); renderMap();
     };
@@ -3974,6 +2716,7 @@
       }
     });
     svgEl.addEventListener('pointerup', e => { pointers.delete(e.pointerId); if (pointers.size < 2) view.pinchStart = 0; view.dragging = false; });
+    svgEl.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if (pointers.size < 2) view.pinchStart = 0; view.dragging = false; });
     svgEl.addEventListener('wheel', e => {
       e.preventDefault();
       const factor = e.deltaY < 0 ? 1.14 : 0.88;
@@ -3984,6 +2727,11 @@
       applyMapTransform(); renderMap();
     }, { passive: false });
 
+    /**
+     * =========================================================================
+     * 6. HUD & SOUVENIR DRAWER SYNC
+     * =========================================================================
+     */
     function syncHUD() {
       const p = activePlayer();
       if (!p) return;
@@ -3993,29 +2741,61 @@
       document.getElementById('status-player-role').textContent = roleMap[p.type] || 'Player';
       document.getElementById('status-player-location').textContent = `Active Turn • ${STATION_MAP.get(p.stationId)?.name || 'Sheldonian'}`;
 
+      const avatarEl = document.getElementById('active-player-avatar');
+      avatarEl.style.backgroundColor = p.color.hex;
+
       const lineBadge = document.getElementById('status-line-badge');
       if (p.currentLine) {
-        lineBadge.textContent = LINES[p.currentLine].name.split(' (')[0];
+        lineBadge.textContent = LINES[p.currentLine].name;
         lineBadge.style.backgroundColor = LINES[p.currentLine].color;
       } else {
         lineBadge.textContent = 'All Connected Lines';
         lineBadge.style.backgroundColor = 'rgba(255,255,255,0.2)';
       }
 
+      const dieBtn = document.getElementById('btn-roll-die');
+      dieBtn.disabled = !(p.type === 'human' && state.phase === 'ROLL_DIE');
+
       const instr = document.getElementById('status-instruction');
-      if (state.phase === 'PLACE_BLOCKERS') instr.textContent = `Tap any stop (except Sheldonian) to place blocker (${state.initialBlockersLeft[state.currentIdx]} remaining). Your destination rings are shown.`;
-      else if (state.phase === 'ROLL_DIE') instr.textContent = p.currentLine ? `Roll the die to travel along ${LINES[p.currentLine].name.split(' (')[0]}.` : `At ${STATION_MAP.get(p.stationId).name}: Roll the die! Any connected line is open.`;
-      else if (state.phase === 'SELECT_MOVE') instr.textContent = `Rolled ${state.dieRoll}! Tap any highlighted stop (1–${state.dieRoll} steps) to preview move.`;
-      else if (state.phase === 'MOVE_BLOCKER') instr.textContent = state.pickedUpBlocker ? `Tap an open station to place blocker (${state.blockerMovesLeft} left).` : `Tap a red closed-station blocker cone on the map to pick it up.`;
-      else if (state.phase === 'GAME_OVER') instr.textContent = 'Match finished! Review map, action log, or telemetry.';
+      if (state.phase === 'PLACE_BLOCKERS') {
+        const left = state.initialBlockersLeft[state.currentIdx] || 0;
+        instr.textContent = `${p.name}: Tap any station (except Sheldonian) to place initial blocker (${left} left).`;
+      } else if (state.phase === 'ROLL_DIE') {
+        instr.textContent = p.type === 'human'
+          ? 'Tap "Roll Die" on the right to begin your movement.'
+          : `${p.name} is rolling the die...`;
+      } else if (state.phase === 'SELECT_MOVE') {
+        instr.textContent = p.type === 'human'
+          ? `Rolled ${state.dieRoll}! Tap a glowing station up to ${state.dieRoll} steps away.`
+          : `${p.name} rolled ${state.dieRoll} and is choosing a destination...`;
+      } else if (state.phase === 'SELECT_DIRECT_STATION' && state.directSelection) {
+        const chooser = state.players.find(pl => pl.id === state.directSelection.chooserId);
+        const target = state.players.find(pl => pl.id === state.directSelection.targetId);
+        instr.textContent = `${chooser?.name || 'Player'}: Tap any station on the map to direct ${target?.name || 'player'} there.`;
+      } else if (state.phase === 'MOVE_BLOCKER') {
+        const mover = (state.blockerActorId !== null
+          ? state.players.find(pl => pl.id === state.blockerActorId)
+          : null) || p;
+        if (state.reopeningFromSix) {
+          instr.textContent = mover.type === 'human'
+            ? `${mover.name}: Tap any open stop (except Sheldonian) to place reopened blocker (${state.blockerMovesLeft} left).`
+            : `${mover.name} is placing reopened blocker(s) (${state.blockerMovesLeft} left)...`;
+        } else if (state.pickedUpBlocker) {
+          instr.textContent = `${mover.name}: Tap an open station (except Sheldonian) to place blocker (${state.blockerMovesLeft} left).`;
+        } else {
+          instr.textContent = `${mover.name}: Tap a red closed-station blocker counter on the map to pick it up.`;
+        }
+      } else if (state.phase === 'GAME_OVER') {
+        instr.textContent = 'Match finished! Review map, action log, or telemetry.';
+      }
 
       const pillsBar = document.getElementById('player-pills-bar');
       pillsBar.innerHTML = state.players.map((pl, idx) => {
         const visitedCount = pl.souvenirs.filter(s => s.visited).length;
         return `
-          <button type="button" onclick="openPlayerInspector(${idx})" title="Inspect ${pl.name}'s progress" style="background:${pl.color.hex};"
-            class="h-7 px-2.5 rounded-full text-white font-extrabold text-xs flex items-center gap-1 shadow transition active:scale-90 shrink-0 opacity-85 hover:opacity-100">
-            <span>🎓 ${visitedCount}</span>
+          <button type="button" onclick="openPlayerInspector(${idx})" title="Inspect ${escapeHTML(pl.name)}'s progress" style="background:${pl.color.hex};"
+            class="h-7 px-3 rounded-full text-white font-extrabold text-xs flex items-center justify-center shadow transition active:scale-90 shrink-0 opacity-90 hover:opacity-100">
+            <span>${visitedCount}</span>
           </button>
         `;
       }).join('');
@@ -4028,7 +2808,6 @@
       document.getElementById('drawer-owner-label').textContent = `(${viewer.name})`;
       document.getElementById('drawer-progress-badge').textContent = visitedNum === viewer.souvenirs.length ? 'Return to Sheldonian!' : `${visitedNum}/${viewer.souvenirs.length}`;
 
-      // Souvenir cards ordered: unvisited first, visited after
       const sortedSouvenirs = [...viewer.souvenirs].sort((a, b) => (a.visited === b.visited ? 0 : a.visited ? 1 : -1));
       const strip = document.getElementById('souvenir-cards-strip');
       strip.innerHTML = sortedSouvenirs.map(card => {
@@ -4037,15 +2816,15 @@
         return `
           <div class="shrink-0 w-32 sm:w-36 rounded-2xl overflow-hidden border-2 bg-white shadow-xs flex flex-col justify-between transition select-none ${card.visited ? 'border-emerald-500 bg-emerald-50/70' : isPulsing ? 'border-[#c83737] ring-2 ring-[#c83737]/40 -translate-y-0.5' : 'border-slate-200 hover:border-[#002147]'}">
             <div style="background:${primaryLine.color};" class="px-2 py-1.5 text-white flex items-center justify-between">
-              <span class="text-[8px] font-bold uppercase tracking-wider truncate max-w-[55%]">${card.lines.join('/')}</span>
+              <span class="text-[8px] font-bold uppercase tracking-wider truncate max-w-[55%]">${escapeHTML(card.lines.join('/'))}</span>
               <div class="flex items-center gap-1">
-                <button type="button" onclick="openSouvenirDetailOverlay(activePlayer(), '${card.stationId}', false)" title="View Full Card" class="w-5 h-5 rounded-md bg-black/25 hover:bg-black/45 text-amber-200 text-[10px] flex items-center justify-center transition">🔍</button>
+                <button type="button" onclick="openSouvenirDetailOverlay(${viewer.id}, '${card.stationId}', false, false)" title="View Full Card" class="w-5 h-5 rounded-md bg-black/25 hover:bg-black/45 text-amber-200 text-[10px] flex items-center justify-center transition">🔍</button>
                 <button type="button" onclick="toggleBeacon('${card.stationId}')" title="Locate on Map" class="w-5 h-5 rounded-md bg-black/25 hover:bg-black/45 text-white text-[10px] flex items-center justify-center transition">📍</button>
               </div>
             </div>
             <div class="p-2 flex-1 cursor-pointer" onclick="toggleBeacon('${card.stationId}')">
-              <div class="font-oxford font-bold text-[11px] text-[#002147] leading-snug truncate">${card.name}</div>
-              <p class="text-[9px] text-slate-500 line-clamp-3 mt-0.5 leading-tight">${card.desc}</p>
+              <div class="font-oxford font-bold text-[11px] text-[#002147] leading-snug truncate">${escapeHTML(card.name)}</div>
+              <p class="text-[9px] text-slate-500 line-clamp-3 mt-0.5 leading-tight">${escapeHTML(card.desc)}</p>
             </div>
             <div class="px-2 pb-1.5 pt-0 text-[9px] font-bold uppercase tracking-wider text-slate-400 text-center bg-slate-50/50">
               ${card.visited ? '✅ Visited' : '○ Pending'}
@@ -4083,27 +2862,29 @@
       if (isSelf) {
         document.getElementById('inspector-list-caption').textContent = 'Your Souvenir Hand (Visited Bold First)';
         listEl.innerHTML = [
-          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${c.name}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
-          ...unvisited.map(c => `<li class="flex items-center justify-between italic text-slate-500 py-1 border-b border-slate-100 last:border-0"><span>○ ${c.name}</span><span class="text-[10px] uppercase">Pending</span></li>`)
+          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${escapeHTML(c.name)}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
+          ...unvisited.map(c => `<li class="flex items-center justify-between italic text-slate-500 py-1 border-b border-slate-100 last:border-0"><span>○ ${escapeHTML(c.name)}</span><span class="text-[10px] uppercase">Pending</span></li>`)
         ].join('');
       } else {
         document.getElementById('inspector-list-caption').textContent = `${targetP.name}'s Souvenir Status`;
         listEl.innerHTML = [
-          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${c.name}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
+          ...visited.map(c => `<li class="flex items-center justify-between font-bold text-[#002147] py-1 border-b border-slate-100"><span>✅ ${escapeHTML(c.name)}</span><span class="text-[10px] uppercase text-emerald-700">Visited</span></li>`),
           ...unvisited.map(c => `<li class="flex items-center justify-between font-mono-tech text-slate-400 py-1 border-b border-slate-100 last:border-0"><span>------</span><span class="text-[10px] uppercase">Unknown</span></li>`)
         ].join('');
       }
       document.getElementById('modal-player-inspector').classList.remove('hidden');
     };
 
-    function openSouvenirDetailOverlay(ownerPlayer, stationId, isArrivalPopup = false) {
+    window.openSouvenirDetailOverlay = function (ownerId, stationId, isArrivalPopup = false, wasTeleported = false, onClosedCallback = null) {
+      const ownerPlayer = state.players.find(pl => pl.id === ownerId) || activePlayer();
+      if (!ownerPlayer) return;
       const card = ownerPlayer.souvenirs.find(s => s.stationId === stationId);
       if (!card) return;
       const primaryLine = LINES[card.lines[0]] || LINES.black;
 
       document.getElementById('souvenir-detail-banner').style.backgroundColor = primaryLine.color;
       document.getElementById('souvenir-detail-line').textContent = card.lines.map(l => LINES[l]?.name || l).join(' • ');
-      document.getElementById('souvenir-detail-name').textContent = card.name;
+      document.getElementById('souvenir-detail-name').textContent = `${card.name}${isArrivalPopup ? ` (${ownerPlayer.name})` : ''}`;
       document.getElementById('souvenir-detail-status').textContent = card.visited ? '✅ Visited' : '📍 Unvisited';
       document.getElementById('souvenir-detail-desc').textContent = card.desc;
 
@@ -4111,10 +2892,14 @@
       closeBtn.textContent = isArrivalPopup ? 'Continue Turn' : 'Close Card';
       closeBtn.onclick = () => {
         document.getElementById('modal-souvenir-detail').classList.add('hidden');
+        if (onClosedCallback) {
+          onClosedCallback();
+          return;
+        }
         if (isArrivalPopup) {
           const p = activePlayer();
           const st = STATION_MAP.get(p.stationId);
-          if (st && st.interchange && st.lines.size > 1) {
+          if (!wasTeleported && st && st.interchange && st.lines.size > 1) {
             if (p.type !== 'human') botDecideInterchangeSwitch(p, st, card);
             else openSwitchLineModal(p, st, card);
           } else {
@@ -4132,8 +2917,13 @@
         syncHUD();
       };
       document.getElementById('modal-souvenir-detail').classList.remove('hidden');
-    }
+    };
 
+    /**
+     * =========================================================================
+     * 7. SETUP ROSTER & SETTINGS EVENT BINDINGS
+     * =========================================================================
+     */
     let setupRoster = [
       { name: 'Player 1', type: 'human' },
       { name: 'Dr. Turing (MCTS)', type: 'hard' },
@@ -4148,7 +2938,7 @@
           <div class="flex-1 min-w-0 flex flex-col gap-2">
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Player Name</label>
-              <input type="text" value="${slot.name}" oninput="setupRoster[${idx}].name = this.value" placeholder="Enter player name..."
+              <input type="text" value="${escapeHTML(slot.name)}" oninput="setupRoster[${idx}].name = this.value" placeholder="Enter player name..."
                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-[#002147] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#002147]" />
             </div>
             <div>
@@ -4182,6 +2972,30 @@
     document.getElementById('btn-start-game').addEventListener('click', () => {
       const autoBlk = document.getElementById('chk-auto-blockers').checked;
       initMatch(setupRoster, autoBlk);
+    });
+
+    document.getElementById('set-sound').addEventListener('change', e => {
+      settings.sound = e.target.checked;
+      sfx.enabled = settings.sound;
+    });
+
+    document.getElementById('set-radar').addEventListener('change', e => {
+      settings.radar = e.target.checked;
+      updateRadarPips();
+    });
+
+    document.getElementById('set-waypoint-labels').addEventListener('change', e => {
+      settings.waypointLabels = e.target.checked;
+      renderMap();
+    });
+
+    document.getElementById('set-bot-confirm').addEventListener('change', e => {
+      settings.botConfirm = e.target.checked;
+    });
+
+    document.getElementById('set-bot-speed').addEventListener('input', e => {
+      settings.botSpeedLevel = parseInt(e.target.value, 10);
+      document.getElementById('set-bot-speed-label').textContent = SPEED_MAP[settings.botSpeedLevel].label;
     });
 
     document.getElementById('btn-cancel-move').addEventListener('click', () => { state.pendingMoveOption = null; document.getElementById('modal-confirm-move').classList.add('hidden'); });
@@ -4251,7 +3065,7 @@
     });
 
     document.getElementById('btn-download-match-log').addEventListener('click', () => {
-      const textLog = state.actionLog.map(item => `[${item.timestamp}] ${item.text}`).join('\n');
+      const textLog = state.actionLog.map(item => `[${item.timestamp}] ${item.text.replace(/<[^>]+>/g, '')}`).join('\n');
       const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textLog);
       const dl = document.createElement('a');
       dl.setAttribute("href", dataStr);
@@ -4271,15 +3085,18 @@
       renderTelemetryCards();
     });
 
-    document.getElementById('btn-return-welcome').addEventListener('click', () => {
+    function resetToWelcomeScreen() {
       clearTimeout(state.botTimer);
       state.phase = 'WELCOME';
       state.telemetryHistory = [];
+      renderTelemetryCards();
       document.getElementById('modal-settings').classList.add('hidden');
       document.getElementById('modal-victory').classList.add('hidden');
       document.getElementById('modal-welcome').classList.remove('hidden');
-    });
+    }
 
+    document.getElementById('btn-return-welcome').addEventListener('click', resetToWelcomeScreen);
+    document.getElementById('btn-play-again').addEventListener('click', resetToWelcomeScreen);
     document.getElementById('btn-close-inspector').addEventListener('click', () => { document.getElementById('modal-player-inspector').classList.add('hidden'); });
 
     window.onload = function () {
