@@ -422,6 +422,7 @@
             class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-slate-800">
             Via Black Line
           </div>
+          <select id="confirm-move-route-select" class="hidden w-full mt-2 p-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800" aria-label="Choose travel line"></select>
         </div>
         <div id="confirm-move-notes"
           class="text-xs text-slate-700 bg-white p-3 rounded-2xl border border-slate-200 space-y-1"></div>
@@ -694,6 +695,12 @@
             <p class="text-xs">Stopping at a <strong>white interchange</strong> lets you switch to another intersecting
               line by drawing a <strong>Hazard card</strong>—even if that stop also completes one of your Souvenir
               destinations!</p>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200">
+            <div class="font-bold text-[#002147] mb-1">4. Blockers</div>
+            <p class="text-xs">A blocker may be placed on any station except the <strong>Sheldonian</strong>, a station
+              already blocked, or a station where <strong>any player is currently standing</strong>. Souvenir destinations
+              are not protected and may be blocked.</p>
           </div>
         </div>
 
@@ -1118,7 +1125,7 @@
      */
     const HAZARD_CARDS = [
       { id: 'work_handed_in', title: 'WORK HANDED IN', count: 8, desc: "You've finished your work and handed it in early. Take an extra turn to celebrate your success!", effect: 'EXTRA_TURN' },
-      { id: 'oxford_graduate', title: 'OXFORD GRADUATE', count: 5, desc: "You've finished your exams, the results are in, and you've passed with flying colours. Move directly to your next destination!", effect: 'GOTO_NEXT_TARGET' },
+      { id: 'oxford_graduate', title: 'OXFORD GRADUATE', count: 5, desc: "You've finished your exams, the results are in, and you've passed with flying colours. Choose any station on the board and go there directly!", effect: 'GOTO_ANYWHERE' },
       { id: 'i_scream_for', title: 'I SCREAM FOR...', count: 5, desc: "In the summer heat you get a hankering for an ice-cream. Head to your favourite branch of G&D's and take a friend with you!", effect: 'GOTO_GDS_FRIEND' },
       { id: 'problem_sheet', title: 'PROBLEM SHEET', count: 5, desc: "You're getting nowhere with question 2(ii)(a) and turn to a friend for advice. Ask a friendly player to direct you anywhere on the board.", effect: 'DIRECT_ANYWHERE' },
       { id: 'freshers_flu', title: "FRESHERS' FLU", count: 4, desc: "In the first weeks of life at university, it's hard to avoid the dreaded freshers' flu. Go to the Jericho Health Centre for some TLC and miss a turn.", effect: 'GOTO_JERICHO_SKIP' },
@@ -1291,10 +1298,13 @@
       dieRoll: null,
       reachableMoves: [],
       pendingMoveOption: null,
+      graduateSelection: null,
+      furthestSelection: null,
       pendingHazard: null,
       directSelection: null,
       blockerMovesLeft: 0,
       blockerActorId: null,
+      blockerForbiddenStationId: null,
       pickedUpBlocker: null,
       reopeningFromSix: false,
       afterBlockerCallback: null,
@@ -1426,7 +1436,10 @@
       state.dieRoll = null;
       state.reachableMoves = [];
       state.directSelection = null;
+      state.graduateSelection = null;
+      state.furthestSelection = null;
       state.blockerActorId = null;
+      state.blockerForbiddenStationId = null;
       state.beaconStationId = null;
       state.actionLog = [];
       state.botTurnLogs = [];
@@ -1485,6 +1498,15 @@
       }
     }
 
+    function playerOccupiesStation(stationId) {
+      return stationId === state.blockerForbiddenStationId || state.players.some(pl => pl.stationId === stationId);
+    }
+
+    function isLegalBlockerDestination(stationId) {
+      return STATION_MAP.has(stationId) && stationId !== 'sheldonian' &&
+        !state.blockers.has(stationId) && !playerOccupiesStation(stationId);
+    }
+
     function placeInitialBlocker(stationId) {
       const p = activePlayer();
       const isBot = p && p.type !== 'human';
@@ -1494,6 +1516,10 @@
       }
       if (state.blockers.has(stationId)) {
         if (!isBot) { sfx.invalid(); showToast('That stop already has a blocking counter.'); }
+        return;
+      }
+      if (playerOccupiesStation(stationId)) {
+        if (!isBot) { sfx.invalid(); showToast('A station occupied by a player cannot be blocked.'); }
         return;
       }
       sfx.blocker();
@@ -1550,6 +1576,10 @@
         }
         const isBot = targetPlayer.type !== 'human';
 
+        // A teleport takes effect before any blocker at the destination is relocated.
+        // This vacates the origin for blocker placement and makes the destination occupied.
+        targetPlayer.stationId = stationId;
+
         const performArrival = () => {
           targetPlayer.stationId = stationId;
           targetPlayer.currentLine = st.lines.size > 1 ? null : Array.from(st.lines)[0];
@@ -1580,6 +1610,7 @@
         };
 
         if (state.blockers.has(stationId)) {
+          state.blockerForbiddenStationId = stationId;
           state.blockers.delete(stationId);
           sfx.blocker();
           const mover = overrideBlockerMover || targetPlayer;
@@ -1597,6 +1628,7 @@
 
           state.afterBlockerCallback = () => {
             state.blockerActorId = null;
+            state.blockerForbiddenStationId = null;
             performArrival();
           };
 
@@ -1640,6 +1672,28 @@
       return best;
     }
 
+    function furthestStationsOnLine(fromId, lineId) {
+      const adj = ADJACENCY[lineId];
+      if (!adj || !adj.has(fromId)) return { stations: [fromId], distance: 0 };
+      const distances = new Map([[fromId, 0]]);
+      const queue = [fromId];
+      for (let i = 0; i < queue.length; i++) {
+        const sid = queue[i];
+        (adj.get(sid) || new Set()).forEach(next => {
+          if (!distances.has(next)) {
+            distances.set(next, distances.get(sid) + 1);
+            queue.push(next);
+          }
+        });
+      }
+      const maxDistance = Math.max(0, ...distances.values());
+      const stations = [...distances.entries()]
+        .filter(([, distance]) => distance === maxDistance)
+        .map(([sid]) => sid)
+        .sort((a, b) => STATION_MAP.get(a).name.localeCompare(STATION_MAP.get(b).name));
+      return { stations, distance: maxDistance };
+    }
+
     function resolveHazardCard() {
       const card = state.pendingHazard;
       if (!card) return;
@@ -1655,13 +1709,21 @@
           addLog(`${escapeHTML(p.name)} gained an extra turn!`, isBot);
           finishTurn();
           break;
-        case 'GOTO_NEXT_TARGET': {
-          const targets = playerObjectives(p);
-          targets.sort((a, b) => blockerAwareDist(p.stationId, a, p.currentLine) - blockerAwareDist(p.stationId, b, p.currentLine));
-          const dest = targets[0];
-          const stName = STATION_MAP.get(dest).name;
-          const msg = `${escapeHTML(p.name)} drew <strong>Oxford Graduate</strong> and proceeded directly to destination <strong>${escapeHTML(stName)}</strong>.`;
-          teleportPlayer(p, dest, msg);
+        case 'GOTO_ANYWHERE': {
+          if (isBot) {
+            // Bots choose a useful objective station; human players may choose any station.
+            const targets = playerObjectives(p);
+            const dest = [...targets].sort((a, b) => graphDist(a, 'sheldonian') - graphDist(b, 'sheldonian'))[0];
+            const stName = STATION_MAP.get(dest).name;
+            const msg = `${escapeHTML(p.name)} drew <strong>Oxford Graduate</strong> and chose to travel directly to <strong>${escapeHTML(stName)}</strong>.`;
+            teleportPlayer(p, dest, msg);
+          } else {
+            state.graduateSelection = { playerId: p.id };
+            state.phase = 'SELECT_GRADUATE_STATION';
+            setCameraMode('full');
+            renderMap();
+            syncHUD();
+          }
           break;
         }
         case 'GOTO_GDS_FRIEND': {
@@ -1739,17 +1801,25 @@
         }
         case 'GOTO_FURTHEST_LINE': {
           const travelLine = p.previousLine || p.currentLine || Array.from(STATION_MAP.get(p.stationId).lines)[0];
-          const adj = ADJACENCY[travelLine];
-          const nodes = adj ? Array.from(adj.keys()) : [p.stationId];
-          const curr = STATION_MAP.get(p.stationId);
-          nodes.sort((a, b) =>
-            Math.hypot(STATION_MAP.get(b).x - curr.x, STATION_MAP.get(b).y - curr.y) -
-            Math.hypot(STATION_MAP.get(a).x - curr.x, STATION_MAP.get(a).y - curr.y)
-          );
-          const furthest = nodes[0] || p.stationId;
-          const stName = STATION_MAP.get(furthest).name;
-          const msg = `${escapeHTML(p.name)} forgot their notes and rushed back along ${escapeHTML(LINES[travelLine]?.name || travelLine)} to <strong>${escapeHTML(stName)}</strong>.`;
-          teleportPlayer(p, furthest, msg);
+          const result = furthestStationsOnLine(p.stationId, travelLine);
+          if (result.stations.length > 1 && !isBot) {
+            state.furthestSelection = { playerId: p.id, lineId: travelLine, stationIds: result.stations };
+            state.phase = 'SELECT_FURTHEST_STATION';
+            setCameraMode('full');
+            renderMap();
+            syncHUD();
+          } else {
+            let destination = result.stations[0];
+            if (isBot && result.stations.length > 1) {
+              const targets = playerObjectives(p);
+              destination = [...result.stations].sort((a, b) =>
+                Math.min(...targets.map(t => graphDist(a, t))) - Math.min(...targets.map(t => graphDist(b, t)))
+              )[0];
+            }
+            const stName = STATION_MAP.get(destination).name;
+            const msg = `${escapeHTML(p.name)} forgot their notes and rushed back along ${escapeHTML(LINES[travelLine]?.name || travelLine)} to <strong>${escapeHTML(stName)}</strong>.`;
+            teleportPlayer(p, destination, msg);
+          }
           break;
         }
         case 'GOTO_BODLEIAN': {
@@ -1818,6 +1888,27 @@
       document.getElementById('modal-direct-player').classList.remove('hidden');
     }
 
+    function handleGraduateStationTap(stationId) {
+      const selection = state.graduateSelection;
+      const player = selection && state.players.find(pl => pl.id === selection.playerId);
+      const station = STATION_MAP.get(stationId);
+      if (!player || !station) return;
+      state.graduateSelection = null;
+      const msg = `${escapeHTML(player.name)} drew <strong>Oxford Graduate</strong> and chose to travel directly to <strong>${escapeHTML(station.name)}</strong>.`;
+      teleportPlayer(player, stationId, msg);
+    }
+
+    function handleFurthestStationTap(stationId) {
+      const selection = state.furthestSelection;
+      if (!selection || !selection.stationIds.includes(stationId)) return;
+      const player = state.players.find(pl => pl.id === selection.playerId);
+      const station = STATION_MAP.get(stationId);
+      if (!player || !station) return;
+      state.furthestSelection = null;
+      const msg = `${escapeHTML(player.name)} forgot their notes and chose <strong>${escapeHTML(station.name)}</strong> from the tied furthest stations on ${escapeHTML(LINES[selection.lineId]?.name || selection.lineId)}.`;
+      teleportPlayer(player, stationId, msg);
+    }
+
     function handleDirectStationTap(stationId) {
       const sel = state.directSelection;
       if (!sel) return;
@@ -1864,6 +1955,10 @@
       }
       if (state.blockers.has(stationId)) {
         if (!isBot) { sfx.invalid(); showToast('That stop already has a blocking counter.'); }
+        return;
+      }
+      if (playerOccupiesStation(stationId)) {
+        if (!isBot) { sfx.invalid(); showToast('A station occupied by a player cannot be blocked.'); }
         return;
       }
       state.blockers.add(stationId);
@@ -1987,8 +2082,7 @@
     }
 
     function pickAIBlockerStation(aiPlayer) {
-      const targets = new Set(playerObjectives(aiPlayer));
-      const cands = STATIONS.filter(s => s.id !== 'sheldonian' && !state.blockers.has(s.id) && !targets.has(s.id));
+      const cands = STATIONS.filter(s => isLegalBlockerDestination(s.id));
       let best = cands[0]?.id;
       let bestScore = -Infinity;
 
@@ -2100,19 +2194,16 @@
       maybeTriggerBotTurn();
     }
 
-    function openMoveConfirmation(stationId) {
-      const opt = state.reachableMoves.find(m => m.stationId === stationId);
+    function renderMoveConfirmationDetails(opt) {
       if (!opt) return;
-      state.pendingMoveOption = opt;
+      const stationId = opt.stationId;
       const st = STATION_MAP.get(stationId);
       const lineName = LINES[opt.lineId]?.name || 'Route';
-
       document.getElementById('confirm-move-steps-badge').textContent = `${opt.steps} step${opt.steps > 1 ? 's' : ''}`;
       document.getElementById('confirm-move-station').textContent = st.name;
       const pill = document.getElementById('confirm-move-line-pill');
       pill.textContent = `Via ${lineName}`;
       pill.style.backgroundColor = LINES[opt.lineId]?.color || '#1e293b';
-
       const notes = [];
       if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
         const names = opt.reopenedBlockers.map(id => escapeHTML(STATION_MAP.get(id)?.name || id)).join(', ');
@@ -2125,8 +2216,21 @@
       if (activeP.souvenirs.every(s => s.visited) && stationId === 'sheldonian') {
         notes.push(`🏆 Returning to the Sheldonian completes your degree and wins the game!`);
       }
-
       document.getElementById('confirm-move-notes').innerHTML = notes.length > 0 ? notes.join('<br>') : 'Standard station stop.';
+    }
+
+    function openMoveConfirmation(stationId) {
+      const options = state.reachableMoves.filter(m => m.stationId === stationId);
+      if (!options.length) return;
+      state.pendingMoveOption = options[0];
+      const routeSelect = document.getElementById('confirm-move-route-select');
+      routeSelect.innerHTML = options.map((opt, idx) => `<option value="${idx}">${escapeHTML(LINES[opt.lineId]?.name || opt.lineId)} Line (${opt.steps} step${opt.steps > 1 ? 's' : ''})</option>`).join('');
+      routeSelect.classList.toggle('hidden', options.length < 2);
+      routeSelect.onchange = () => {
+        state.pendingMoveOption = options[Number(routeSelect.value)] || options[0];
+        renderMoveConfirmationDetails(state.pendingMoveOption);
+      };
+      renderMoveConfirmationDetails(state.pendingMoveOption);
       document.getElementById('modal-confirm-move').classList.remove('hidden');
     }
 
@@ -2277,6 +2381,8 @@
       document.getElementById('hazard-count-badge').textContent = `×${card.count}`;
 
       const box = document.getElementById('hazard-interactive-box');
+      const hazardOk = document.getElementById('btn-hazard-ok');
+      hazardOk.textContent = card.effect === 'GOTO_ANYWHERE' ? 'Choose Destination on Map' : 'Acknowledge & Resolve';
       box.innerHTML = '';
       if (card.effect === 'GOTO_GDS_FRIEND') {
         box.classList.remove('hidden');
@@ -2337,7 +2443,7 @@
 
     function maybeTriggerBotTurn() {
       clearTimeout(state.botTimer);
-      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION') return;
+      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION' || state.phase === 'SELECT_GRADUATE_STATION' || state.phase === 'SELECT_FURTHEST_STATION') return;
       const p = state.phase === 'MOVE_BLOCKER' && state.blockerActorId !== null
         ? state.players.find(pl => pl.id === state.blockerActorId)
         : activePlayer();
@@ -2463,9 +2569,14 @@
           if (!s) return;
           hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="18" fill="rgba(245,158,11,0.28)" stroke="#d97706" stroke-width="3" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
         });
-      } else if (state.phase === 'SELECT_DIRECT_STATION') {
+      } else if (state.phase === 'SELECT_DIRECT_STATION' || state.phase === 'SELECT_GRADUATE_STATION') {
         STATIONS.forEach(s => {
           hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="14" fill="rgba(245,158,11,0.22)" stroke="#d97706" stroke-width="2" class="cursor-pointer" data-sid="${s.id}" />`;
+        });
+      } else if (state.phase === 'SELECT_FURTHEST_STATION' && state.furthestSelection) {
+        state.furthestSelection.stationIds.forEach(sid => {
+          const st = STATION_MAP.get(sid);
+          if (st) hlSVG += `<circle cx="${st.x}" cy="${st.y}" r="19" fill="rgba(245,158,11,0.30)" stroke="#d97706" stroke-width="3" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
         });
       }
       highlightsLayer.innerHTML = hlSVG;
@@ -2484,7 +2595,7 @@
         sightLayer.innerHTML = '';
       }
 
-      const showObjectives = currP && currP.type === 'human' && state.phase !== 'SELECT_DIRECT_STATION' && document.getElementById('modal-pass-phone').classList.contains('hidden');
+      const showObjectives = currP && currP.type === 'human' && !['SELECT_DIRECT_STATION', 'SELECT_GRADUATE_STATION', 'SELECT_FURTHEST_STATION'].includes(state.phase) && document.getElementById('modal-pass-phone').classList.contains('hidden');
       const myObjectives = showObjectives ? new Set(playerObjectives(currP)) : new Set();
       let stSVG = '';
       let lblSVG = '';
@@ -2579,6 +2690,14 @@
     function onStationClicked(stationId) {
       if (state.phase === 'SELECT_DIRECT_STATION') {
         handleDirectStationTap(stationId);
+        return;
+      }
+      if (state.phase === 'SELECT_GRADUATE_STATION') {
+        handleGraduateStationTap(stationId);
+        return;
+      }
+      if (state.phase === 'SELECT_FURTHEST_STATION') {
+        handleFurthestStationTap(stationId);
         return;
       }
       if (state.phase === 'MOVE_BLOCKER') {
@@ -2759,7 +2878,7 @@
       const instr = document.getElementById('status-instruction');
       if (state.phase === 'PLACE_BLOCKERS') {
         const left = state.initialBlockersLeft[state.currentIdx] || 0;
-        instr.textContent = `${p.name}: Tap any station (except Sheldonian) to place initial blocker (${left} left).`;
+        instr.textContent = `${p.name}: Tap an unoccupied station (except Sheldonian) to place initial blocker (${left} left).`;
       } else if (state.phase === 'ROLL_DIE') {
         instr.textContent = p.type === 'human'
           ? 'Tap "Roll Die" on the right to begin your movement.'
@@ -2772,16 +2891,22 @@
         const chooser = state.players.find(pl => pl.id === state.directSelection.chooserId);
         const target = state.players.find(pl => pl.id === state.directSelection.targetId);
         instr.textContent = `${chooser?.name || 'Player'}: Tap any station on the map to direct ${target?.name || 'player'} there.`;
+      } else if (state.phase === 'SELECT_GRADUATE_STATION' && state.graduateSelection) {
+        const graduatePlayer = state.players.find(pl => pl.id === state.graduateSelection.playerId);
+        instr.textContent = `${graduatePlayer?.name || 'Player'}: Choose any station on the map for Oxford Graduate.`;
+      } else if (state.phase === 'SELECT_FURTHEST_STATION' && state.furthestSelection) {
+        const chooser = state.players.find(pl => pl.id === state.furthestSelection.playerId);
+        instr.textContent = `${chooser?.name || 'Player'}: Several stations are tied for furthest on this line. Choose one of the highlighted stations.`;
       } else if (state.phase === 'MOVE_BLOCKER') {
         const mover = (state.blockerActorId !== null
           ? state.players.find(pl => pl.id === state.blockerActorId)
           : null) || p;
         if (state.reopeningFromSix) {
           instr.textContent = mover.type === 'human'
-            ? `${mover.name}: Tap any open stop (except Sheldonian) to place reopened blocker (${state.blockerMovesLeft} left).`
+            ? `${mover.name}: Tap an unoccupied open stop (except Sheldonian) to place reopened blocker (${state.blockerMovesLeft} left).`
             : `${mover.name} is placing reopened blocker(s) (${state.blockerMovesLeft} left)...`;
         } else if (state.pickedUpBlocker) {
-          instr.textContent = `${mover.name}: Tap an open station (except Sheldonian) to place blocker (${state.blockerMovesLeft} left).`;
+          instr.textContent = `${mover.name}: Tap an unoccupied open station (except Sheldonian) to place blocker (${state.blockerMovesLeft} left).`;
         } else {
           instr.textContent = `${mover.name}: Tap a red closed-station blocker counter on the map to pick it up.`;
         }
@@ -2998,7 +3123,7 @@
       document.getElementById('set-bot-speed-label').textContent = SPEED_MAP[settings.botSpeedLevel].label;
     });
 
-    document.getElementById('btn-cancel-move').addEventListener('click', () => { state.pendingMoveOption = null; document.getElementById('modal-confirm-move').classList.add('hidden'); });
+    document.getElementById('btn-cancel-move').addEventListener('click', () => { state.pendingMoveOption = null; document.getElementById('confirm-move-route-select').classList.add('hidden'); document.getElementById('modal-confirm-move').classList.add('hidden'); });
     document.getElementById('btn-accept-move').addEventListener('click', () => { if (state.pendingMoveOption) executeConfirmedMove(state.pendingMoveOption); });
 
     document.getElementById('btn-roll-die').addEventListener('click', handleRollDie);
