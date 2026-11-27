@@ -186,7 +186,9 @@
     <div id="action-log-drawer" class="hidden border-t border-white/15 bg-[#001733] px-3 py-2.5">
       <div class="flex items-center justify-between mb-1.5">
         <span class="text-[11px] font-bold uppercase tracking-wider text-[#b8860b]">Chronological Match Log</span>
-        <button id="btn-close-log" type="button"
+        <div class="flex items-center gap-2">
+          <button id="btn-export-diagnostics" type="button" class="text-[10px] font-bold text-amber-200 px-2 py-1 rounded bg-white/10">Export full log</button>
+          <button id="btn-close-log" type="button"
           class="text-xs text-slate-300 hover:text-white px-2 py-0.5 rounded bg-white/10">Close ✕</button>
       </div>
       <div id="action-log-list" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs text-slate-200 font-mono-tech">
@@ -1304,6 +1306,9 @@
       directSelection: null,
       blockerMovesLeft: 0,
       blockerActorId: null,
+      blockerSequence: null,
+      blockerSequenceCounter: 0,
+      botActionGeneration: 0,
       blockerForbiddenStationId: null,
       pickedUpBlocker: null,
       reopeningFromSix: false,
@@ -1344,7 +1349,7 @@
 
     function addLog(text, isBot = false) {
       const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      state.actionLog.unshift({ timestamp, text });
+      state.actionLog.unshift({ timestamp, text, isBot: !!isBot, epoch: Date.now() });
       if (isBot) state.botTurnLogs.push(text);
       const listEl = document.getElementById('action-log-list');
       listEl.innerHTML = state.actionLog.map(item => `
@@ -1439,6 +1444,12 @@
       state.graduateSelection = null;
       state.furthestSelection = null;
       state.blockerActorId = null;
+      state.blockerSequence = null;
+      state.blockerMovesLeft = 0;
+      state.pickedUpBlocker = null;
+      state.reopeningFromSix = false;
+      state.afterBlockerCallback = null;
+      state.botActionGeneration += 1;
       state.blockerForbiddenStationId = null;
       state.beaconStationId = null;
       state.actionLog = [];
@@ -1617,24 +1628,19 @@
           const moverIsBot = mover.type !== 'human';
           addLog(`🚧 Reopened blocker at ${escapeHTML(st.name)} due to direct arrival (${escapeHTML(mover.name)} relocates it).`, moverIsBot);
 
-          state.blockerMovesLeft = 1;
-          state.blockerActorId = mover.id;
-          state.pickedUpBlocker = '__REOPENED_SIX__';
-          state.reopeningFromSix = true;
-          state.phase = 'MOVE_BLOCKER';
+          state.blockerForbiddenStationId = stationId;
+          beginBlockerSequence({
+            actorId: mover.id, count: 1, source: 'teleport arrival',
+            reopened: true,
+            callback: () => {
+              state.blockerForbiddenStationId = null;
+              performArrival();
+            }
+          });
           setCameraMode('full');
           renderMap();
           syncHUD();
-
-          state.afterBlockerCallback = () => {
-            state.blockerActorId = null;
-            state.blockerForbiddenStationId = null;
-            performArrival();
-          };
-
-          if (moverIsBot) {
-            maybeTriggerBotTurn();
-          }
+          if (moverIsBot) maybeTriggerBotTurn();
           return;
         }
 
@@ -1837,14 +1843,12 @@
         case 'MOVE_ONE_BLOCKER':
         case 'MOVE_ALL_BLOCKERS': {
           if (state.blockers.size === 0) { finishTurn(); return; }
-          state.blockerMovesLeft = card.effect === 'MOVE_ALL_BLOCKERS' ? state.blockers.size : 1;
-          state.blockerActorId = p.id;
-          state.pickedUpBlocker = null;
-          state.afterBlockerCallback = () => {
-            state.blockerActorId = null;
-            finishTurn();
-          };
-          state.phase = 'MOVE_BLOCKER';
+          const moveCount = card.effect === 'MOVE_ALL_BLOCKERS' ? state.blockers.size : 1;
+          beginBlockerSequence({
+            actorId: p.id, count: moveCount, source: card.effect,
+            pendingBlockers: Array.from(state.blockers),
+            callback: () => finishTurn()
+          });
           renderMap();
           syncHUD();
           maybeTriggerBotTurn();
@@ -1930,55 +1934,86 @@
       teleportPlayer(target, stationId, msg);
     }
 
+    function beginBlockerSequence({ actorId, count, source, pendingBlockers = [], reopened = false, callback = null }) {
+      state.blockerSequenceCounter += 1;
+      const id = state.blockerSequenceCounter;
+      state.blockerSequence = {
+        id, actorId, source, remaining: count,
+        pendingBlockers: [...pendingBlockers],
+        reopened: !!reopened,
+        startedAt: Date.now()
+      };
+      state.blockerMovesLeft = count;
+      state.blockerActorId = actorId;
+      state.pickedUpBlocker = reopened ? '__REOPENED_SIX__' : null;
+      state.reopeningFromSix = !!reopened;
+      state.afterBlockerCallback = callback;
+      state.phase = 'MOVE_BLOCKER';
+      addLog(`Blocker sequence #${id} started (${source}); ${count} placement(s) required.`);
+      return id;
+    }
+
+    function completeBlockerSequence(sequenceId) {
+      const seq = state.blockerSequence;
+      if (!seq || seq.id !== sequenceId) return;
+      addLog(`Blocker sequence #${sequenceId} completed.`);
+      state.blockerSequence = null;
+      state.blockerMovesLeft = 0;
+      state.pickedUpBlocker = null;
+      state.reopeningFromSix = false;
+      state.blockerActorId = null;
+      const cb = state.afterBlockerCallback;
+      state.afterBlockerCallback = null;
+      if (cb) cb();
+      else finishTurn();
+    }
+
     function handleBlockerRelocateTap(stationId) {
-      const p = (state.blockerActorId !== null
-        ? state.players.find(pl => pl.id === state.blockerActorId)
-        : null) || activePlayer();
+      const seq = state.blockerSequence;
+      if (!seq || state.phase !== 'MOVE_BLOCKER' || seq.remaining <= 0) return;
+      const p = state.players.find(pl => pl.id === seq.actorId);
+      if (!p) return;
       const isBot = p.type !== 'human';
 
+      // Ordinary card-driven sequences must pick each original blocker at most once.
       if (!state.pickedUpBlocker) {
-        if (!state.blockers.has(stationId)) {
-          if (!isBot) { sfx.invalid(); showToast('Tap a red blocker counter to pick it up first.'); }
+        if (!seq.pendingBlockers.includes(stationId) || !state.blockers.has(stationId)) {
+          if (!isBot) { sfx.invalid(); showToast('Tap a blocker that is still awaiting relocation.'); }
           return;
         }
+        seq.pendingBlockers = seq.pendingBlockers.filter(id => id !== stationId);
         state.blockers.delete(stationId);
         state.pickedUpBlocker = stationId;
+        addLog(`Blocker sequence #${seq.id}: picked up blocker at ${STATION_MAP.get(stationId)?.name || stationId}.`, isBot);
         sfx.blocker();
         renderMap();
         syncHUD();
         return;
       }
 
-      if (stationId === 'sheldonian') {
-        if (!isBot) { sfx.invalid(); showToast('The Sheldonian Theatre cannot be blocked.'); }
+      if (!isLegalBlockerDestination(stationId)) {
+        if (!isBot) {
+          sfx.invalid();
+          showToast(stationId === 'sheldonian' ? 'The Sheldonian Theatre cannot be blocked.' :
+            state.blockers.has(stationId) ? 'That stop already has a blocking counter.' :
+            playerOccupiesStation(stationId) ? 'A station occupied by a player cannot be blocked.' :
+            'That is not a legal blocker location.');
+        }
         return;
       }
-      if (state.blockers.has(stationId)) {
-        if (!isBot) { sfx.invalid(); showToast('That stop already has a blocking counter.'); }
-        return;
-      }
-      if (playerOccupiesStation(stationId)) {
-        if (!isBot) { sfx.invalid(); showToast('A station occupied by a player cannot be blocked.'); }
-        return;
-      }
+
       state.blockers.add(stationId);
-      state.blockerMovesLeft--;
+      seq.remaining -= 1;
+      state.blockerMovesLeft = seq.remaining;
       sfx.blocker();
+      const stName = STATION_MAP.get(stationId)?.name || stationId;
+      addLog(`${escapeHTML(p.name)} relocated a blocker to <strong>${escapeHTML(stName)}</strong>.`, isBot);
+      addLog(`Blocker sequence #${seq.id}: placement accepted; ${seq.remaining} remaining.`, isBot);
 
-      const stName = STATION_MAP.get(stationId).name;
-      const placementMsg = `${escapeHTML(p.name)} relocated a blocker to <strong>${escapeHTML(stName)}</strong>.`;
-      addLog(placementMsg, isBot);
-
-      if (state.blockerMovesLeft <= 0) {
-        state.pickedUpBlocker = null;
-        state.reopeningFromSix = false;
-        state.blockerActorId = null;
-        const cb = state.afterBlockerCallback;
-        state.afterBlockerCallback = null;
-        if (cb) cb();
-        else finishTurn();
+      if (seq.remaining <= 0) {
+        completeBlockerSequence(seq.id);
       } else {
-        state.pickedUpBlocker = state.reopeningFromSix ? '__REOPENED_SIX__' : null;
+        state.pickedUpBlocker = seq.reopened ? '__REOPENED_SIX__' : null;
         renderMap();
         syncHUD();
       }
@@ -2099,8 +2134,8 @@
       return best;
     }
 
-    function pickAIBlockerToRemove(aiPlayer) {
-      const blockersArr = Array.from(state.blockers);
+    function pickAIBlockerToRemove(aiPlayer, eligibleBlockers = Array.from(state.blockers)) {
+      const blockersArr = eligibleBlockers.filter(id => state.blockers.has(id));
       if (blockersArr.length === 0) return null;
       const targets = playerObjectives(aiPlayer);
       let bestBlocker = blockersArr[0];
@@ -2183,7 +2218,32 @@
 
       if (state.reachableMoves.length === 0) {
         addLog(`${escapeHTML(p.name)} rolled a ${d} with no valid moves available.`, p.type !== 'human');
-        setTimeout(() => finishTurn(), 700);
+        const currentStation = STATION_MAP.get(p.stationId);
+        if (currentStation?.interchange && currentStation.lines.size > 1) {
+          addLog(`${escapeHTML(p.name)} is trapped but may still change lines at ${escapeHTML(currentStation.name)}.`, p.type !== 'human');
+          if (p.type === 'human') {
+            openSwitchLineModal(p, currentStation, null);
+            const opts = document.getElementById('switch-line-options');
+            if (!document.getElementById('btn-trapped-end-turn')) {
+              const end = document.createElement('button');
+              end.id = 'btn-trapped-end-turn';
+              end.type = 'button';
+              end.className = 'w-full p-3 rounded-2xl bg-slate-200 text-slate-800 font-bold text-xs';
+              end.textContent = 'End Turn Without Switching';
+              end.onclick = () => {
+                document.getElementById('modal-switch-line').classList.add('hidden');
+                finishTurn();
+              };
+              opts.appendChild(end);
+            } else {
+              document.getElementById('btn-trapped-end-turn').classList.remove('hidden');
+            }
+          } else {
+            botDecideInterchangeSwitch(p, currentStation, null);
+          }
+        } else {
+          setTimeout(() => finishTurn(), 700);
+        }
         return;
       }
 
@@ -2303,15 +2363,11 @@
 
       if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
         state.reachableMoves = [];
-        state.blockerMovesLeft = opt.reopenedBlockers.length;
-        state.blockerActorId = p.id;
-        state.reopeningFromSix = true;
-        state.pickedUpBlocker = '__REOPENED_SIX__';
-        state.afterBlockerCallback = () => {
-          state.blockerActorId = null;
-          completeArrivalSequence();
-        };
-        state.phase = 'MOVE_BLOCKER';
+        beginBlockerSequence({
+          actorId: p.id, count: opt.reopenedBlockers.length, source: 'rolled six',
+          reopened: true,
+          callback: () => completeArrivalSequence()
+        });
         setCameraMode('full');
         renderMap();
         syncHUD();
@@ -2347,6 +2403,8 @@
         `;
       }).join('');
 
+      const trappedEndTurn = document.getElementById('btn-trapped-end-turn');
+      if (trappedEndTurn) trappedEndTurn.classList.add('hidden');
       document.getElementById('modal-switch-line').classList.remove('hidden');
     }
 
@@ -2417,7 +2475,9 @@
       const targets = playerObjectives(p);
       const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(p);
       let bestLine = p.currentLine;
-      let bestD = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, p.currentLine)));
+      let bestD = p.currentLine
+        ? Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, p.currentLine)))
+        : Infinity;
 
       st.lines.forEach(lid => {
         if (lid === p.currentLine) return;
@@ -2426,6 +2486,7 @@
         if (d + effectiveThreshold < bestD) { bestD = d; bestLine = lid; }
       });
 
+      if (!bestLine && st.lines.size > 0) bestLine = Array.from(st.lines)[0];
       if (bestLine === p.currentLine && pathObstructed && p.type !== 'easy') {
         const altLines = Array.from(st.lines).filter(lid => lid !== p.currentLine);
         if (altLines.length > 0 && Math.random() < (0.45 + hazardUtility * 0.45)) {
@@ -2443,6 +2504,7 @@
 
     function maybeTriggerBotTurn() {
       clearTimeout(state.botTimer);
+      const actionGeneration = ++state.botActionGeneration;
       if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION' || state.phase === 'SELECT_GRADUATE_STATION' || state.phase === 'SELECT_FURTHEST_STATION') return;
       const p = state.phase === 'MOVE_BLOCKER' && state.blockerActorId !== null
         ? state.players.find(pl => pl.id === state.blockerActorId)
@@ -2452,7 +2514,18 @@
       const delay = SPEED_MAP[settings.botSpeedLevel].ms;
       const profile = BOT_PROFILES[p.type];
 
+      const expectedPhase = state.phase;
+      const expectedActorId = p.id;
+      const expectedSequenceId = state.blockerSequence?.id ?? null;
       state.botTimer = setTimeout(() => {
+        if (actionGeneration !== state.botActionGeneration) return;
+        if (state.phase !== expectedPhase) return;
+        const currentActor = state.phase === 'MOVE_BLOCKER'
+          ? state.players.find(pl => pl.id === state.blockerActorId)
+          : activePlayer();
+        if (!currentActor || currentActor.id !== expectedActorId) return;
+        if (expectedPhase === 'MOVE_BLOCKER' &&
+            (!state.blockerSequence || state.blockerSequence.id !== expectedSequenceId)) return;
         if (state.phase === 'PLACE_BLOCKERS') {
           const stId = pickAIBlockerStation(p);
           placeInitialBlocker(stId);
@@ -2496,23 +2569,26 @@
 
           executeConfirmedMove(bestOpt);
         } else if (state.phase === 'MOVE_BLOCKER') {
-          if (!state.reopeningFromSix && !state.pickedUpBlocker && state.blockers.size > 0) {
-            const targetB = pickAIBlockerToRemove(p) || Array.from(state.blockers)[0];
+          const seq = state.blockerSequence;
+          if (!seq || seq.id !== expectedSequenceId) return;
+          if (!state.pickedUpBlocker) {
+            const candidates = seq.pendingBlockers.filter(id => state.blockers.has(id));
+            if (!candidates.length) {
+              addLog(`Blocker sequence #${seq.id} paused: no unprocessed blocker remains to pick up.`);
+              return;
+            }
+            const targetB = pickAIBlockerToRemove(p, candidates) || candidates[0];
             handleBlockerRelocateTap(targetB);
-            maybeTriggerBotTurn();
+            if (state.phase === 'MOVE_BLOCKER' && state.blockerSequence?.id === expectedSequenceId) maybeTriggerBotTurn();
           } else {
             const destB = pickAIBlockerStation(p);
             if (destB) {
               handleBlockerRelocateTap(destB);
-              if (state.phase === 'MOVE_BLOCKER') maybeTriggerBotTurn();
+              if (state.phase === 'MOVE_BLOCKER' && state.blockerSequence?.id === expectedSequenceId) maybeTriggerBotTurn();
             } else {
-              state.pickedUpBlocker = null;
-              state.reopeningFromSix = false;
-              state.blockerActorId = null;
-              const cb = state.afterBlockerCallback;
-              state.afterBlockerCallback = null;
-              if (cb) cb();
-              else finishTurn();
+              addLog(`Blocker sequence #${seq.id} paused safely: no legal destination exists; blocker remains held.`);
+              renderMap();
+              syncHUD();
             }
           }
         }
@@ -3189,14 +3265,45 @@
       setCameraMode('full');
     });
 
-    document.getElementById('btn-download-match-log').addEventListener('click', () => {
-      const textLog = state.actionLog.map(item => `[${item.timestamp}] ${item.text.replace(/<[^>]+>/g, '')}`).join('\n');
-      const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textLog);
+    function exportFullDiagnostics() {
+      const players = state.players.map(p => ({
+        id: p.id, name: p.name, type: p.type, stationId: p.stationId,
+        stationName: STATION_MAP.get(p.stationId)?.name || p.stationId,
+        currentLine: p.currentLine, previousLine: p.previousLine,
+        souvenirs: p.souvenirs.map(x => ({ name: x.name, stationId: x.stationId, visited: x.visited })),
+        skipNextTurn: !!p.skipNextTurn, extraTurn: !!p.extraTurn
+      }));
+      const diagnostics = {
+        exportType: 'Oxford Game full match diagnostics',
+        exportedAt: new Date().toISOString(),
+        gameVersion: 'Engine Audit 3',
+        phase: state.phase,
+        currentPlayerIndex: state.currentIdx,
+        dieRoll: state.dieRoll,
+        players,
+        blockers: Array.from(state.blockers).map(id => ({ stationId: id, stationName: STATION_MAP.get(id)?.name || id })),
+        blockerState: {
+          movesLeft: state.blockerMovesLeft, actorId: state.blockerActorId,
+          pickedUpBlocker: state.pickedUpBlocker, reopeningFromSix: state.reopeningFromSix,
+          sequence: state.blockerSequence
+        },
+        hazardDeckRemaining: state.hazardDeck.length,
+        hazardDiscard: state.hazardDiscard.map(c => ({ title: c.title, effect: c.effect })),
+        actionLog: state.actionLog.map(item => ({ ...item, text: item.text.replace(/<[^>]+>/g, '') })).reverse(),
+        aiTelemetry: state.telemetryHistory,
+        botTurnLogs: state.botTurnLogs
+      };
+      const blob = new Blob([JSON.stringify(diagnostics, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
       const dl = document.createElement('a');
-      dl.setAttribute("href", dataStr);
-      dl.setAttribute("download", `oxford_game_match_log_${Date.now()}.txt`);
+      dl.href = url;
+      dl.download = `oxford_game_diagnostics_${Date.now()}.json`;
       document.body.appendChild(dl); dl.click(); dl.remove();
-    });
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      addLog('Full match diagnostics exported.');
+    }
+    document.getElementById('btn-export-diagnostics').addEventListener('click', exportFullDiagnostics);
+    document.getElementById('btn-download-match-log').addEventListener('click', exportFullDiagnostics);
 
     document.getElementById('btn-download-telemetry').addEventListener('click', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.telemetryHistory, null, 2));
@@ -3212,6 +3319,8 @@
 
     function resetToWelcomeScreen() {
       clearTimeout(state.botTimer);
+      state.botActionGeneration += 1;
+      state.blockerSequence = null;
       state.phase = 'WELCOME';
       state.telemetryHistory = [];
       renderTelemetryCards();
