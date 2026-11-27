@@ -1347,10 +1347,10 @@
       return card;
     }
 
-    function addLog(text, isBot = false, debugOnly = false) {
+    function addLog(text, isBot = false, debugOnly = false, includeInBotSummary = true) {
       const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       state.actionLog.unshift({ timestamp, text, isBot: !!isBot, debugOnly: !!debugOnly, epoch: Date.now() });
-      if (isBot && !debugOnly) state.botTurnLogs.push(text);
+      if (isBot && !debugOnly && includeInBotSummary) state.botTurnLogs.push(text);
       const listEl = document.getElementById('action-log-list');
       listEl.innerHTML = state.actionLog.filter(item => !item.debugOnly).map(item => `
         <div class="border-b border-white/10 pb-1 last:border-0">
@@ -2233,7 +2233,9 @@
       setTimeout(() => document.getElementById('btn-roll-die').classList.remove('die-rolling'), 450);
 
       state.reachableMoves = computeReachableMoves(p.stationId, p.currentLine, d, d === 6);
-      addLog(`${escapeHTML(p.name)} rolled a ${d}.`, p.type !== 'human');
+      // Keep the roll in the chronological live log, but don't repeat it at the
+      // top of the bot summary: the detailed Dice Roll entry is added with its route.
+      addLog(`${escapeHTML(p.name)} rolled a ${d}.`, p.type !== 'human', false, false);
 
       if (state.reachableMoves.length === 0) {
         addLog(`${escapeHTML(p.name)} rolled a ${d} with no valid moves available.`, p.type !== 'human');
@@ -2334,18 +2336,25 @@
                         `📍 <strong>Route:</strong> Traveled from ${escapeHTML(startStName)} along the <strong>${escapeHTML(lineName)}</strong> to arrive at <strong>${escapeHTML(st.name)}</strong>.`;
       
       if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
+        // The completed blocker sequence supplies the useful from → to report.
+        // Do not add a second, less-informative list of reopened station names here.
         opt.reopenedBlockers.forEach(bid => state.blockers.delete(bid));
-        const blkNames = opt.reopenedBlockers.map(id => escapeHTML(STATION_MAP.get(id)?.name || id)).join(', ');
-        summaryText += `<br>🚧 <strong>Blocker Capture:</strong> Passed through and reopened ${opt.reopenedBlockers.length} blocker(s): ${blkNames}.`;
       }
+
+      // When blockers were reopened, log the dice/route before the blocker
+      // sequence completes. Its from → to report is then appended immediately
+      // afterwards, in the intended player-facing order.
+      const routeSummaryLogged = !!(opt.reopenedBlockers && opt.reopenedBlockers.length > 0);
+      if (routeSummaryLogged) addLog(summaryText, isBot);
 
       const completeArrivalSequence = () => {
         if (souvenirCard) {
           souvenirCard.visited = true;
           sfx.stamp();
           const visitedCount = p.souvenirs.filter(s => s.visited).length;
-          summaryText += `<br>🎓 <strong>Souvenir Stamped:</strong> Successfully visited destination <strong>${escapeHTML(souvenirCard.name)}</strong> (${visitedCount}/${p.souvenirs.length} visited)!`;
-          addLog(summaryText, isBot);
+          const souvenirSummary = `🎓 <strong>Souvenir Stamped:</strong> Successfully visited destination <strong>${escapeHTML(souvenirCard.name)}</strong> (${visitedCount}/${p.souvenirs.length} visited)!`;
+          if (routeSummaryLogged) addLog(souvenirSummary, isBot);
+          else addLog(summaryText + `<br>` + souvenirSummary, isBot);
 
           if (p.souvenirs.every(s => s.visited) && opt.stationId === 'sheldonian') {
             declareVictory(p);
@@ -2365,17 +2374,17 @@
         }
 
         if (p.souvenirs.every(s => s.visited) && opt.stationId === 'sheldonian') {
-          addLog(summaryText, isBot);
+          if (!routeSummaryLogged) addLog(summaryText, isBot);
           declareVictory(p);
           return;
         }
 
         if (st.interchange && st.lines.size > 1) {
-          addLog(summaryText, isBot);
+          if (!routeSummaryLogged) addLog(summaryText, isBot);
           if (isBot) botDecideInterchangeSwitch(p, st, null);
           else openSwitchLineModal(p, st, null);
         } else {
-          addLog(summaryText, isBot);
+          if (!routeSummaryLogged) addLog(summaryText, isBot);
           finishTurn();
         }
       };
