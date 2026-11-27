@@ -513,8 +513,8 @@
   <!-- ===================================================================== -->
   <div id="modal-bot-summary"
     class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#f8f5ee] w-full max-w-sm rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden">
-      <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center gap-3">
+    <div class="bg-[#f8f5ee] w-full max-w-sm max-h-[88dvh] rounded-3xl border-2 border-[#002147] shadow-2xl overflow-hidden flex flex-col">
+      <div class="bg-[#002147] text-white px-5 py-3.5 flex items-center gap-3 shrink-0">
         <div id="bot-summary-avatar"
           class="w-9 h-9 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shrink-0">
           🎓</div>
@@ -524,8 +524,8 @@
           <h3 id="bot-summary-name" class="font-oxford font-bold text-base">Dr. Turing (MCTS)</h3>
         </div>
       </div>
-      <div class="p-5 space-y-4">
-        <p id="bot-summary-text" class="text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200 leading-relaxed font-sans"></p>
+      <div class="p-5 space-y-4 flex flex-col min-h-0">
+        <p id="bot-summary-text" class="text-xs sm:text-sm text-slate-800 bg-white p-3.5 rounded-2xl border border-slate-200 leading-relaxed font-sans max-h-[58dvh] overflow-y-auto overscroll-contain"></p>
         <button id="btn-bot-continue" type="button"
           class="w-full py-3 rounded-2xl bg-[#002147] hover:bg-[#00336e] text-amber-300 font-bold text-sm shadow-lg active:scale-95 transition">Continue</button>
       </div>
@@ -1347,12 +1347,12 @@
       return card;
     }
 
-    function addLog(text, isBot = false) {
+    function addLog(text, isBot = false, debugOnly = false) {
       const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      state.actionLog.unshift({ timestamp, text, isBot: !!isBot, epoch: Date.now() });
-      if (isBot) state.botTurnLogs.push(text);
+      state.actionLog.unshift({ timestamp, text, isBot: !!isBot, debugOnly: !!debugOnly, epoch: Date.now() });
+      if (isBot && !debugOnly) state.botTurnLogs.push(text);
       const listEl = document.getElementById('action-log-list');
-      listEl.innerHTML = state.actionLog.map(item => `
+      listEl.innerHTML = state.actionLog.filter(item => !item.debugOnly).map(item => `
         <div class="border-b border-white/10 pb-1 last:border-0">
           <span class="text-amber-300">[${item.timestamp}]</span> ${item.text}
         </div>
@@ -1444,12 +1444,6 @@
       state.graduateSelection = null;
       state.furthestSelection = null;
       state.blockerActorId = null;
-      state.blockerSequence = null;
-      state.blockerMovesLeft = 0;
-      state.pickedUpBlocker = null;
-      state.reopeningFromSix = false;
-      state.afterBlockerCallback = null;
-      state.botActionGeneration += 1;
       state.blockerForbiddenStationId = null;
       state.beaconStationId = null;
       state.actionLog = [];
@@ -1631,7 +1625,7 @@
           state.blockerForbiddenStationId = stationId;
           beginBlockerSequence({
             actorId: mover.id, count: 1, source: 'teleport arrival',
-            reopened: true,
+            pendingBlockers: [stationId], reopened: true,
             callback: () => {
               state.blockerForbiddenStationId = null;
               performArrival();
@@ -1941,6 +1935,9 @@
         id, actorId, source, remaining: count,
         pendingBlockers: [...pendingBlockers],
         reopened: !!reopened,
+        sourceStations: [...pendingBlockers],
+        currentFrom: null,
+        movedPairs: [],
         startedAt: Date.now()
       };
       state.blockerMovesLeft = count;
@@ -1949,14 +1946,33 @@
       state.reopeningFromSix = !!reopened;
       state.afterBlockerCallback = callback;
       state.phase = 'MOVE_BLOCKER';
-      addLog(`Blocker sequence #${id} started (${source}); ${count} placement(s) required.`);
+      addLog(`Blocker sequence #${id} started (${source}); ${count} placement(s) required.`, false, true);
       return id;
     }
 
     function completeBlockerSequence(sequenceId) {
       const seq = state.blockerSequence;
       if (!seq || seq.id !== sequenceId) return;
-      addLog(`Blocker sequence #${sequenceId} completed.`);
+      const moved = seq.movedPairs || [];
+      if (moved.length) {
+        const pairs = moved.map(pair => {
+          const from = STATION_MAP.get(pair.from)?.name || pair.from || 'reopened station';
+          const to = STATION_MAP.get(pair.to)?.name || pair.to;
+          return `${escapeHTML(from)} → ${escapeHTML(to)}`;
+        });
+        const actor = state.players.find(pl => pl.id === seq.actorId);
+        const actorName = escapeHTML(actor?.name || 'Player');
+        if (seq.source === 'rolled six') {
+          addLog(`🚧 <strong>Blocker Capture:</strong> Reopened and relocated ${moved.length} blocker(s):<br>${pairs.join('<br>')}`, actor?.type !== 'human');
+        } else if (seq.source === 'teleport arrival') {
+          addLog(`🚧 <strong>${actorName} moved blocker:</strong> ${pairs.join('; ')}.`, actor?.type !== 'human');
+        } else if (moved.length > 1) {
+          addLog(`🚧 <strong>${actorName} rearranged ${moved.length} blocker(s):</strong><br>${pairs.join('<br>')}`, actor?.type !== 'human');
+        } else {
+          addLog(`🚧 <strong>${actorName} moved a blocker:</strong> ${pairs[0]}.`, actor?.type !== 'human');
+        }
+      }
+      addLog(`Blocker sequence #${sequenceId} completed.`, false, true);
       state.blockerSequence = null;
       state.blockerMovesLeft = 0;
       state.pickedUpBlocker = null;
@@ -1982,9 +1998,10 @@
           return;
         }
         seq.pendingBlockers = seq.pendingBlockers.filter(id => id !== stationId);
+        seq.currentFrom = stationId;
         state.blockers.delete(stationId);
         state.pickedUpBlocker = stationId;
-        addLog(`Blocker sequence #${seq.id}: picked up blocker at ${STATION_MAP.get(stationId)?.name || stationId}.`, isBot);
+        addLog(`Blocker sequence #${seq.id}: picked up blocker at ${STATION_MAP.get(stationId)?.name || stationId}.`, isBot, true);
         sfx.blocker();
         renderMap();
         syncHUD();
@@ -2003,12 +2020,13 @@
       }
 
       state.blockers.add(stationId);
+      const fromId = seq.currentFrom || seq.sourceStations.shift() || null;
+      seq.movedPairs.push({ from: fromId, to: stationId });
+      seq.currentFrom = null;
       seq.remaining -= 1;
       state.blockerMovesLeft = seq.remaining;
       sfx.blocker();
-      const stName = STATION_MAP.get(stationId)?.name || stationId;
-      addLog(`${escapeHTML(p.name)} relocated a blocker to <strong>${escapeHTML(stName)}</strong>.`, isBot);
-      addLog(`Blocker sequence #${seq.id}: placement accepted; ${seq.remaining} remaining.`, isBot);
+      addLog(`Blocker sequence #${seq.id}: placement accepted; ${seq.remaining} remaining.`, isBot, true);
 
       if (seq.remaining <= 0) {
         completeBlockerSequence(seq.id);
@@ -2017,6 +2035,21 @@
         renderMap();
         syncHUD();
       }
+    }
+
+    function showBotSummaryStage(player, lines, onContinue) {
+      const profile = BOT_PROFILES[player.type];
+      document.getElementById('bot-summary-avatar').style.backgroundColor = player.color.hex;
+      document.getElementById('bot-summary-tier').textContent = profile.tier;
+      document.getElementById('bot-summary-name').textContent = player.name;
+      document.getElementById('bot-summary-text').innerHTML = lines.join('<br><br>');
+      document.getElementById('btn-bot-continue').onclick = () => {
+        document.getElementById('modal-bot-summary').classList.add('hidden');
+        onContinue();
+      };
+      document.getElementById('modal-bot-summary').classList.remove('hidden');
+      renderMap();
+      syncHUD();
     }
 
     function finishTurn() {
@@ -2066,21 +2099,7 @@
         state.botTurnLogs = [];
 
         if (settings.botConfirm) {
-          const profile = BOT_PROFILES[finishedPlayer.type];
-          const av = document.getElementById('bot-summary-avatar');
-          av.style.backgroundColor = finishedPlayer.color.hex;
-          document.getElementById('bot-summary-tier').textContent = profile.tier;
-          document.getElementById('bot-summary-name').textContent = finishedPlayer.name;
-          document.getElementById('bot-summary-text').innerHTML = logsCopy.join('<br><br>');
-
-          const btnCont = document.getElementById('btn-bot-continue');
-          btnCont.onclick = () => {
-            document.getElementById('modal-bot-summary').classList.add('hidden');
-            advanceToNextPlayer();
-          };
-          document.getElementById('modal-bot-summary').classList.remove('hidden');
-          renderMap();
-          syncHUD();
+          showBotSummaryStage(finishedPlayer, logsCopy, advanceToNextPlayer);
           return;
         }
       }
@@ -2317,7 +2336,7 @@
       if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
         opt.reopenedBlockers.forEach(bid => state.blockers.delete(bid));
         const blkNames = opt.reopenedBlockers.map(id => escapeHTML(STATION_MAP.get(id)?.name || id)).join(', ');
-        summaryText += `<br>🚧 <strong>Blocker Capture:</strong> Passed through and reopened ${opt.reopenedBlockers.length} blocker(s) at (${blkNames}).`;
+        summaryText += `<br>🚧 <strong>Blocker Capture:</strong> Passed through and reopened ${opt.reopenedBlockers.length} blocker(s): ${blkNames}.`;
       }
 
       const completeArrivalSequence = () => {
@@ -2365,7 +2384,7 @@
         state.reachableMoves = [];
         beginBlockerSequence({
           actorId: p.id, count: opt.reopenedBlockers.length, source: 'rolled six',
-          reopened: true,
+          pendingBlockers: opt.reopenedBlockers, reopened: true,
           callback: () => completeArrivalSequence()
         });
         setCameraMode('full');
@@ -2419,10 +2438,12 @@
         const card = drawHazard();
         state.pendingHazard = card;
         sfx.hazard();
-        const switchText = `🔀 <strong>Interchange Switch:</strong> Switched lines to <strong>${escapeHTML(LINES[lineId].name)}</strong> and drew Hazard card: <em>${escapeHTML(card.title)}</em> (${escapeHTML(card.desc)}).`;
+        const switchText = `🔀 <strong>Interchange Switch:</strong> Switched lines to <strong>${escapeHTML(LINES[lineId].name)}</strong> and drew a Hazard card.`;
         addLog(switchText, isBot);
         if (isBot) {
-          resolveHazardCard();
+          const preHazardLines = [...state.botTurnLogs];
+          state.botTurnLogs = [];
+          showBotSummaryStage(p, preHazardLines, () => openHazardModal(card));
         } else {
           openHazardModal(card);
         }
@@ -2475,9 +2496,7 @@
       const targets = playerObjectives(p);
       const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(p);
       let bestLine = p.currentLine;
-      let bestD = p.currentLine
-        ? Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, p.currentLine)))
-        : Infinity;
+      let bestD = Math.min(...targets.map(t => blockerAwareDist(p.stationId, t, p.currentLine)));
 
       st.lines.forEach(lid => {
         if (lid === p.currentLine) return;
@@ -2486,7 +2505,6 @@
         if (d + effectiveThreshold < bestD) { bestD = d; bestLine = lid; }
       });
 
-      if (!bestLine && st.lines.size > 0) bestLine = Array.from(st.lines)[0];
       if (bestLine === p.currentLine && pathObstructed && p.type !== 'easy') {
         const altLines = Array.from(st.lines).filter(lid => lid !== p.currentLine);
         if (altLines.length > 0 && Math.random() < (0.45 + hazardUtility * 0.45)) {
@@ -2574,7 +2592,7 @@
           if (!state.pickedUpBlocker) {
             const candidates = seq.pendingBlockers.filter(id => state.blockers.has(id));
             if (!candidates.length) {
-              addLog(`Blocker sequence #${seq.id} paused: no unprocessed blocker remains to pick up.`);
+              addLog(`Blocker sequence #${seq.id} paused: no unprocessed blocker remains to pick up.`, false, true);
               return;
             }
             const targetB = pickAIBlockerToRemove(p, candidates) || candidates[0];
@@ -2586,7 +2604,7 @@
               handleBlockerRelocateTap(destB);
               if (state.phase === 'MOVE_BLOCKER' && state.blockerSequence?.id === expectedSequenceId) maybeTriggerBotTurn();
             } else {
-              addLog(`Blocker sequence #${seq.id} paused safely: no legal destination exists; blocker remains held.`);
+              addLog(`Blocker sequence #${seq.id} paused safely: no legal destination exists; blocker remains held.`, false, true);
               renderMap();
               syncHUD();
             }
@@ -3276,7 +3294,7 @@
       const diagnostics = {
         exportType: 'Oxford Game full match diagnostics',
         exportedAt: new Date().toISOString(),
-        gameVersion: 'Engine Audit 3',
+        gameVersion: 'Engine Audit 4',
         phase: state.phase,
         currentPlayerIndex: state.currentIdx,
         dieRoll: state.dieRoll,
