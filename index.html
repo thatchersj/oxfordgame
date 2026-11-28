@@ -171,6 +171,7 @@
         <p id="status-instruction" class="text-xs sm:text-sm text-slate-100 leading-snug">
           Welcome to Oxford! Set up players to begin.
         </p>
+        <button id="btn-skip-pending-blockers" type="button" class="hidden self-start mt-1 px-3 py-1.5 rounded-lg bg-amber-300 text-[#002147] text-xs font-extrabold shadow">Skip remaining blockers</button>
       </div>
 
       <!-- Bottom Row: Clean Mortarboard Progress Pills & Deck Stats -->
@@ -183,7 +184,7 @@
     </div>
 
     <!-- Expandable Scrollable Action Log Drawer -->
-    <div id="action-log-drawer" class="hidden fixed inset-x-0 bottom-0 z-[60] h-[72dvh] bg-[#001733] border-t-2 border-[#b8860b] px-3 py-3 flex flex-col shadow-2xl">
+    <div id="action-log-drawer" class="hidden fixed inset-x-0 top-[32vh] bottom-0 z-[60] bg-[#001733] border-t-2 border-[#b8860b] px-3 py-3 flex flex-col shadow-2xl">
       <div class="flex items-center justify-between gap-2 mb-2 shrink-0">
         <span class="text-[11px] font-bold uppercase tracking-wider text-[#b8860b]">Chronological Match Log</span>
         <div class="flex items-center gap-2">
@@ -1655,8 +1656,8 @@
       stepNext();
     }
 
-    function teleportPlayer(targetPlayer, stationId, actionLogMsg = null) {
-      teleportPlayersSequentially([{ player: targetPlayer, stationId, actionLogMsg }]);
+    function teleportPlayer(targetPlayer, stationId, actionLogMsg = null, onDone = null) {
+      teleportPlayersSequentially([{ player: targetPlayer, stationId, actionLogMsg }], onDone);
     }
 
     function pickAIDirectionForHuman(botPlayer, humanPlayer) {
@@ -1875,6 +1876,15 @@
       document.getElementById('modal-turn-skip').classList.remove('hidden');
     }
 
+
+    function showHumanEffectSummary(player, message, onContinue) {
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[95] bg-slate-950/70 flex items-center justify-center p-4';
+      overlay.innerHTML = `<div class="w-full max-w-md rounded-2xl border-2 border-[#002147] bg-[#f8f5ee] p-5 shadow-2xl"><h3 class="font-oxford text-lg font-bold text-[#002147] mb-3">Hazard outcome</h3><div class="text-sm leading-relaxed text-slate-800">${message}</div><button type="button" class="mt-5 w-full rounded-xl bg-[#002147] p-3 font-bold text-amber-200">Continue</button></div>`;
+      overlay.querySelector('button').addEventListener('click', () => { overlay.remove(); if (onContinue) onContinue(); });
+      document.body.appendChild(overlay);
+    }
+
     function openDirectFriendChooser(targetPlayer, others) {
       const overlay = document.createElement('div');
       overlay.className = 'fixed inset-0 z-[90] bg-slate-950/70 flex items-center justify-center p-4';
@@ -1889,7 +1899,7 @@
           const destId = pickAIDirectionForHuman(friend, targetPlayer);
           const stName = STATION_MAP.get(destId).name;
           const msg = `${escapeHTML(targetPlayer.name)} asked <strong>${escapeHTML(friend.name)}</strong> for help and was directed to <strong>${escapeHTML(stName)}</strong>.`;
-          teleportPlayer(targetPlayer, destId, msg);
+          teleportPlayer(targetPlayer, destId, msg, () => showHumanEffectSummary(targetPlayer, msg));
         } else {
           openDirectPlayerModal(friend, targetPlayer, true);
         }
@@ -2057,6 +2067,22 @@
       state.afterBlockerCallback = null;
       if (cb) cb();
       else finishTurn();
+    }
+
+    function skipPendingBlockerSequence() {
+      const seq = state.blockerSequence;
+      if (!seq || seq.source !== 'MOVE_ALL_BLOCKERS' || state.phase !== 'MOVE_BLOCKER') return;
+      // If a blocker is currently held, put it back at its original station.
+      if (state.pickedUpBlocker && state.pickedUpBlocker !== '__REOPENED_SIX__' && seq.currentFrom) {
+        state.blockers.add(seq.currentFrom);
+        seq.currentFrom = null;
+        state.pickedUpBlocker = null;
+      }
+      seq.remaining = 0;
+      state.blockerMovesLeft = 0;
+      addLog(`Blocker sequence #${seq.id}: player skipped the remaining relocations; ${seq.pendingBlockers.length} blocker(s) left in place.`, false, true);
+      completeBlockerSequence(seq.id);
+      renderMap(); syncHUD();
     }
 
     function handleBlockerRelocateTap(stationId) {
@@ -2553,10 +2579,10 @@
             state.botTurnLogs = [
               `⚠️ <strong>Hazard Card: ${escapeHTML(card.title)}</strong><br>${escapeHTML(card.desc)}`
             ];
-            // AI choices are resolved by the bot logic; no card acknowledgement
-            // popup is needed. Any genuine human input (e.g. directing the bot)
-            // is requested only when that choice is reached.
-            resolveHazardCard();
+            // Use the same card-first presentation as human turns. Bot choices
+            // are made internally by resolveHazardCard; only genuine human input
+            // (such as directing the bot) is requested when that effect is reached.
+            openHazardModal(card);
           });
         } else {
           // Human players see the card and its instructions before resolving it.
@@ -2784,6 +2810,13 @@
         state.furthestSelection.stationIds.forEach(sid => {
           const st = STATION_MAP.get(sid);
           if (st) hlSVG += `<circle cx="${st.x}" cy="${st.y}" r="19" fill="rgba(245,158,11,0.30)" stroke="#d97706" stroke-width="3" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
+        });
+      }
+      if (state.phase === 'MOVE_BLOCKER' && state.blockerSequence) {
+        state.blockerSequence.pendingBlockers.forEach(sid => {
+          if (!state.blockers.has(sid)) return;
+          const st = STATION_MAP.get(sid); if (!st) return;
+          hlSVG += `<circle cx="${st.x}" cy="${st.y}" r="20" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="5 3" class="beacon-ring" pointer-events="none" />`;
         });
       }
       highlightsLayer.innerHTML = hlSVG;
@@ -3072,6 +3105,8 @@
     function syncHUD() {
       const p = activePlayer();
       if (!p) return;
+      const skipBlockersBtn = document.getElementById('btn-skip-pending-blockers');
+      if (skipBlockersBtn) skipBlockersBtn.classList.toggle('hidden', !(state.phase === 'MOVE_BLOCKER' && state.blockerSequence?.source === 'MOVE_ALL_BLOCKERS' && state.blockerActorId === p.id && p.type === 'human'));
 
       document.getElementById('status-player-name').textContent = p.name;
       const roleMap = { human: 'Human', easy: 'Fresher Bot', medium: 'GA Bot', hard: 'MCTS Bot' };
@@ -3351,6 +3386,7 @@
 
     document.getElementById('btn-roll-die').addEventListener('click', handleRollDie);
     document.getElementById('btn-hazard-ok').addEventListener('click', resolveHazardCard);
+    document.getElementById('btn-skip-pending-blockers').addEventListener('click', skipPendingBlockerSequence);
 
     document.getElementById('cam-my-turn').addEventListener('click', () => setCameraMode('turn'));
     document.getElementById('cam-objectives').addEventListener('click', () => setCameraMode('objectives'));
