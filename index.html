@@ -394,7 +394,7 @@
         <span class="text-xl">⏳</span>
         <div>
           <div class="text-[10px] font-bold uppercase tracking-widest text-amber-200">Academic Delay</div>
-          <h3 class="font-oxford font-extrabold text-lg leading-tight">Turn Skipped</h3>
+          <h3 class="font-oxford font-extrabold text-lg leading-tight">You Must Miss This Turn</h3>
         </div>
       </div>
       <div class="p-5 space-y-4">
@@ -1480,6 +1480,7 @@
           souvenirs: cards,
           recentStations: ['sheldonian'],
           skipNextTurn: false,
+          skipNextTurnReason: null,
           extraTurn: false
         };
       });
@@ -1716,7 +1717,7 @@
       switch (card.effect) {
         case 'EXTRA_TURN':
           p.extraTurn = true;
-          addLog(`${escapeHTML(p.name)} gained an extra turn!`, isBot);
+          if (isBot) addLog(`${escapeHTML(p.name)} gained an extra turn!`, true);
           finishTurn();
           break;
         case 'GOTO_ANYWHERE': {
@@ -1788,7 +1789,8 @@
         }
         case 'GOTO_JERICHO_SKIP': {
           p.skipNextTurn = true;
-          const msg = `${escapeHTML(p.name)} contracted Freshers' Flu and was sent to <strong>Jericho Health Centre</strong>.`;
+          p.skipNextTurnReason = { cardTitle: card.title, cardDesc: card.desc };
+          const msg = isBot ? `${escapeHTML(p.name)} contracted Freshers' Flu and was sent to <strong>Jericho Health Centre</strong>.` : null;
           teleportPlayer(p, 'jericho_health', msg);
           break;
         }
@@ -1822,26 +1824,25 @@
               )[0];
             }
             const stName = STATION_MAP.get(destination).name;
-            const msg = `${escapeHTML(p.name)} forgot their notes and rushed back along ${escapeHTML(LINES[travelLine]?.name || travelLine)} to <strong>${escapeHTML(stName)}</strong>.`;
+            const msg = isBot ? `${escapeHTML(p.name)} forgot their notes and rushed back along ${escapeHTML(LINES[travelLine]?.name || travelLine)} to <strong>${escapeHTML(stName)}</strong>.` : null;
             teleportPlayer(p, destination, msg);
           }
           break;
         }
         case 'GOTO_BODLEIAN': {
-          const msg = `${escapeHTML(p.name)} suffered an Essay Crisis and was sent directly to the <strong>Bodleian Library</strong>.`;
+          const msg = isBot ? `${escapeHTML(p.name)} suffered an Essay Crisis and was sent directly to the <strong>Bodleian Library</strong>.` : null;
           teleportPlayer(p, 'bodleian', msg);
           break;
         }
         case 'MISS_TURN': {
           p.skipNextTurn = true;
+          p.skipNextTurnReason = { cardTitle: card.title, cardDesc: card.desc };
           if (isBot) {
-            addLog(`⏭️ ${escapeHTML(p.name)} will miss their next turn.`, true);
-            finishTurn();
-          } else {
-            const msg = `${escapeHTML(p.name)} drew <strong>${escapeHTML(card.title)}</strong>: ${escapeHTML(card.desc)} (Will miss next turn).`;
-            addLog(msg, false);
-            openTurnSkipModal(p, card.title, card.desc);
+            addLog(`⏭️ ${escapeHTML(p.name)} will miss their next turn because of <strong>${escapeHTML(card.title)}</strong>.`, true);
           }
+          // Do not interrupt the turn in which the card was drawn. The reminder
+          // is presented only when this player's next turn would otherwise begin.
+          finishTurn();
           break;
         }
         case 'MOVE_ONE_BLOCKER':
@@ -1862,12 +1863,14 @@
       }
     }
 
-    function openTurnSkipModal(player, cardTitle, cardDesc) {
-      document.getElementById('turn-skip-desc').innerHTML = `<strong>${escapeHTML(player.name)}</strong> drew <strong>${escapeHTML(cardTitle)}</strong>!<br><br>${escapeHTML(cardDesc)}`;
+    function openTurnSkipModal(player, reason, onAcknowledge) {
+      const cardTitle = reason?.cardTitle || 'a Hazard card';
+      const cardDesc = reason?.cardDesc || 'An academic setback means you must miss this turn.';
+      document.getElementById('turn-skip-desc').innerHTML = `<strong>${escapeHTML(player.name)}</strong>, you must miss this turn because you drew <strong>${escapeHTML(cardTitle)}</strong>.<br><br>${escapeHTML(cardDesc)}`;
       const btn = document.getElementById('btn-turn-skip-ok');
       btn.onclick = () => {
         document.getElementById('modal-turn-skip').classList.add('hidden');
-        finishTurn();
+        if (typeof onAcknowledge === 'function') onAcknowledge();
       };
       document.getElementById('modal-turn-skip').classList.remove('hidden');
     }
@@ -1963,8 +1966,9 @@
       const station = STATION_MAP.get(stationId);
       if (!player || !station) return;
       state.graduateSelection = null;
-      const msg = `${escapeHTML(player.name)} drew <strong>Oxford Graduate</strong> and chose to travel directly to <strong>${escapeHTML(station.name)}</strong>.`;
-      teleportPlayer(player, stationId, msg);
+      // The human has just seen the Oxford Graduate card; no separate
+      // action-summary message is needed for this personal choice.
+      teleportPlayer(player, stationId, null);
     }
 
     function handleFurthestStationTap(stationId) {
@@ -2140,29 +2144,46 @@
           return;
         }
 
-        let nextIdx = state.currentIdx;
-        let safetyCounter = 0;
-        while (safetyCounter < state.players.length * 2) {
-          safetyCounter++;
-          nextIdx = (nextIdx + 1) % state.players.length;
-          const nextP = state.players[nextIdx];
-          if (nextP.skipNextTurn) {
-            nextP.skipNextTurn = false;
-            addLog(`⏭️ ${escapeHTML(nextP.name)} missed their turn.`);
-            continue;
+        const selectNextPlayer = () => {
+          let nextIdx = state.currentIdx;
+          let safetyCounter = 0;
+          while (safetyCounter < state.players.length * 2) {
+            safetyCounter++;
+            nextIdx = (nextIdx + 1) % state.players.length;
+            const nextP = state.players[nextIdx];
+            if (nextP.skipNextTurn) {
+              const reason = nextP.skipNextTurnReason;
+              nextP.skipNextTurn = false;
+              nextP.skipNextTurnReason = null;
+              state.currentIdx = nextIdx;
+              state.phase = 'ROLL_DIE';
+              addLog(`⏭️ ${escapeHTML(nextP.name)} missed their turn${reason?.cardTitle ? ` because of ${escapeHTML(reason.cardTitle)}` : ''}.`);
+
+              if (nextP.type === 'human') {
+                setCameraMode('turn');
+                triggerPassAndPlayCurtain(() => {
+                  renderMap();
+                  syncHUD();
+                  openTurnSkipModal(nextP, reason, selectNextPlayer);
+                });
+                return;
+              }
+              // Bots skip automatically; no human-facing reminder is needed.
+              continue;
+            }
+            break;
           }
-          break;
-        }
 
-        state.currentIdx = nextIdx;
-        state.phase = 'ROLL_DIE';
-        setCameraMode('turn');
-
-        triggerPassAndPlayCurtain(() => {
-          renderMap();
-          syncHUD();
-          maybeTriggerBotTurn();
-        });
+          state.currentIdx = nextIdx;
+          state.phase = 'ROLL_DIE';
+          setCameraMode('turn');
+          triggerPassAndPlayCurtain(() => {
+            renderMap();
+            syncHUD();
+            maybeTriggerBotTurn();
+          });
+        };
+        selectNextPlayer();
       };
 
       if (finishedPlayer.type !== 'human' && state.botTurnLogs.length > 0) {
@@ -2538,10 +2559,10 @@
             resolveHazardCard();
           });
         } else {
-          // The card is described in the resulting action summary; avoid a
-          // duplicate full-screen card popup. Choice-based effects open only
-          // the map/choice interaction they actually require.
-          resolveHazardCard();
+          // Human players see the card and its instructions before resolving it.
+          // Outcome logging is handled separately and only retained when the
+          // effect involves another player's choice or movement.
+          openHazardModal(card);
         }
       } else {
         const stayText = `🚇 <strong>Interchange:</strong> Stayed on ${escapeHTML(LINES[lineId].name)}. Turn completed.`;
@@ -2558,32 +2579,10 @@
       const box = document.getElementById('hazard-interactive-box');
       const hazardOk = document.getElementById('btn-hazard-ok');
       hazardOk.textContent = card.effect === 'GOTO_ANYWHERE' ? 'Choose Destination on Map' : 'Acknowledge & Resolve';
+      // The card popup explains the effect. Any actual choice is made in the
+      // appropriate map-selection or player-choice interaction after acknowledgement.
       box.innerHTML = '';
-      if (card.effect === 'GOTO_GDS_FRIEND') {
-        box.classList.remove('hidden');
-        box.innerHTML = `
-          <div class="text-xs font-bold text-amber-900">Choose G&amp;D's Branch &amp; Friend Companion:</div>
-          <select id="haz-gds-branch" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
-            <option value="gds_jericho">G&amp;D's Jericho</option>
-            <option value="gds_south">G&amp;D's St Aldate's</option>
-            <option value="gds_east">G&amp;D's Cowley Road</option>
-          </select>
-          <select id="haz-friend-id" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
-            ${state.players.filter(pl => pl.id !== activePlayer().id).map(pl => `<option value="${pl.id}">${escapeHTML(pl.name)}</option>`).join('')}
-          </select>
-        `;
-      } else if (card.effect === 'DIRECT_ANYWHERE') {
-        const others = state.players.filter(pl => pl.id !== activePlayer().id);
-        box.classList.remove('hidden');
-        box.innerHTML = `
-          <div class="text-xs font-bold text-amber-900">Ask a friendly player to direct you anywhere on the board:</div>
-          <select id="haz-direct-friend" class="w-full p-2 rounded-xl border border-amber-300 text-xs bg-white">
-            ${others.map(pl => `<option value="${pl.id}">${escapeHTML(pl.name)} (${pl.type === 'human' ? 'Human' : BOT_PROFILES[pl.type]?.tier || 'Bot'})</option>`).join('')}
-          </select>
-        `;
-      } else {
-        box.classList.add('hidden');
-      }
+      box.classList.add('hidden');
 
       document.getElementById('modal-hazard').classList.remove('hidden');
     }
@@ -2649,6 +2648,11 @@
         } else if (state.phase === 'SELECT_MOVE') {
           const moves = state.reachableMoves;
           if (!moves.length) { finishTurn(); return; }
+          const hasFinishedSouvenirs = p.souvenirs.every(s => s.visited);
+          if (hasFinishedSouvenirs && p.stationId === 'sheldonian') {
+            declareVictory(p);
+            return;
+          }
           const targets = playerObjectives(p);
           const { pathObstructed, hazardUtility } = analyzeBlockerObstruction(p);
           const recent = p.recentStations || [];
@@ -2657,7 +2661,15 @@
 
           moves.forEach(opt => {
             let sc = 0;
-            if (p.type === 'hard') {
+            if (hasFinishedSouvenirs) {
+              // Endgame is a separate objective: all bot tiers must now pursue
+              // the Sheldonian, not continue optimizing souvenir/interchange play.
+              const currentEndgameDist = blockerAwareDist(p.stationId, 'sheldonian', p.currentLine);
+              const candidateEndgameDist = blockerAwareDist(opt.stationId, 'sheldonian', opt.lineId);
+              const progress = currentEndgameDist - candidateEndgameDist;
+              sc = (opt.stationId === 'sheldonian' ? 1000000 : progress * 1000 - candidateEndgameDist * 20)
+                + (opt.steps > 0 ? 0.1 : 0);
+            } else if (p.type === 'hard') {
               sc = runMCTSRollout(p, opt, profile.rollouts) * 100;
             } else {
               const hit = targets.includes(opt.stationId) ? profile.weights.targetHit : 0;
@@ -2723,6 +2735,7 @@
           </div>
           <div class="text-xs text-slate-700">Pos: ${escapeHTML(item.position)} | Rolled: ${item.roll}</div>
           <div class="text-xs text-emerald-800 font-semibold">Move: ${escapeHTML(item.selectedMove)} (Score: ${item.score})</div>
+          ${item.objective ? `<div class="text-[10px] text-slate-500">Objective: ${escapeHTML(item.objective)}</div>` : ''}
         </div>
       `).join('');
     }
@@ -3407,7 +3420,7 @@
         stationName: STATION_MAP.get(p.stationId)?.name || p.stationId,
         currentLine: p.currentLine, previousLine: p.previousLine,
         souvenirs: p.souvenirs.map(x => ({ name: x.name, stationId: x.stationId, visited: x.visited })),
-        skipNextTurn: !!p.skipNextTurn, extraTurn: !!p.extraTurn
+        skipNextTurn: !!p.skipNextTurn, skipNextTurnReason: p.skipNextTurnReason || null, extraTurn: !!p.extraTurn
       }));
       const diagnostics = {
         exportType: 'Oxford Game full match diagnostics',
