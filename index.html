@@ -1303,6 +1303,7 @@
       graduateSelection: null,
       furthestSelection: null,
       pendingHazard: null,
+      pendingBotHazardSummary: null,
       directSelection: null,
       blockerMovesLeft: 0,
       blockerActorId: null,
@@ -1377,6 +1378,13 @@
       candidateLines.forEach(lineId => {
         const adj = ADJACENCY[lineId];
         if (!adj || !adj.has(stationId)) return;
+        // Staying at the current station is a legitimate zero-step move on
+        // every line available at this station. This also lets an uncommitted
+        // player choose a line before electing to remain where they are.
+        const stayKey = `${stationId}|${lineId}`;
+        bestByTargetAndLine.set(stayKey, {
+          stationId, lineId, steps: 0, path: [stationId], reopenedBlockers: []
+        });
         const queue = [{ curr: stationId, prev: null, steps: 0, path: [stationId], reopenedBlockers: [] }];
 
         while (queue.length > 0) {
@@ -1765,11 +1773,15 @@
               openDirectPlayerModal(friend, p, true);
             }
           } else {
-            const humanRiv = others.find(pl => pl.type === 'human');
-            if (humanRiv) {
-              openDirectPlayerModal(humanRiv, p, false);
+            // The bot chooses whom to ask; no human-facing friend-selection
+            // control is shown. If it asks a human, that player still chooses
+            // the destination, which is the actual interactive part of the card.
+            const friend = [...others].sort((a, b) =>
+              graphDist(a.stationId, p.stationId) - graphDist(b.stationId, p.stationId)
+            )[0];
+            if (friend.type === 'human') {
+              openDirectPlayerModal(friend, p, false);
             } else {
-              const friend = others[0];
               const t = playerObjectives(p)[0];
               const cands = STATIONS.filter(s => s.type !== 'square');
               cands.sort((a, b) => graphDist(b.id, t) - graphDist(a.id, t));
@@ -1829,9 +1841,14 @@
         }
         case 'MISS_TURN': {
           p.skipNextTurn = true;
-          const msg = `${escapeHTML(p.name)} drew <strong>${escapeHTML(card.title)}</strong>: ${escapeHTML(card.desc)} (Will miss next turn).`;
-          addLog(msg, isBot);
-          openTurnSkipModal(p, card.title, card.desc);
+          if (isBot) {
+            addLog(`⏭️ ${escapeHTML(p.name)} will miss their next turn.`, true);
+            finishTurn();
+          } else {
+            const msg = `${escapeHTML(p.name)} drew <strong>${escapeHTML(card.title)}</strong>: ${escapeHTML(card.desc)} (Will miss next turn).`;
+            addLog(msg, false);
+            openTurnSkipModal(p, card.title, card.desc);
+          }
           break;
         }
         case 'MOVE_ONE_BLOCKER':
@@ -2097,6 +2114,8 @@
       if (finishedPlayer.type !== 'human' && state.botTurnLogs.length > 0) {
         const logsCopy = [...state.botTurnLogs];
         state.botTurnLogs = [];
+        const isHazardResolution = state.pendingBotHazardSummary?.playerId === finishedPlayer.id;
+        if (isHazardResolution) state.pendingBotHazardSummary = null;
 
         if (settings.botConfirm) {
           showBotSummaryStage(finishedPlayer, logsCopy, advanceToNextPlayer);
@@ -2280,7 +2299,7 @@
       const stationId = opt.stationId;
       const st = STATION_MAP.get(stationId);
       const lineName = LINES[opt.lineId]?.name || 'Route';
-      document.getElementById('confirm-move-steps-badge').textContent = `${opt.steps} step${opt.steps > 1 ? 's' : ''}`;
+      document.getElementById('confirm-move-steps-badge').textContent = opt.steps === 0 ? 'Stay (0 steps)' : `${opt.steps} step${opt.steps > 1 ? 's' : ''}`;
       document.getElementById('confirm-move-station').textContent = st.name;
       const pill = document.getElementById('confirm-move-line-pill');
       pill.textContent = `Via ${lineName}`;
@@ -2332,8 +2351,10 @@
       recordRecentStation(p, opt.stationId);
       sfx.step();
 
-      let summaryText = `🎲 <strong>Dice Roll:</strong> Rolled a ${state.dieRoll}.<br>` +
-                        `📍 <strong>Route:</strong> Traveled from ${escapeHTML(startStName)} along the <strong>${escapeHTML(lineName)}</strong> to arrive at <strong>${escapeHTML(st.name)}</strong>.`;
+      const routeDescription = opt.steps === 0
+        ? `📍 <strong>Route:</strong> Stayed at <strong>${escapeHTML(st.name)}</strong> (0 spaces) on the <strong>${escapeHTML(lineName)}</strong>.`
+        : `📍 <strong>Route:</strong> Traveled from ${escapeHTML(startStName)} along the <strong>${escapeHTML(lineName)}</strong> to arrive at <strong>${escapeHTML(st.name)}</strong>.`;
+      let summaryText = `🎲 <strong>Dice Roll:</strong> Rolled a ${state.dieRoll}.<br>${routeDescription}`;
       
       if (opt.reopenedBlockers && opt.reopenedBlockers.length > 0) {
         // The completed blocker sequence supplies the useful from → to report.
@@ -2452,7 +2473,16 @@
         if (isBot) {
           const preHazardLines = [...state.botTurnLogs];
           state.botTurnLogs = [];
-          showBotSummaryStage(p, preHazardLines, () => openHazardModal(card));
+          state.pendingBotHazardSummary = { playerId: p.id, cardTitle: card.title };
+          showBotSummaryStage(p, preHazardLines, () => {
+            state.botTurnLogs = [
+              `⚠️ <strong>Hazard Card: ${escapeHTML(card.title)}</strong><br>${escapeHTML(card.desc)}`
+            ];
+            // AI choices are resolved by the bot logic; no card acknowledgement
+            // popup is needed. Any genuine human input (e.g. directing the bot)
+            // is requested only when that choice is reached.
+            resolveHazardCard();
+          });
         } else {
           openHazardModal(card);
         }
@@ -3084,7 +3114,8 @@
 
       const visited = targetP.souvenirs.filter(s => s.visited);
       const unvisited = targetP.souvenirs.filter(s => !s.visited);
-      document.getElementById('inspector-sub').textContent = `At ${STATION_MAP.get(targetP.stationId).name} • ${visited.length}/${targetP.souvenirs.length} Visited`;
+      const lineLabel = targetP.currentLine ? `${LINES[targetP.currentLine]?.name || targetP.currentLine} Line` : 'No line selected';
+      document.getElementById('inspector-sub').textContent = `At ${STATION_MAP.get(targetP.stationId).name} • ${lineLabel} • ${visited.length}/${targetP.souvenirs.length} Visited`;
 
       const listEl = document.getElementById('inspector-souvenir-list');
       if (isSelf) {
