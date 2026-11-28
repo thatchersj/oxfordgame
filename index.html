@@ -183,15 +183,15 @@
     </div>
 
     <!-- Expandable Scrollable Action Log Drawer -->
-    <div id="action-log-drawer" class="hidden border-t border-white/15 bg-[#001733] px-3 py-2.5">
-      <div class="flex items-center justify-between mb-1.5">
+    <div id="action-log-drawer" class="hidden fixed inset-x-0 bottom-0 z-[60] h-[72dvh] bg-[#001733] border-t-2 border-[#b8860b] px-3 py-3 flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between gap-2 mb-2 shrink-0">
         <span class="text-[11px] font-bold uppercase tracking-wider text-[#b8860b]">Chronological Match Log</span>
         <div class="flex items-center gap-2">
           <button id="btn-export-diagnostics" type="button" class="text-[10px] font-bold text-amber-200 px-2 py-1 rounded bg-white/10">Export full log</button>
-          <button id="btn-close-log" type="button"
-          class="text-xs text-slate-300 hover:text-white px-2 py-0.5 rounded bg-white/10">Close ✕</button>
+          <button id="btn-close-log" type="button" class="text-xs text-slate-300 hover:text-white px-2 py-1 rounded bg-white/10">Close ✕</button>
+        </div>
       </div>
-      <div id="action-log-list" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs text-slate-200 font-mono-tech">
+      <div id="action-log-list" class="flex-1 min-h-0 w-full overflow-y-auto space-y-1.5 pr-1 text-xs text-slate-200 font-mono-tech">
         <div class="text-slate-400 italic">No actions recorded yet.</div>
       </div>
     </div>
@@ -272,7 +272,7 @@
     </div>
 
     <!-- Dice Roll Dock (Right Thumb Zone) -->
-    <div id="dice-dock" class="absolute right-3 bottom-32 sm:bottom-36 z-20 flex flex-col items-end gap-2">
+    <div id="dice-dock" class="absolute right-3 bottom-64 sm:bottom-52 z-20 flex flex-col items-end gap-2">
       <button id="btn-roll-die" type="button"
         class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#002147] hover:bg-[#00316b] disabled:opacity-45 disabled:pointer-events-none text-white border-2 border-[#b8860b] shadow-2xl flex flex-col items-center justify-center gap-0.5 active:scale-95 transition">
         <span id="die-face" class="text-2xl sm:text-3xl font-extrabold leading-none">🎲</span>
@@ -1301,6 +1301,7 @@
       reachableMoves: [],
       pendingMoveOption: null,
       graduateSelection: null,
+      gdsSelection: null,
       furthestSelection: null,
       pendingHazard: null,
       pendingBotHazardSummary: null,
@@ -1450,6 +1451,7 @@
       state.reachableMoves = [];
       state.directSelection = null;
       state.graduateSelection = null;
+      state.gdsSelection = null;
       state.furthestSelection = null;
       state.blockerActorId = null;
       state.blockerForbiddenStationId = null;
@@ -1735,19 +1737,19 @@
           break;
         }
         case 'GOTO_GDS_FRIEND': {
-          let branch = 'gds_jericho';
-          let friendId = null;
           if (!isBot) {
-            branch = document.getElementById('haz-gds-branch')?.value || 'gds_jericho';
-            friendId = parseInt(document.getElementById('haz-friend-id')?.value ?? '-1', 10);
-          } else {
-            const branches = ['gds_jericho', 'gds_south', 'gds_east'];
-            const t = playerObjectives(p)[0];
-            branches.sort((a, b) => blockerAwareDist(a, t) - blockerAwareDist(b, t));
-            branch = branches[0];
-            friendId = state.players.find(o => o.id !== p.id)?.id ?? null;
+            state.gdsSelection = { playerId: p.id, branchId: null };
+            state.phase = 'SELECT_GDS_BRANCH';
+            setCameraMode('full'); renderMap(); syncHUD();
+            break;
           }
-          const friend = state.players.find(o => o.id === friendId);
+          const branches = ['gds_jericho', 'gds_south', 'gds_east'];
+          const t = playerObjectives(p)[0];
+          branches.sort((a, b) => blockerAwareDist(a, t) - blockerAwareDist(b, t));
+          const branch = branches[0];
+          const friend = state.players.filter(o => o.id !== p.id).sort((a, b) =>
+            graphDist(a.stationId, p.stationId) - graphDist(b.stationId, p.stationId)
+          )[0] || null;
           const stName = STATION_MAP.get(branch).name;
           const msg = `${escapeHTML(p.name)}${friend ? ` & ${escapeHTML(friend.name)}` : ''} went for ice-cream at <strong>${escapeHTML(stName)}</strong>.`;
           const entries = [{ player: p, stationId: branch, actionLogMsg: msg }];
@@ -1762,16 +1764,7 @@
             return;
           }
           if (!isBot) {
-            const chosenFriendId = parseInt(document.getElementById('haz-direct-friend')?.value ?? `${others[0].id}`, 10);
-            const friend = others.find(o => o.id === chosenFriendId) || others[0];
-            if (friend.type !== 'human') {
-              const destId = pickAIDirectionForHuman(friend, p);
-              const stName = STATION_MAP.get(destId).name;
-              const msg = `${escapeHTML(p.name)} asked <strong>${escapeHTML(friend.name)}</strong> for help and was directed to <strong>${escapeHTML(stName)}</strong>.`;
-              teleportPlayer(p, destId, msg);
-            } else {
-              openDirectPlayerModal(friend, p, true);
-            }
+            openDirectFriendChooser(p, others);
           } else {
             // The bot chooses whom to ask; no human-facing friend-selection
             // control is shown. If it asks a human, that player still chooses
@@ -1879,6 +1872,28 @@
       document.getElementById('modal-turn-skip').classList.remove('hidden');
     }
 
+    function openDirectFriendChooser(targetPlayer, others) {
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[90] bg-slate-950/70 flex items-center justify-center p-4';
+      overlay.innerHTML = `<div class="w-full max-w-xs rounded-2xl bg-[#f8f5ee] p-4 shadow-2xl"><h3 class="font-oxford font-bold text-[#002147] mb-1">Ask a friendly player</h3><p class="text-xs text-slate-600 mb-3">Choose who will direct you to a station.</p><div class="space-y-2">${others.map(pl => `<button data-ask-player="${pl.id}" class="w-full text-left rounded-xl border border-slate-200 bg-white p-3 font-bold text-sm">${escapeHTML(pl.name)} <span class="text-xs font-normal text-slate-500">(${pl.type === 'human' ? 'Human' : BOT_PROFILES[pl.type]?.tier || 'Bot'})</span></button>`).join('')}</div></div>`;
+      overlay.addEventListener('click', e => {
+        const b = e.target.closest('[data-ask-player]');
+        if (!b) return;
+        const friend = others.find(pl => pl.id === Number(b.dataset.askPlayer));
+        overlay.remove();
+        if (!friend) return;
+        if (friend.type !== 'human') {
+          const destId = pickAIDirectionForHuman(friend, targetPlayer);
+          const stName = STATION_MAP.get(destId).name;
+          const msg = `${escapeHTML(targetPlayer.name)} asked <strong>${escapeHTML(friend.name)}</strong> for help and was directed to <strong>${escapeHTML(stName)}</strong>.`;
+          teleportPlayer(targetPlayer, destId, msg);
+        } else {
+          openDirectPlayerModal(friend, targetPlayer, true);
+        }
+      });
+      document.body.appendChild(overlay);
+    }
+
     function openDirectPlayerModal(chooserPlayer, targetPlayer, askedByHuman) {
       document.getElementById('direct-ps-badge').textContent = askedByHuman
         ? `${targetPlayer.name} Asked ${chooserPlayer.name}`
@@ -1901,6 +1916,45 @@
         syncHUD();
       };
       document.getElementById('modal-direct-player').classList.remove('hidden');
+    }
+
+    function handleGdsBranchTap(stationId) {
+      if (!['gds_jericho', 'gds_south', 'gds_east'].includes(stationId) || !state.gdsSelection) return;
+      state.gdsSelection.branchId = stationId;
+      state.phase = 'SELECT_GDS_FRIEND';
+      renderMap(); syncHUD();
+      showToast("Now tap another player's marker on the map.");
+    }
+
+    function completeGdsFriendSelection(friend) {
+      const sel = state.gdsSelection;
+      if (!sel || !friend || friend.id === sel.playerId) return;
+      const player = state.players.find(pl => pl.id === sel.playerId);
+      if (!player) return;
+      const branch = sel.branchId;
+      state.gdsSelection = null;
+      state.phase = 'ROLL_DIE';
+      const stName = STATION_MAP.get(branch).name;
+      const msg = `${escapeHTML(player.name)} & ${escapeHTML(friend.name)} went for ice-cream at <strong>${escapeHTML(stName)}</strong>.`;
+      teleportPlayersSequentially([
+        { player, stationId: branch, actionLogMsg: msg },
+        { player: friend, stationId: branch, actionLogMsg: null }
+      ], null, player);
+    }
+
+    function chooseGdsFriendAtStation(stationId) {
+      const candidates = state.players.filter(pl => pl.id !== state.gdsSelection?.playerId && pl.stationId === stationId);
+      if (!candidates.length) { showToast('Tap another player’s marker, not a station.'); return; }
+      if (candidates.length === 1) { completeGdsFriendSelection(candidates[0]); return; }
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[90] bg-slate-950/70 flex items-center justify-center p-4';
+      overlay.innerHTML = `<div class="w-full max-w-xs rounded-2xl bg-[#f8f5ee] p-4 shadow-2xl"><h3 class="font-oxford font-bold text-[#002147] mb-3">Which player?</h3><div class="space-y-2">${candidates.map(pl => `<button data-pick-player="${pl.id}" class="w-full text-left rounded-xl border border-slate-200 bg-white p-3 font-bold text-sm">${escapeHTML(pl.name)}</button>`).join('')}</div><button data-cancel class="mt-3 w-full rounded-xl bg-slate-200 p-2 text-sm font-bold">Cancel</button></div>`;
+      overlay.addEventListener('click', e => {
+        const b = e.target.closest('[data-pick-player]');
+        if (b) { const pl = state.players.find(x => x.id === Number(b.dataset.pickPlayer)); overlay.remove(); completeGdsFriendSelection(pl); }
+        if (e.target.closest('[data-cancel]')) overlay.remove();
+      });
+      document.body.appendChild(overlay);
     }
 
     function handleGraduateStationTap(stationId) {
@@ -2484,7 +2538,10 @@
             resolveHazardCard();
           });
         } else {
-          openHazardModal(card);
+          // The card is described in the resulting action summary; avoid a
+          // duplicate full-screen card popup. Choice-based effects open only
+          // the map/choice interaction they actually require.
+          resolveHazardCard();
         }
       } else {
         const stayText = `🚇 <strong>Interchange:</strong> Stayed on ${escapeHTML(LINES[lineId].name)}. Turn completed.`;
@@ -2562,7 +2619,7 @@
     function maybeTriggerBotTurn() {
       clearTimeout(state.botTimer);
       const actionGeneration = ++state.botActionGeneration;
-      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION' || state.phase === 'SELECT_GRADUATE_STATION' || state.phase === 'SELECT_FURTHEST_STATION') return;
+      if (state.phase === 'WELCOME' || state.phase === 'GAME_OVER' || state.phase === 'SELECT_DIRECT_STATION' || state.phase === 'SELECT_GRADUATE_STATION' || state.phase === 'SELECT_GDS_BRANCH' || state.phase === 'SELECT_GDS_FRIEND' || state.phase === 'SELECT_FURTHEST_STATION') return;
       const p = state.phase === 'MOVE_BLOCKER' && state.blockerActorId !== null
         ? state.players.find(pl => pl.id === state.blockerActorId)
         : activePlayer();
@@ -2706,6 +2763,10 @@
         STATIONS.forEach(s => {
           hlSVG += `<circle cx="${s.x}" cy="${s.y}" r="14" fill="rgba(245,158,11,0.22)" stroke="#d97706" stroke-width="2" class="cursor-pointer" data-sid="${s.id}" />`;
         });
+      } else if (state.phase === 'SELECT_GDS_BRANCH') {
+        ['gds_jericho', 'gds_south', 'gds_east'].forEach(sid => {
+          const st = STATION_MAP.get(sid); if (st) hlSVG += `<circle cx="${st.x}" cy="${st.y}" r="22" fill="rgba(245,158,11,0.38)" stroke="#c83737" stroke-width="4" class="beacon-ring cursor-pointer" data-sid="${sid}" />`;
+        });
       } else if (state.phase === 'SELECT_FURTHEST_STATION' && state.furthestSelection) {
         state.furthestSelection.stationIds.forEach(sid => {
           const st = STATION_MAP.get(sid);
@@ -2728,7 +2789,7 @@
         sightLayer.innerHTML = '';
       }
 
-      const showObjectives = currP && currP.type === 'human' && !['SELECT_DIRECT_STATION', 'SELECT_GRADUATE_STATION', 'SELECT_FURTHEST_STATION'].includes(state.phase) && document.getElementById('modal-pass-phone').classList.contains('hidden');
+      const showObjectives = currP && currP.type === 'human' && !['SELECT_DIRECT_STATION', 'SELECT_FURTHEST_STATION'].includes(state.phase) && document.getElementById('modal-pass-phone').classList.contains('hidden');
       const myObjectives = showObjectives ? new Set(playerObjectives(currP)) : new Set();
       let stSVG = '';
       let lblSVG = '';
@@ -2739,7 +2800,10 @@
         const primaryCol = LINES[Array.from(s.lines)[0]]?.color || '#1e293b';
 
         if (isObj) {
-          stSVG += `<circle cx="${s.x}" cy="${s.y}" r="15" fill="rgba(184,134,11,0.32)" stroke="#b8860b" stroke-width="2" />`;
+          const graduatePick = state.phase === 'SELECT_GRADUATE_STATION';
+          stSVG += graduatePick
+            ? `<circle cx="${s.x}" cy="${s.y}" r="23" fill="rgba(16,185,129,0.22)" stroke="#059669" stroke-width="5" /><circle cx="${s.x}" cy="${s.y}" r="17" fill="rgba(245,158,11,0.48)" stroke="#b8860b" stroke-width="2.5" />`
+            : `<circle cx="${s.x}" cy="${s.y}" r="15" fill="rgba(184,134,11,0.32)" stroke="#b8860b" stroke-width="2" />`;
         }
 
         if (s.interchange) {
@@ -2809,8 +2873,8 @@
           const px = s.x + Math.cos(ang) * dist;
           const py = s.y + Math.sin(ang) * dist - 6;
           plySVG += `
-            <g filter="url(#dropShadow)" pointer-events="none">
-              <circle cx="${px}" cy="${py}" r="13" fill="${p.color.hex}" stroke="#ffffff" stroke-width="2.2" />
+            <g filter="url(#dropShadow)" ${state.phase === 'SELECT_GDS_FRIEND' ? `class="cursor-pointer" data-player-id="${p.id}"` : 'pointer-events="none"'}>
+              <circle cx="${px}" cy="${py}" r="${state.phase === 'SELECT_GDS_FRIEND' ? 17 : 13}" fill="${p.color.hex}" stroke="${state.phase === 'SELECT_GDS_FRIEND' ? '#f59e0b' : '#ffffff'}" stroke-width="${state.phase === 'SELECT_GDS_FRIEND' ? 4 : 2.2}" />
               <text x="${px}" y="${py + 4}" text-anchor="middle" font-size="11">🎓</text>
             </g>
           `;
@@ -2821,6 +2885,7 @@
     }
 
     function onStationClicked(stationId) {
+      if (state.phase === 'SELECT_GDS_BRANCH') { handleGdsBranchTap(stationId); return; }
       if (state.phase === 'SELECT_DIRECT_STATION') {
         handleDirectStationTap(stationId);
         return;
@@ -2854,6 +2919,13 @@
     const worldGroup = document.getElementById('map-world');
 
     svgEl.addEventListener('click', e => {
+      const playerTarget = e.target.closest('[data-player-id]');
+      if (playerTarget && state.phase === 'SELECT_GDS_FRIEND') {
+        e.stopPropagation();
+        const pl = state.players.find(x => x.id === Number(playerTarget.getAttribute('data-player-id')));
+        if (pl) chooseGdsFriendAtStation(pl.stationId);
+        return;
+      }
       const target = e.target.closest('[data-sid]');
       if (target) {
         e.stopPropagation();
@@ -3024,6 +3096,10 @@
         const chooser = state.players.find(pl => pl.id === state.directSelection.chooserId);
         const target = state.players.find(pl => pl.id === state.directSelection.targetId);
         instr.textContent = `${chooser?.name || 'Player'}: Tap any station on the map to direct ${target?.name || 'player'} there.`;
+      } else if (state.phase === 'SELECT_GDS_BRANCH') {
+        instr.textContent = 'I Scream For...: Tap one of the highlighted G&D’s branches on the map.';
+      } else if (state.phase === 'SELECT_GDS_FRIEND') {
+        instr.textContent = 'I Scream For...: Tap another player’s marker on the map to take them with you.';
       } else if (state.phase === 'SELECT_GRADUATE_STATION' && state.graduateSelection) {
         const graduatePlayer = state.players.find(pl => pl.id === state.graduateSelection.playerId);
         instr.textContent = `${graduatePlayer?.name || 'Player'}: Choose any station on the map for Oxford Graduate.`;
@@ -3284,10 +3360,12 @@
       const drawer = document.getElementById('action-log-drawer');
       const chev = document.getElementById('log-chevron');
       const open = drawer.classList.toggle('hidden');
+      drawer.classList.toggle('flex', !open);
       chev.textContent = open ? '▼' : '▲';
     });
     document.getElementById('btn-close-log').addEventListener('click', () => {
       document.getElementById('action-log-drawer').classList.add('hidden');
+      document.getElementById('action-log-drawer').classList.remove('flex');
       document.getElementById('log-chevron').textContent = '▼';
     });
 
